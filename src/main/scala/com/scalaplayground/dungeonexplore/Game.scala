@@ -117,11 +117,13 @@ object Game extends App {
 class GameState(player:Player) {
   val dungeonHelper = new DungeonHelper
   var defeatedMonsters = Map[String,Int]()
-
+  var shouldGenerateMonster = true
   var monsters: List[Monster] = List[Monster](generateMonster().get)
   var monstersSlain = 0
   var shrine = generateShrine()
   var droppedItems = List[Item]()
+  var currTileDescription: String = "Nothing is here."
+
 
 
   def generateShrine(): Shrine = {
@@ -134,11 +136,12 @@ class GameState(player:Player) {
   }
 
   def generateMonster(): Option[Monster] = {
-    if (monsters != null && monsters.filter(m => m.isAlive).length >= MAX_MONSTERS_ALIVE) {
+    if (!shouldGenerateMonster || (monsters != null && monsters.filter(m => m.isAlive).length >= MAX_MONSTERS_ALIVE)) {
       return None
     }
-    if (monstersSlain == 10) {
+    if (monstersSlain >= 10) {
       println("The door before you creaks open and an inhuman howl escapes from inside. A grayish light reveals the final resting place of Cem Hial...\n\n\n")
+      shouldGenerateMonster = false
       return Some(new CemHial())
     }
     else {
@@ -153,101 +156,7 @@ class GameState(player:Player) {
     }
   }
 
-  /*
-  def openDoor: Unit = {
-    println("You kick open a new door")
-    Random.nextInt(5) match {
-      case 0 => {
-        val trapDamage = Random.nextInt(3) + 1
-        println(s"The door was trapped! You take ${trapDamage} points of damage!")
-      }
-      case _ => ()
-    }
-    monster = generateMonster()
-    println(s"You are jumped by a ${monster.name}!")
-  }
-  */
-
-  /*
-  def performPlayerAction: Boolean = {
-    if (monster == null) {
-      println("This room is empty!")
-      return true
-    }
-    val attackRoll = player.performAttack
-    println(s"attack roll of ${attackRoll} vs AC ${monster.armorClass + monster.armor.armorBonus}")
-
-    if (attackRoll >= monster.armorClass + monster.armor.armorBonus) {
-      val damage = player.calculateDamage
-      monster.health = monster.health - damage
-      if (monster.health <= 0) {
-        println(s"You defeated the ${monster.name}!")
-        if (defeatedMonsters.contains(monster.name)) {
-          defeatedMonsters = defeatedMonsters ++ Map[String,Int](monster.name -> (defeatedMonsters(monster.name) + 1))
-        }
-        else {
-          defeatedMonsters = defeatedMonsters ++ Map[String,Int](monster.name -> 1)
-        }
-        monstersSlain = monstersSlain + 1
-        if (monster.name == "Cem Hial, the Necromancer") {
-          println("With one final wail the Necromancer disappears into nothing. Congratulations! The town is saved!")
-          return false
-        }
-        val loot = monster.dropLoot match {
-          case Some("potion") => {
-            print("dropping potion")
-            //player.numPotions = player.numPotions + 1
-            //println(s"${monster.name} dropped a potion! You now have ${player.numPotions}.")
-            droppedItems = droppedItems :+ new Item(new Position(Random.nextInt(NUM_ROWS), Random.nextInt(NUM_COLS)), "!")
-          }
-          case _ => None
-        }
-        println(loot)
-
-        if(monster.weapon.isDroppable) {
-          println(
-            s"""
-               |${monster.name} dropped their ${monster.weapon.name}. Pick it up?
-               |1. Yes
-               |2. No
-                 """.stripMargin
-          )
-          scala.io.StdIn.readLine(">> ").toInt match {
-            case 1 => {
-              player.weapon = monster.weapon
-              println(s"You wield your new ${monster.weapon.name} threateningly.")
-            }
-            case _ => ""
-          }
-        }
-        if (monster.armor.isDroppable) {
-          println(
-            s"""
-               |${monster.name} dropped their ${monster.armor.name}. Pick it up (${monster.armor.armorBonus - player.armor.armorBonus})?
-               |1. Yes
-               |2. No
-                 """.stripMargin
-          )
-          scala.io.StdIn.readLine(">> ").toInt match {
-            case 1 => {
-              player.armor = monster.armor
-              println(s"You don your new ${monster.armor.name} armor. It feels a bit snug.")
-            }
-            case _ => Unit
-          }
-        }
-      }
-    }
-    else {
-      println(s"You missed the ${monster.name}")
-    }
-
-    return true
-  }
-  */
-
   def tick(action: String): Boolean = {
-    //print("\033c")
     val colNum = NUM_COLS
     val rowNum = NUM_ROWS
 
@@ -259,14 +168,6 @@ class GameState(player:Player) {
             shrine.interact(player)
             shrine = generateShrine()
           }
-          // Check for loot
-//          droppedItems.filter(item => item.position.x == player.position.x && item.position.y == player.position.y).headOption match {
-//            case Some(item) => {
-//              item.interact(player)
-//              droppedItems = droppedItems.filterNot( i => i == item)
-//            }
-//            case None => Unit
-//          }
           print("p")
         }
         else if (monsters.filter(m => m.position.x == x && m.position.y == y && m.isAlive).length > 0) {
@@ -281,7 +182,9 @@ class GameState(player:Player) {
         }
         else if ( droppedItems.filter(i => i.position.x == x && i.position.y == y).length > 0 ) {
           droppedItems.filter(i => i.position.x == x && i.position.y == y).headOption match {
-            case Some(item) => item.render
+            case Some(item) => {
+              item.render
+            }
             case None => Unit
           }
         }
@@ -346,13 +249,19 @@ class GameState(player:Player) {
             }
             if (m.health <= 0) {
               m.dropLoot match {
-                case Some("potion") => {
-                  droppedItems = droppedItems :+ new Item(new Position(m.position.x, m.position.y), "!")
-                }
-                case _ => None
-              }
+                case Some(loot) => {
+                  var newItem = new Item(new Position(m.position.x, m.position.y), dispChar = "!", itemId = loot._1, hoverDescription = loot._2)
+                  droppedItems = droppedItems :+ newItem
 
-              monsters = monsters ++ List[Monster](generateMonster.get)
+                }
+                case None => None
+
+              }
+              monstersSlain += 1
+              generateMonster match {
+                case Some(monster) => monsters = monsters ++ List[Monster](monster)
+                case None => Unit
+              }
             }
           }
           case None => Unit
@@ -426,14 +335,13 @@ class GameState(player:Player) {
     val p = getPlayer
     println(s"${p.name}")
     println(s"HP: ${p.health}    AC: ${p.armorClass}     WIELDING: ${p.weapon.name}     POTIONS (q): ${p.numPotions}")
-    //println(s"Nothing is here")
-    println(s"Player pos: ${player.position}")
-    println("Monsters:")
-    monsters.map(monster => {
-      if (monster.isAlive) {
-        println(s"${monster.name} is at ${monster.position}")
+    currTileDescription = "There is nothing here."
+    droppedItems.map(item => {
+      if (item.position.x == player.position.x && item.position.y == player.position.y) {
+        currTileDescription = item.tileDescription
       }
     })
+    println(s"${currTileDescription}")
   }
 
 

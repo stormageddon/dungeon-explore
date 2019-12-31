@@ -5,6 +5,7 @@ import scala.util.Random
 abstract class Weapon {
   var name: String
   var damage: (Int, Int)
+  var id: String
   var attackBonus: Int = 0
   var isDroppable: Boolean = false
 
@@ -18,6 +19,7 @@ abstract class Weapon {
 class RustyDagger extends Weapon {
   var name = "Rusty dagger"
   var damage = (1,2)
+  var id = "RUSTY_DAGGER"
   isDroppable = true
   attackBonus = -1
 }
@@ -25,12 +27,14 @@ class RustyDagger extends Weapon {
 class Dagger extends Weapon {
   var name = "Dagger"
   var damage = (1,2)
+  var id = "DAGGER"
   isDroppable = true
 }
 
 class FineDagger extends Weapon {
   var name = "Fine Dagger"
   var damage = (1,3)
+  var id = "FINE_DAGGER"
   isDroppable = true
   attackBonus = 1
 }
@@ -38,6 +42,7 @@ class FineDagger extends Weapon {
 class RustyShortSword extends Weapon {
   var name = "Rusty short sword"
   var damage = (1,4)
+  var id = "RUSTY_SHORT_SWORD"
   isDroppable = true
   attackBonus = -1
 }
@@ -45,12 +50,14 @@ class RustyShortSword extends Weapon {
 class ShortSword extends Weapon {
   var name = "Short sword"
   var damage = (1,4)
+  var id = "SHORT_SWORD"
   isDroppable = true
 }
 
 class FineShortSword extends Weapon {
   var name = "Fine short sword"
   var damage = (1,5)
+  var id = "FINE_SHORT_SWORD"
   isDroppable = true
   attackBonus = 1
 }
@@ -58,6 +65,7 @@ class FineShortSword extends Weapon {
 class RustyGreatAxe extends Weapon {
   var name = "Rusty Great Axe"
   var damage = (1, 6)
+  var id = "RUSTY_GREAT_AXE"
   isDroppable = true
   attackBonus = -1
 }
@@ -66,12 +74,14 @@ class RustyGreatAxe extends Weapon {
 class GreatAxe extends Weapon {
   var name = "Great Axe"
   var damage = (1,6)
+  var id = "GREAT_AXE"
   isDroppable = true
 }
 
 class FineGreatAxe extends Weapon {
   var name = "Fine Great Axe"
   var damage = (1,7)
+  var id = "FINE_GREAT_AXE"
   isDroppable = true
   attackBonus = 1
 }
@@ -79,17 +89,20 @@ class FineGreatAxe extends Weapon {
 class Claws extends Weapon {
   var name = "claws"
   var damage = (1,4)
+  var id = "CLAWS"
   isDroppable = false
 }
 
 class NightBlade extends Weapon {
   var name = "Night Blade"
   var damage = (2,7)
+  var id = "NIGHT_BLADE"
   isDroppable = true
 }
 
 class Spear extends Weapon {
   var name = "spear"
   var damage = (1,3)
+  var id = "SPEAR"
   isDroppable = true
 }
