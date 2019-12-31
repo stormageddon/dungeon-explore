@@ -15,7 +15,7 @@ abstract class Monster {
   var attackBonus: Int = 1
   var weapon: Weapon = new RustyDagger
   var armor: Armor = new Natural
-  var position: Position = new Position(10,10)
+  var position: Position = new Position(Random.nextInt(NUM_ROWS), Random.nextInt(NUM_COLS))
   var displayChar: String = "m"
   var dungeonHelper = new DungeonHelper
 
@@ -41,8 +41,30 @@ abstract class Monster {
     None
   }
 
-  def move: Position = {
-    this.position
+  def move(target: Option[Position]): Position = {
+    val newPosition = this.position
+    target match {
+      case Some(p) => {
+        // try horizontal first
+        if (this.position.x < p.x) {
+          this.position.x += 1
+        }
+        else if (this.position.x > p.x) {
+          this.position.x -= 1
+        }
+        // then try vertical
+        else if (this.position.y < p.y) {
+          this.position.y += 1
+        }
+        else if (this.position.y > p.y) {
+          this.position.y -= 1
+        }
+      }
+      case None => Unit
+    }
+    //    val x = dungeonHelper.clamp(this.position.x + 1, 0, NUM_ROWS)
+    //    val y = dungeonHelper.clamp(this.position.y + 1, 0, NUM_ROWS)
+    newPosition
   }
 }
 
@@ -54,7 +76,7 @@ class GiantRat extends Monster {
   position = new Position(1,1)
   displayChar = "r"
 
-  override def move: Position = {
+  override def move(target: Option[Position]): Position = {
     val possibleMoves = Seq(
       new Position(this.position.x + 1, this.position.y),
       new Position(this.position.x - 1, this.position.y),
@@ -64,7 +86,7 @@ class GiantRat extends Monster {
       new Position(this.position.x - 1, this.position.y - 1)
     )
 
-    var p = possibleMoves(Random.nextInt(possibleMoves.length))
+    val p = possibleMoves(Random.nextInt(possibleMoves.length))
     p.x = dungeonHelper.clamp(p.x, 0, NUM_ROWS)
     p.y = dungeonHelper.clamp(p.y, 0, NUM_COLS)
     p
@@ -77,6 +99,7 @@ class Goblin extends Monster {
   attackBonus = 2
   weapon = List(new RustyDagger,new Dagger,new FineDagger)(Random.nextInt(3))
   armor = List(new Natural, new Leather)(Random.nextInt(2))
+  displayChar = "g"
 }
 
 class Wolf extends Monster {
@@ -84,6 +107,7 @@ class Wolf extends Monster {
   override var health = 3
   armorClass = 10
   weapon = new Claws
+  displayChar = "w"
 }
 
 class Kobold extends Monster {
@@ -97,11 +121,13 @@ class Kobold extends Monster {
     new Dagger
   )(Random.nextInt(5))
   armor = List(new Natural, new Leather)(Random.nextInt(2))
+  displayChar = "k"
 }
 
-class Orc extends Monster {
+class Orc(startingPos: Position = new Position(0, 0)) extends Monster {
   override val name = "Orc"
-  override var health = 3
+  override var health = 13
+  position = startingPos
   weapon = List(
     new RustyShortSword,
     new ShortSword,
@@ -111,6 +137,33 @@ class Orc extends Monster {
     new FineGreatAxe
   )(Random.nextInt(6))
   armor = List(new Natural, new Leather, new Chain, new PlateMail)(Random.nextInt(4))
+  displayChar = "o"
+
+  override def move(target: Option[Position]): Position = {
+    val newPosition = this.position
+    target match {
+      case Some(p) => {
+        // try horizontal first
+        if (this.position.x < p.x) {
+          this.position.x += 1
+        }
+        else if (this.position.x > p.x) {
+          this.position.x -= 1
+        }
+        // then try vertical
+        else if (this.position.y < p.y) {
+          this.position.y += 1
+        }
+        else if (this.position.y > p.y) {
+          this.position.y -= 1
+        }
+      }
+      case None => Unit
+    }
+//    val x = dungeonHelper.clamp(this.position.x + 1, 0, NUM_ROWS)
+//    val y = dungeonHelper.clamp(this.position.y + 1, 0, NUM_ROWS)
+    newPosition
+  }
 }
 
 class CemHial extends Monster {
@@ -118,6 +171,7 @@ class CemHial extends Monster {
   override var health = 10
   weapon = new NightBlade
   armorClass = 13
+  displayChar = "C"
 }
 
 class DireWolf extends Monster {
@@ -125,6 +179,7 @@ class DireWolf extends Monster {
   override var health = 7
   weapon = new Claws()
   weapon.damage = (1,6)
+  displayChar = "W"
 
   override def calculateDamage: Int = {
     val roll = Random.nextInt(10)
@@ -142,6 +197,7 @@ class RockGolem extends Monster {
   override var health = 8
   weapon = new Claws()
   weapon.damage = (1,8)
+  displayChar = "G"
 }
 
 

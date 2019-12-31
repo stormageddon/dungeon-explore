@@ -16,12 +16,15 @@ class Player(val name:String) {
   var attackBonus = 2
   var armor: Armor = new Natural
   var position = new Position(10, 10)
+  var dungeonHelper = new DungeonHelper
+
 
   def calculateDamage: Int = {
     weapon.attack
   }
 
   def performAttack: Int = {
+    println("You attack!")
     val attackRoll = Random.nextInt(20) + weapon.attackBonus + attackBonus + 1
     attackRoll
   }
@@ -40,7 +43,7 @@ class Player(val name:String) {
   }
 
   def move(xVel: Int, yVel: Int): Position = {
-    new Position(this.position.x + xVel, this.position.y + yVel)
+    new Position(dungeonHelper.clamp(this.position.x + xVel, 0, NUM_ROWS), dungeonHelper.clamp(this.position.y + yVel, 0, NUM_COLS))
   }
 }
 
