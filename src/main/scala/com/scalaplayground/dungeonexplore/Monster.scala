@@ -49,17 +49,17 @@ abstract class Monster {
     target match {
       case Some(p) => {
         // try horizontal first
-        if (this.position.x < p.x) {
+        if (this.position.x < p.x - 1) {
           this.position.x += 1
         }
-        else if (this.position.x > p.x) {
+        else if (this.position.x > p.x + 1) {
           this.position.x -= 1
         }
         // then try vertical
-        else if (this.position.y < p.y) {
+        else if (this.position.y < p.y - 1) {
           this.position.y += 1
         }
-        else if (this.position.y > p.y) {
+        else if (this.position.y > p.y + 1) {
           this.position.y -= 1
         }
       }
@@ -129,7 +129,7 @@ class Kobold extends Monster {
 
 class Orc(startingPos: Position = new Position(0, 0)) extends Monster {
   override val name = "Orc"
-  override var health = 13
+  override var health = 3
   position = startingPos
   weapon = List(
     new RustyShortSword,

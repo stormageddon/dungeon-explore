@@ -24,6 +24,12 @@ class Chain extends Armor {
   isDroppable = true
 }
 
+class StoneArmor extends Armor {
+  val name = "Stone Armor"
+  armorBonus = 4
+  isDroppable = false
+}
+
 class PlateMail extends Armor {
   val name = "Platemail"
   armorBonus = 5

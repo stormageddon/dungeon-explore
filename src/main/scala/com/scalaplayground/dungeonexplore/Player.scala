@@ -10,6 +10,7 @@ import scala.util.Random
 
 class Player(val name:String) {
   var health = STARTING_PLAYER_HEALTH
+  var maxHealth = STARTING_PLAYER_HEALTH
   var weapon: Weapon = new RustyDagger
   var numPotions = 1
   val armorClass = 10
@@ -32,7 +33,7 @@ class Player(val name:String) {
 
   def quaffPotion: Unit = {
     if (numPotions > 0) {
-      val healthRegained = Random.nextInt(6) + 1
+      val healthRegained = dungeonHelper.clamp(Random.nextInt(6) + 1, 0 , maxHealth)
       numPotions = numPotions - 1
       println(s"You quickly quaff a potion, regaining ${healthRegained} health. You have ${numPotions} left")
       health = health + healthRegained

@@ -52,19 +52,7 @@ object Game extends App {
   val colNum = NUM_COLS
   val rowNum = NUM_ROWS
 
-  for (y <- 0 to rowNum - 1) {
-    for (x <- 0 to colNum - 1) {
-      if (player.position.x == x && player.position.y == y) {
-        print("p")
-      }
-      else {
-        print(".")
-      }
-      print(" ")
-    }
-    println("")
-  }
-
+  isPlaying = gameState.tick("")
   while(isPlaying) {
 
     if (player.health <= 0) {
@@ -73,22 +61,8 @@ object Game extends App {
       isPlaying = false
     }
     else {
-//      println("\n\n\n=======")
-//      println(s"${player.name} (${player.health})")
-//      println(
-//        s"""
-//           |Select an action:
-//           |1. Attack
-//           |2. Quaff a potion
-//           |3. Enter another room
-//           |4. Quit
-//         """.stripMargin)
-
-
-      //val input = scala.io.StdIn.readChar()
 
       val input = s.keypress.toChar
-
 
       println(input)
       val key = input.toString.asInstanceOf[String]
@@ -139,7 +113,7 @@ class GameState(player:Player) {
     if (!shouldGenerateMonster || (monsters != null && monsters.filter(m => m.isAlive).length >= MAX_MONSTERS_ALIVE)) {
       return None
     }
-    if (monstersSlain >= 10) {
+    if (monstersSlain >= 20) {
       println("The door before you creaks open and an inhuman howl escapes from inside. A grayish light reveals the final resting place of Cem Hial...\n\n\n")
       shouldGenerateMonster = false
       return Some(new CemHial())
@@ -148,11 +122,12 @@ class GameState(player:Player) {
       return Random.nextInt(100) match {
         case it if 0 until 25 contains it => Some(new Goblin())
         case it if 25 until 50 contains it => Some(new Kobold())
-        case it if  50 until 75 contains it => Some(new GiantRat())
+        case it if 50 until 75 contains it => Some(new GiantRat())
         case it if 75 until 90 contains it => Some(new Orc())
-        case it if 90 until 100 contains it => Some(new Wolf())
+        case it if 90 until 95 contains it => Some(new Wolf())
+        case it if 95 until 98 contains it => Some(new DireWolf())
+        case it if 98 until 100 contains it => Some(new RockGolem())
       }
-      //return Some(new Orc(new Position(Random.nextInt(NUM_ROWS), Random.nextInt(NUM_COLS))))
     }
   }
 
@@ -193,7 +168,12 @@ class GameState(player:Player) {
         }
         print(" ")
       }
-      println("")
+      y match {
+        case 0 => println("    w,a,s,d - Move")
+        case 1 => println("    q - Quaff a potion")
+        case 2 => println("    u - Use item on ground")
+        case _ => println("")
+      }
     }
 
 
@@ -202,9 +182,7 @@ class GameState(player:Player) {
     var playerDidMove = false
     val playerIsAlive = true
     action match {
-      //case "" => playerIsAlive = performPlayerAction
       case "q" => player.quaffPotion
-      //case "o" => openDoor
       case "w" => {
         player.position = player.move(0,-1)
         playerDidMove = true
@@ -229,6 +207,10 @@ class GameState(player:Player) {
           }
           case None => print("There is nothing to use here.")
         }
+      }
+      case "个" => {
+        // quit the game
+        return false
       }
       case _ => Unit
     }
@@ -334,7 +316,7 @@ class GameState(player:Player) {
   def renderStatsBar(): Unit = {
     val p = getPlayer
     println(s"${p.name}")
-    println(s"HP: ${p.health}    AC: ${p.armorClass}     WIELDING: ${p.weapon.name}     POTIONS (q): ${p.numPotions}")
+    println(s"HP: ${p.health}    AC: ${p.armorClass}     WIELDING: ${p.weapon.name} (${p.weapon.damage._1}-${p.weapon.damage._2} + ${p.weapon.attackBonus})     POTIONS (q): ${p.numPotions}")
     currTileDescription = "There is nothing here."
     droppedItems.map(item => {
       if (item.position.x == player.position.x && item.position.y == player.position.y) {
