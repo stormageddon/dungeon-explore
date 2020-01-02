@@ -35,14 +35,17 @@ abstract class Monster {
 
   def dropLoot: Option[(String, String)] = {
     val roll = Random.nextInt(100)
-    if (roll <= POTION_DROP_PERCENTAGE) {
-      return Some("POTION", "A swirling potion lies here.")
-    }
-    else if (roll <= WEAPON_DROP_PERCENTAGE && weapon.isDroppable) {
+    //else if (roll <= WEAPON_DROP_PERCENTAGE && weapon.isDroppable) {
+    //  return Some((weapon.id, weapon.name))
+    //}
+    if (roll <= weapon.dropChance && weapon.isDroppable) {
       return Some((weapon.id, weapon.name))
     }
     else if (roll <= ARMOR_DROP_PERCENTAGE && armor.isDroppable) {
       return Some((armor.id, armor.name))
+    }
+    else if (roll <= POTION_DROP_PERCENTAGE) {
+      return Some("POTION", "A swirling potion lies here.")
     }
     None
   }

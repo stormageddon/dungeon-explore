@@ -1,5 +1,7 @@
 package com.scalaplayground.dungeonexplore.Weapon
 
+import com.scalaplayground.dungeonexplore.constants.Constants
+
 import scala.util.Random
 
 abstract class Weapon {
@@ -8,6 +10,7 @@ abstract class Weapon {
   var id: String
   var attackBonus: Int = 0
   var isDroppable: Boolean = false
+  val dropChance = Constants.WEAPON_DROP_PERCENTAGE
 
   def attack: Int = {
     val damageDealt = Random.nextInt(damage._2) + damage._1
@@ -94,8 +97,9 @@ class Claws extends Weapon {
 
 class NightBlade extends Weapon {
   var name = "Night Blade"
-  var damage = (2,7)
+  var damage = (4,10)
   var id = "NIGHT_BLADE"
+  override val dropChance = 100
   isDroppable = true
 }
 

@@ -169,6 +169,11 @@ class GameState(player:Player) {
           case Some(item) => {
             item.interact(player)
             droppedItems = droppedItems.filterNot( i => i == item)
+            if(item.id == "NIGHT_BLADE") {
+              renderPlayerActions()
+              renderMonsterActions(monsterActionMessage)
+              return false
+            }
           }
           case _ => {
             if (shrine.position.x == player.position.x && shrine.position.y == player.position.y) {
@@ -268,6 +273,7 @@ class GameState(player:Player) {
     renderMonsterActions(monsterActionMessage)
 
     player.endRound
+    monsterActionMessage = ""
 
     return playerIsAlive
   }
