@@ -1,4 +1,4 @@
-package com.scalaplayground.dungeonexplore
+package com.scalaplayground.dungeonexplore.constants
 
 object Constants {
   val POTION_DROP_PERCENTAGE = 10

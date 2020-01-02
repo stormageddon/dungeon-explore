@@ -4,7 +4,7 @@ package com.scalaplayground.dungeonexplore
 import com.scalaplayground.dungeonexplore.Armor._
 import com.scalaplayground.dungeonexplore.Weapon._
 import com.scalaplayground.dungeonexplore.Position.Position
-import com.scalaplayground.dungeonexplore.Constants._
+import com.scalaplayground.dungeonexplore.constants.Constants._
 
 import scala.util.Random
 

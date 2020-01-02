@@ -1,6 +1,6 @@
 package com.scalaplayground.dungeonexplore.Shrine
 
-import com.scalaplayground.dungeonexplore.Constants.STARTING_PLAYER_HEALTH
+import com.scalaplayground.dungeonexplore.constants.Constants.STARTING_PLAYER_HEALTH
 import com.scalaplayground.dungeonexplore.{DungeonHelper, Player}
 import com.scalaplayground.dungeonexplore.Position.Position
 

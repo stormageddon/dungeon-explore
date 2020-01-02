@@ -3,7 +3,7 @@ package com.scalaplayground.dungeonexplore.Monster
 import com.scalaplayground.dungeonexplore.Armor._
 
 import scala.util.Random
-import com.scalaplayground.dungeonexplore.Constants._
+import com.scalaplayground.dungeonexplore.constants.Constants._
 import com.scalaplayground.dungeonexplore.Position.Position
 import com.scalaplayground.dungeonexplore.Weapon._
 import com.scalaplayground.dungeonexplore.DungeonHelper

@@ -4,7 +4,8 @@ import net.team2xh.scurses.{Colors, Scurses}
 
 import scala.util.Random
 import com.scalaplayground.dungeonexplore.Monster._
-import com.scalaplayground.dungeonexplore.Constants._
+import com.scalaplayground.dungeonexplore.constants.Constants._
+import com.scalaplayground.dungeonexplore.constants.KeyboardCommands._
 import com.scalaplayground.dungeonexplore.Item.Item
 import com.scalaplayground.dungeonexplore.Position.Position
 import com.scalaplayground.dungeonexplore.Shrine._
@@ -183,24 +184,24 @@ class GameState(player:Player) {
     var playerDidMove = false
     val playerIsAlive = true
     action match {
-      case "q" => player.quaffPotion
-      case "w" => {
+      case QUAFF_POTION => player.quaffPotion
+      case MOVE_UP => {
         player.position = player.move(0,-1)
         playerDidMove = true
       }
-      case "a" => {
+      case MOVE_LEFT => {
         player.position = player.move(-1, 0)
         playerDidMove = true
       }
-      case "s" => {
+      case MOVE_DOWN => {
         player.position = player.move(0, 1)
         playerDidMove = true
       }
-      case "d" => {
+      case MOVE_RIGHT => {
         player.position = player.move(1, 0)
         playerDidMove = true
       }
-      case "u" => {
+      case USE_ITEM => {
         // check for items
         droppedItems.filter(item => item.position.x == player.position.x && item.position.y == player.position.y).headOption match {
           case Some(item) => {
@@ -217,7 +218,7 @@ class GameState(player:Player) {
         }
 
       }
-      case "个" => {
+      case ESCAPE => {
         // quit the game
         return false
       }
