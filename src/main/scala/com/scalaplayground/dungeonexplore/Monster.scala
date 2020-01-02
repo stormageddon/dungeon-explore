@@ -166,8 +166,7 @@ class Orc(startingPos: Position = new Position(0, 0)) extends Monster {
       }
       case None => Unit
     }
-//    val x = dungeonHelper.clamp(this.position.x + 1, 0, NUM_ROWS)
-//    val y = dungeonHelper.clamp(this.position.y + 1, 0, NUM_ROWS)
+
     newPosition
   }
 }
@@ -189,10 +188,10 @@ class DireWolf extends Monster {
 
   override def calculateDamage: Int = {
     val roll = Random.nextInt(10)
-    var damage:Int = super.performAttack
+    var damage:Int = super.calculateDamage
     if (roll <= 1) {
       println("The Dire Wolf snaps ferociously!")
-      damage = damage + super.performAttack
+      damage = damage + super.calculateDamage
     }
     damage
   }

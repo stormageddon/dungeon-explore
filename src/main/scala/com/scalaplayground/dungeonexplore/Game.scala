@@ -11,10 +11,6 @@ import com.scalaplayground.dungeonexplore.Position.Position
 import com.scalaplayground.dungeonexplore.Shrine._
 import com.scalaplayground.dungeonexplore.{DungeonHelper, Player}
 
-import scala.collection.parallel.ThreadPoolTasks
-
-
-
 object Game extends App {
   def createPlayer: Player = {
     println("What is your name, traveler?")
@@ -42,9 +38,8 @@ object Game extends App {
     screen.keypress()
   }
 
-
+  s.refresh()
   val player = createPlayer
-  println(s"Hello ${player.name}. You currently have ${player.health} hp")
 
   val gameState = new GameState(player)
   var isPlaying = true
@@ -63,11 +58,19 @@ object Game extends App {
     }
     else {
 
-      val input = s.keypress.toChar
+      print(">> ")
 
-      println(input)
+
+      val input = scala.io.StdIn.readLine.slice(0,1)
+
+      //val input = s.keypress.toChar
+
+      //val key = input.toString.asInstanceOf[String].slice(0,1)
+
       val key = input.toString.asInstanceOf[String]
-      print("\033c")
+
+      //print("\033c")
+      //println(s"pressed: ${key}")
 
       if (key == "ESC") {
         isPlaying = false
@@ -99,6 +102,7 @@ class GameState(player:Player) {
   var droppedItems = List[Item]()
   var currTileDescription: String = "Nothing is here."
   var roundMessage: String = ""
+  var monsterActionMessage: String = ""
 
 
 
@@ -116,7 +120,8 @@ class GameState(player:Player) {
       return None
     }
     if (monstersSlain >= 20) {
-      println("The door before you creaks open and an inhuman howl escapes from inside. A grayish light reveals the final resting place of Cem Hial...\n\n\n")
+
+      monsterActionMessage = s"The door before you creaks open and an inhuman howl escapes from inside. A grayish light reveals the final resting place of Cem Hial...\n\n${monsterActionMessage}"
       shouldGenerateMonster = false
       return Some(new CemHial())
     }
@@ -134,55 +139,12 @@ class GameState(player:Player) {
   }
 
   def tick(action: String): Boolean = {
-    val colNum = NUM_COLS
-    val rowNum = NUM_ROWS
-
-    for (y <- 0 to rowNum - 1) {
-      for (x <- 0 to colNum - 1) {
-        if (player.position.x == x && player.position.y == y) {
-          // Check for shrine usage
-//          if (shrine != null && shrine.position.x == player.position.x && shrine.position.y == player.position.y) {
-//            shrine.interact(player)
-//            shrine = generateShrine()
-//          }
-          player.render
-        }
-        else if (monsters.filter(m => m.position.x == x && m.position.y == y && m.isAlive).length > 0) {
-          monsters.filter(m => m.position.x == x && m.position.y == y && m.isAlive).headOption match {
-            case Some(monster) => print(monster.displayChar)
-            case None => Unit
-          }
-
-        }
-        else if (shrine != null && shrine.position.x == x && shrine.position.y == y) {
-          shrine.render
-        }
-        else if ( droppedItems.filter(i => i.position.x == x && i.position.y == y).length > 0 ) {
-          droppedItems.filter(i => i.position.x == x && i.position.y == y).headOption match {
-            case Some(item) => {
-              item.render
-            }
-            case None => Unit
-          }
-        }
-        else {
-          print(".")
-        }
-        print(" ")
-      }
-      y match {
-        case 0 => println("    w,a,s,d - Move")
-        case 1 => println("    q - Quaff a potion")
-        case 2 => println("    u - Use item on ground")
-        case _ => println("")
-      }
-    }
-
-
-    renderStatsBar()
+    print("\033c")
 
     var playerDidMove = false
     val playerIsAlive = true
+
+
     action match {
       case QUAFF_POTION => player.quaffPotion
       case MOVE_UP => {
@@ -234,17 +196,18 @@ class GameState(player:Player) {
       if (monster.isAlive) {
         playerHasValidTarget(player, monster) match {
           case Some(m) => {
-            print("ATTACKING!!!!!")
-            val attack = player.performAttack
+            val attack = player.performAttack(m.armorClass)
             if (attack >= m.armorClass) {
-              m.health = m.health - player.weapon.attack
+              val damage = player.weapon.attack
+              player.actionMessage = player.actionMessage + s"You stab with your ${player.weapon.name} dealing ${damage} damage!\n"
+              m.health = m.health - damage
             }
             if (m.health <= 0) {
               m.dropLoot match {
                 case Some(loot) => {
                   var newItem = new Item(new Position(m.position.x, m.position.y), dispChar = "!", itemId = loot._1, hoverDescription = loot._2)
                   droppedItems = droppedItems :+ newItem
-
+                  monsterActionMessage = monsterActionMessage + s"${m.name} dropped something with a loud clink.\n"
                 }
                 case None => None
 
@@ -261,14 +224,14 @@ class GameState(player:Player) {
 
         if (monsterHasValidTarget(monster, player)) {
           val hitRoll = monster.performAttack
-          println(s"attack roll of ${hitRoll} vs AC ${player.armorClass + player.armor.armorBonus}")
+          monsterActionMessage = monsterActionMessage + s"attack roll of ${hitRoll} vs AC ${player.armorClass + player.armor.armorBonus}\n"
           if (hitRoll >= player.armorClass + player.armor.armorBonus) {
             val damage = monster.calculateDamage
-            println(s"${monster.name} swings at you with their ${monster.weapon.name} dealing ${damage} damage")
+            monsterActionMessage = monsterActionMessage + s"${monster.name} swings at you with their ${monster.weapon.name} dealing ${damage} damage\n"
             player.health = player.health - damage
           }
           else {
-            println(s"The ${monster.name} missed you.")
+            monsterActionMessage = monsterActionMessage + s"The ${monster.name} missed you.\n"
           }
         }
 
@@ -298,6 +261,13 @@ class GameState(player:Player) {
       }
       case _ => Unit
     }
+
+    renderGameState()
+    renderStatsBar()
+    renderPlayerActions()
+    renderMonsterActions(monsterActionMessage)
+
+    player.endRound
 
     return playerIsAlive
   }
@@ -339,6 +309,53 @@ class GameState(player:Player) {
     println(s"${currTileDescription}")
     println(s"${roundMessage}")
     roundMessage = ""
+  }
+
+
+  def renderGameState(): Unit = {
+    for (y <- 0 to NUM_ROWS - 1) {
+      for (x <- 0 to NUM_COLS - 1) {
+        if (player.position.x == x && player.position.y == y) {
+          player.render
+        }
+        else if (monsters.filter(m => m.position.x == x && m.position.y == y && m.isAlive).length > 0) {
+          monsters.filter(m => m.position.x == x && m.position.y == y && m.isAlive).headOption match {
+            case Some(monster) => print(monster.displayChar)
+            case None => Unit
+          }
+
+        }
+        else if (shrine != null && shrine.position.x == x && shrine.position.y == y) {
+          shrine.render
+        }
+        else if ( droppedItems.filter(i => i.position.x == x && i.position.y == y).length > 0 ) {
+          droppedItems.filter(i => i.position.x == x && i.position.y == y).headOption match {
+            case Some(item) => {
+              item.render
+            }
+            case None => Unit
+          }
+        }
+        else {
+          print(".")
+        }
+        print(" ")
+      }
+      y match {
+        case 0 => println("    w,a,s,d - Move")
+        case 1 => println("    q - Quaff a potion")
+        case 2 => println("    u - Use item on ground")
+        case _ => println("")
+      }
+    }
+  }
+
+  def renderMonsterActions(monsterMessage:String) = {
+    println(monsterMessage)
+  }
+
+  def renderPlayerActions() = {
+    println(player.actionMessage)
   }
 
 

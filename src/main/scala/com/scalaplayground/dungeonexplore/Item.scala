@@ -19,30 +19,30 @@ class Item(startingPos: Position, dispChar: String, hoverDescription: String = "
     id match {
       case "POTION" => {
         player.numPotions = player.numPotions + 1
-        println(s"You picked up a potion!")
+        player.appendActionMessage("You picked up a potion!")
       }
       case "RUSTY_DAGGER" => {
-        println(s"You picked up the Rusty Dagger")
+        player.appendActionMessage("You picked up the Rusty Dagger")
         player.weapon = new RustyDagger
       }
       case "DAGGER" => {
-        println("You picked up the Dagger")
+        player.appendActionMessage("You picked up the Dagger")
         player.weapon = new Dagger
       }
       case "FINE_DAGGER" => {
         player.weapon = new FineDagger
-        println("You picked up the Fine Dagger")
+        player.appendActionMessage("You picked up the Fine Dagger")
       }
       case "RUSTY_SHORT_SWORD" => {
-        println("You picked up the Rusty Short Sword")
+        player.appendActionMessage("You picked up the Rusty Short Sword")
         player.weapon = new RustyShortSword
       }
       case "SHORT_SWORD" => {
-        println("You picked up the Short Sword")
+        player.appendActionMessage("You picked up the Short Sword")
         player.weapon = new ShortSword
       }
       case "FINE_SHORT_SWORD" => {
-        println("You picked up the Fine Short Sword")
+        player.appendActionMessage("You picked up the Fine Short Sword")
         player.weapon = new FineShortSword
       }
       case "RUSTY_GREAT_AXE" => {
@@ -50,35 +50,35 @@ class Item(startingPos: Position, dispChar: String, hoverDescription: String = "
         player.weapon = new RustyGreatAxe
       }
       case "GREAT_AXE" => {
-        println("You picked up the Great Axe")
+        player.appendActionMessage("You picked up the Great Axe")
         player.weapon = new GreatAxe
       }
       case "FINE_GREAT_AXE" => {
-        println("You picked up the Fine Great Axe")
+        player.appendActionMessage("You picked up the Fine Great Axe")
         player.weapon = new FineGreatAxe
       }
       case "SPEAR" => {
-        println("You picked up the Spear")
+        player.appendActionMessage("You picked up the Spear")
         player.weapon = new Spear
       }
       case "NIGHT_BLADE" => {
-        println("You hold the gleaming blade aloft. Outside, the clouds part for the first time in centuries. The town rejoices.")
+        player.appendActionMessage("You hold the gleaming blade aloft. Outside, the clouds part for the first time in centuries. The town rejoices.")
         player.weapon = new NightBlade
       }
       case "LEATHER_ARMOR" => {
-        println("You don the Leather Armor. You look sexy.")
+        player.appendActionMessage("You don the Leather Armor. You look sexy.")
         player.donArmor(new Leather)
       }
       case "CHAINMAIL" => {
-        println("You don the Chain Mail. It's a bit snug.")
+        player.appendActionMessage("You don the Chain Mail. It's a bit snug.")
         player.donArmor(new Chain)
       }
       case "PLATE_MAIL" => {
-        println("You don the Plate Mail. It feels heavy, yet protective.")
+        player.appendActionMessage("You don the Plate Mail. It feels heavy, yet protective.")
         player.donArmor(new PlateMail)
       }
       case "DRAGON_SCALE" => {
-        println("You don the Dragon Scale. You feel totally protected.")
+        player.appendActionMessage("You don the Dragon Scale. You feel totally protected.")
         player.donArmor(new DragonScale)
       }
 

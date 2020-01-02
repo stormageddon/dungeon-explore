@@ -19,6 +19,7 @@ class Player(val name:String) {
   var position = new Position(10, 10)
   var dungeonHelper = new DungeonHelper
   val displayChar = "@"
+  var actionMessage: String = ""
 
 
   def render = {
@@ -29,9 +30,9 @@ class Player(val name:String) {
     weapon.attack
   }
 
-  def performAttack: Int = {
-    println("You attack!")
+  def performAttack(targetAC: Int): Int = {
     val attackRoll = Random.nextInt(20) + weapon.attackBonus + attackBonus + 1
+    appendActionMessage(s"You swing with a roll of ${attackRoll} vs the monster's ac of ${targetAC}")
     attackRoll
   }
 
@@ -43,16 +44,24 @@ class Player(val name:String) {
     if (numPotions > 0) {
       val healthRegained = dungeonHelper.clamp(Random.nextInt(6) + 1, 0 , maxHealth)
       numPotions = numPotions - 1
-      println(s"You quickly quaff a potion, regaining ${healthRegained} health. You have ${numPotions} left")
+      appendActionMessage(s"You quickly quaff a potion, regaining ${healthRegained} health. You have ${numPotions} left")
       health = health + healthRegained
     }
     else {
-      println("You are out of potions!")
+      appendActionMessage("You are out of potions!")
     }
   }
 
   def move(xVel: Int, yVel: Int): Position = {
     new Position(dungeonHelper.clamp(this.position.x + xVel, 0, NUM_ROWS), dungeonHelper.clamp(this.position.y + yVel, 0, NUM_COLS))
+  }
+
+  def endRound = {
+    actionMessage = ""
+  }
+
+  def appendActionMessage(message:String): Unit = {
+    actionMessage = actionMessage + message + "\n"
   }
 }
 

@@ -11,7 +11,6 @@ abstract class Weapon {
 
   def attack: Int = {
     val damageDealt = Random.nextInt(damage._2) + damage._1
-    println(s"You stab with your ${name} dealing ${damageDealt} damage!")
     damageDealt
   }
 }
