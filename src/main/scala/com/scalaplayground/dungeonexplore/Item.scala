@@ -1,5 +1,6 @@
 package com.scalaplayground.dungeonexplore.Item
 
+import com.scalaplayground.dungeonexplore.Armor._
 import com.scalaplayground.dungeonexplore.Player
 import com.scalaplayground.dungeonexplore.Position.Position
 import com.scalaplayground.dungeonexplore.Weapon._
@@ -63,6 +64,22 @@ class Item(startingPos: Position, dispChar: String, hoverDescription: String = "
       case "NIGHT_BLADE" => {
         println("You hold the gleaming blade aloft. Outside, the clouds part for the first time in centuries. The town rejoices.")
         player.weapon = new NightBlade
+      }
+      case "LEATHER_ARMOR" => {
+        println("You don the Leather Armor. You look sexy.")
+        player.donArmor(new Leather)
+      }
+      case "CHAINMAIL" => {
+        println("You don the Chain Mail. It's a bit snug.")
+        player.donArmor(new Chain)
+      }
+      case "PLATE_MAIL" => {
+        println("You don the Plate Mail. It feels heavy, yet protective.")
+        player.donArmor(new PlateMail)
+      }
+      case "DRAGON_SCALE" => {
+        println("You don the Dragon Scale. You feel totally protected.")
+        player.donArmor(new DragonScale)
       }
 
     }

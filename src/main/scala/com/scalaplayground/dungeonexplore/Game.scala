@@ -97,6 +97,7 @@ class GameState(player:Player) {
   var shrine = generateShrine()
   var droppedItems = List[Item]()
   var currTileDescription: String = "Nothing is here."
+  var roundMessage: String = ""
 
 
 
@@ -139,11 +140,11 @@ class GameState(player:Player) {
       for (x <- 0 to colNum - 1) {
         if (player.position.x == x && player.position.y == y) {
           // Check for shrine usage
-          if (shrine != null && shrine.position.x == player.position.x && shrine.position.y == player.position.y) {
-            shrine.interact(player)
-            shrine = generateShrine()
-          }
-          print("p")
+//          if (shrine != null && shrine.position.x == player.position.x && shrine.position.y == player.position.y) {
+//            shrine.interact(player)
+//            shrine = generateShrine()
+//          }
+          player.render
         }
         else if (monsters.filter(m => m.position.x == x && m.position.y == y && m.isAlive).length > 0) {
           monsters.filter(m => m.position.x == x && m.position.y == y && m.isAlive).headOption match {
@@ -153,7 +154,7 @@ class GameState(player:Player) {
 
         }
         else if (shrine != null && shrine.position.x == x && shrine.position.y == y) {
-          print(shrine.displayChar)
+          shrine.render
         }
         else if ( droppedItems.filter(i => i.position.x == x && i.position.y == y).length > 0 ) {
           droppedItems.filter(i => i.position.x == x && i.position.y == y).headOption match {
@@ -200,13 +201,21 @@ class GameState(player:Player) {
         playerDidMove = true
       }
       case "u" => {
+        // check for items
         droppedItems.filter(item => item.position.x == player.position.x && item.position.y == player.position.y).headOption match {
           case Some(item) => {
             item.interact(player)
             droppedItems = droppedItems.filterNot( i => i == item)
           }
-          case None => print("There is nothing to use here.")
+          case _ => {
+            if (shrine.position.x == player.position.x && shrine.position.y == player.position.y) {
+              roundMessage = shrine.interact(player)
+            } else {
+              print("There is nothing to use here.")
+            }
+          }
         }
+
       }
       case "个" => {
         // quit the game
@@ -316,14 +325,19 @@ class GameState(player:Player) {
   def renderStatsBar(): Unit = {
     val p = getPlayer
     println(s"${p.name}")
-    println(s"HP: ${p.health}    AC: ${p.armorClass}     WIELDING: ${p.weapon.name} (${p.weapon.damage._1}-${p.weapon.damage._2} + ${p.weapon.attackBonus})     POTIONS (q): ${p.numPotions}")
+    println(s"HP: ${p.health}    AC: ${p.armorClass + p.armor.armorBonus}     WIELDING: ${p.weapon.name} (${p.weapon.damage._1}-${p.weapon.damage._2} + ${p.weapon.attackBonus})     POTIONS (q): ${p.numPotions}")
     currTileDescription = "There is nothing here."
     droppedItems.map(item => {
       if (item.position.x == player.position.x && item.position.y == player.position.y) {
         currTileDescription = item.tileDescription
       }
     })
+    if (shrine != null && shrine.position.x == player.position.x && shrine.position.y == player.position.y) {
+      currTileDescription = shrine.tileDescription
+    }
     println(s"${currTileDescription}")
+    println(s"${roundMessage}")
+    roundMessage = ""
   }
 
 

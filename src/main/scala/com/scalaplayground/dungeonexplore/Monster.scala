@@ -41,6 +41,9 @@ abstract class Monster {
     else if (roll <= WEAPON_DROP_PERCENTAGE && weapon.isDroppable) {
       return Some((weapon.id, weapon.name))
     }
+    else if (roll <= ARMOR_DROP_PERCENTAGE && armor.isDroppable) {
+      return Some((armor.id, armor.name))
+    }
     None
   }
 

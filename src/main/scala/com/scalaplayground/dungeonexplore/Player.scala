@@ -18,7 +18,12 @@ class Player(val name:String) {
   var armor: Armor = new Natural
   var position = new Position(10, 10)
   var dungeonHelper = new DungeonHelper
+  val displayChar = "@"
 
+
+  def render = {
+    print(displayChar)
+  }
 
   def calculateDamage: Int = {
     weapon.attack
@@ -30,6 +35,9 @@ class Player(val name:String) {
     attackRoll
   }
 
+  def donArmor(newArmor: Armor) = {
+    armor = newArmor
+  }
 
   def quaffPotion: Unit = {
     if (numPotions > 0) {
