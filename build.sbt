@@ -1,6 +1,6 @@
 name := "scala-playground"
 
-version := "0.2"
+version := "0.3"
 
 scalaVersion := "2.12.0"
 
