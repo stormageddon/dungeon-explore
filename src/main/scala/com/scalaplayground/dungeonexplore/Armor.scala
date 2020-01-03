@@ -1,10 +1,13 @@
 package com.scalaplayground.dungeonexplore.Armor
 
+import com.scalaplayground.dungeonexplore.constants.Constants
+
 abstract class Armor {
   val name: String
   var id: String
   var armorBonus: Int = 0
   var isDroppable: Boolean = false
+  val dropChance: Int = Constants.ARMOR_DROP_PERCENTAGE
 }
 
 class Natural extends Armor {
@@ -45,8 +48,9 @@ class PlateMail extends Armor {
 class DragonScale extends Armor {
   val name = "DragonScale"
   var id = "DRAGON_SCALE"
+  override val dropChance = 100
   armorBonus = 20
-  isDroppable = false
+  isDroppable = true
 }
 
 

@@ -41,7 +41,7 @@ abstract class Monster {
     if (roll <= weapon.dropChance && weapon.isDroppable) {
       return Some((weapon.id, weapon.name))
     }
-    else if (roll <= ARMOR_DROP_PERCENTAGE && armor.isDroppable) {
+    else if (roll <= armor.dropChance && armor.isDroppable) {
       return Some((armor.id, armor.name))
     }
     else if (roll <= POTION_DROP_PERCENTAGE) {
@@ -176,9 +176,9 @@ class Orc(startingPos: Position = new Position(0, 0)) extends Monster {
 
 class CemHial extends Monster {
   override val name = "Cem Hial, the Necromancer"
-  override var health = 10
+  override var health = 20
   weapon = new NightBlade
-  armorClass = 13
+  armorClass = 15
   displayChar = "C"
 }
 
@@ -205,6 +205,94 @@ class RockGolem extends Monster {
   weapon = new Claws()
   weapon.damage = (1,8)
   displayChar = "G"
+}
+
+class Dragon extends Monster {
+  override val name = "Young Black Dragon"
+  override var health = 15
+  weapon = new Claws()
+  weapon.damage = (3,8)
+  displayChar = "D"
+  armorClass = 13
+  armor = new DragonScale()
+
+  override def move(target: Option[Position]): Position = {
+    val newPosition = this.position
+    target match {
+      case Some(p) => {
+        // try horizontal first
+        if (this.position.x < p.x) {
+          this.position.x += 1
+        }
+        else if (this.position.x > p.x) {
+          this.position.x -= 1
+        }
+        // then try vertical
+        else if (this.position.y < p.y) {
+          this.position.y += 1
+        }
+        else if (this.position.y > p.y) {
+          this.position.y -= 1
+        }
+      }
+      case None => Unit
+    }
+    // move twice
+    target match {
+      case Some(p) => {
+        // try horizontal first
+        if (this.position.x < p.x) {
+          this.position.x += 1
+        }
+        else if (this.position.x > p.x) {
+          this.position.x -= 1
+        }
+        // then try vertical
+        else if (this.position.y < p.y) {
+          this.position.y += 1
+        }
+        else if (this.position.y > p.y) {
+          this.position.y -= 1
+        }
+      }
+      case None => Unit
+    }
+
+    newPosition
+  }
+
+  override def performAttack: Int = {
+
+    class FireBreath extends Weapon {
+      var name = "Fire breath"
+      var damage = (5,10)
+      var id = "FIRE_BREATH"
+      isDroppable = false
+      attackBonus = 2
+      attackText = "opens its maw and releases a column of burning flames"
+    }
+
+    val dragonClaws = new Claws()
+    dragonClaws.damage = (3,8)
+
+    val fireBreath = new FireBreath()
+
+
+
+    val possibleAttacks = Seq(
+      dragonClaws,
+      fireBreath
+    )
+    weapon = possibleAttacks(Random.nextInt(possibleAttacks.length))
+
+    val attackRoll = Random.nextInt(20) + weapon.attackBonus + attackBonus + 1
+    attackRoll
+  }
+
+  override def calculateDamage: Int = {
+    val damage = Random.nextInt(weapon.damage._2) + weapon.damage._1
+    damage
+  }
 }
 
 

@@ -119,11 +119,12 @@ class GameState(player:Player) {
       return Random.nextInt(100) match {
         case it if 0 until 25 contains it => Some(new Goblin())
         case it if 25 until 50 contains it => Some(new Kobold())
-        case it if 50 until 75 contains it => Some(new GiantRat())
-        case it if 75 until 90 contains it => Some(new Orc())
-        case it if 90 until 95 contains it => Some(new Wolf())
-        case it if 95 until 98 contains it => Some(new DireWolf())
-        case it if 98 until 100 contains it => Some(new RockGolem())
+        case it if 50 until 60 contains it => Some(new GiantRat())
+        case it if 60 until 75 contains it => Some(new Orc())
+        case it if 75 until 80 contains it => Some(new Wolf())
+        case it if 80 until 90 contains it => Some(new DireWolf())
+        case it if 90 until 95 contains it => Some(new RockGolem())
+        case it if 95 until 100 contains it => Some(new Dragon())
       }
     }
   }
@@ -226,7 +227,7 @@ class GameState(player:Player) {
           monsterActionMessage = monsterActionMessage + s"attack roll of ${hitRoll} vs AC ${player.armorClass + player.armor.armorBonus}\n"
           if (hitRoll >= player.armorClass + player.armor.armorBonus) {
             val damage = monster.calculateDamage
-            monsterActionMessage = monsterActionMessage + s"${monster.name} swings at you with their ${monster.weapon.name} dealing ${damage} damage\n"
+            monsterActionMessage = monsterActionMessage + s"${monster.name} ${monster.weapon.attackText} dealing ${damage} damage\n"
             player.health = player.health - damage
           }
           else {
@@ -295,6 +296,7 @@ class GameState(player:Player) {
             case "orc" => monsters ++ List(new Orc())
             case "wolf" => monsters ++ List(new Wolf())
             case "cel" => monsters ++ List(new CemHial())
+            case "dragon" => monsters ++ List(new Dragon())
             case _ => monsters
           }
         }
@@ -307,7 +309,7 @@ class GameState(player:Player) {
             case "dagger" => player.weapon = new FineDagger()
             case "sword" => player.weapon = new FineShortSword()
             case "spear" => player.weapon = new Spear()
-            case "dragon" => player.armor = new DragonScale()
+            case "dragon_scale" => player.armor = new DragonScale()
           }
         }
       }
