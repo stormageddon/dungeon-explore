@@ -193,7 +193,6 @@ class DireWolf extends Monster {
     val roll = Random.nextInt(10)
     var damage:Int = super.calculateDamage
     if (roll <= 1) {
-      println("The Dire Wolf snaps ferociously!")
       damage = damage + super.calculateDamage
     }
     damage

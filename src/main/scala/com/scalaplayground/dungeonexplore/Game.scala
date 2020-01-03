@@ -11,7 +11,7 @@ import com.scalaplayground.dungeonexplore.constants.KeyboardCommands._
 import com.scalaplayground.dungeonexplore.Item.Item
 import com.scalaplayground.dungeonexplore.Position.Position
 import com.scalaplayground.dungeonexplore.Shrine._
-import com.scalaplayground.dungeonexplore.{DungeonHelper, Player}
+import com.scalaplayground.dungeonexplore.{DungeonHelper, Player, Renderer}
 
 object Game extends App {
   def createPlayer: Player = {
@@ -96,6 +96,7 @@ object Game extends App {
 
 class GameState(player:Player) {
   val dungeonHelper = new DungeonHelper
+  val renderer = new Renderer(this)
   var defeatedMonsters = Map[String,Int]()
   var shouldGenerateMonster = true
   var monsters: List[Monster] = List[Monster](generateMonster().get)
@@ -272,7 +273,7 @@ class GameState(player:Player) {
       case _ => Unit
     }
 
-    renderGameState()
+    renderer.renderGameState
     renderStatsBar()
     renderPlayerActions()
     renderMonsterActions(monsterActionMessage)
@@ -322,45 +323,6 @@ class GameState(player:Player) {
     roundMessage = ""
   }
 
-
-  def renderGameState(): Unit = {
-    for (y <- 0 to NUM_ROWS - 1) {
-      for (x <- 0 to NUM_COLS - 1) {
-        if (player.position.x == x && player.position.y == y) {
-          player.render
-        }
-        else if (monsters.filter(m => m.position.x == x && m.position.y == y && m.isAlive).length > 0) {
-          monsters.filter(m => m.position.x == x && m.position.y == y && m.isAlive).headOption match {
-            case Some(monster) => print(monster.displayChar)
-            case None => Unit
-          }
-
-        }
-        else if (shrine != null && shrine.position.x == x && shrine.position.y == y) {
-          shrine.render
-        }
-        else if ( droppedItems.filter(i => i.position.x == x && i.position.y == y).length > 0 ) {
-          droppedItems.filter(i => i.position.x == x && i.position.y == y).headOption match {
-            case Some(item) => {
-              item.render
-            }
-            case None => Unit
-          }
-        }
-        else {
-          print(".")
-        }
-        print(" ")
-      }
-      y match {
-        case 0 => println("    w,a,s,d - Move")
-        case 1 => println("    q - Quaff a potion")
-        case 2 => println("    u - Use item on ground")
-        case _ => println("")
-      }
-    }
-  }
-
   def renderMonsterActions(monsterMessage:String) = {
     println(monsterMessage)
   }
@@ -369,6 +331,9 @@ class GameState(player:Player) {
     println(player.actionMessage)
   }
 
+  /*
+   * Commands are for debugging purposes
+   */
   def runCommand = {
     val command = scala.io.StdIn.readLine.split(" ")
     command(0) match {
