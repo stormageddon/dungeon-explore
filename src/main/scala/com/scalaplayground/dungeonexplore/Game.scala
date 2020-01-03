@@ -102,7 +102,7 @@ class GameState(player:Player) {
     for (y <- 0 to NUM_ROWS - 1) {
       for (x <- 0 to NUM_COLS - 1) {
         val thisPos = new Position(x, y)
-        if (Random.nextInt(100) <= 25) {
+        if (Random.nextInt(100) <= 15) {
           tiles = tiles :+ List(new HorizontalWall(thisPos), new VerticalWall(thisPos))(Random.nextInt(2))
         }
         else {
@@ -140,10 +140,10 @@ class GameState(player:Player) {
         case it if 25 until 50 contains it => Some(new Kobold())
         case it if 50 until 60 contains it => Some(new GiantRat())
         case it if 60 until 75 contains it => Some(new Orc())
-        case it if 75 until 80 contains it => Some(new Wolf())
-        case it if 80 until 90 contains it => Some(new DireWolf())
-        case it if 90 until 95 contains it => Some(new RockGolem())
-        case it if 95 until 100 contains it => Some(new Dragon())
+        case it if 75 until 81 contains it => Some(new Wolf())
+        case it if 81 until 93 contains it => Some(new DireWolf())
+        case it if 93 until 98 contains it => Some(new RockGolem())
+        case it if 98 until 100 contains it => Some(new Dragon())
       }
     }
   }
@@ -258,7 +258,7 @@ class GameState(player:Player) {
           monsterActionMessage = monsterActionMessage + s"attack roll of ${hitRoll} vs AC ${player.armorClass + player.armor.armorBonus}\n"
           if (hitRoll >= player.armorClass + player.armor.armorBonus) {
             val damage = monster.calculateDamage
-            monsterActionMessage = monsterActionMessage + s"${monster.name} ${monster.weapon.attackText} dealing ${damage} damage\n"
+            monsterActionMessage = monsterActionMessage + s"${monster.name} ${monster.weapon.getAttackText} dealing ${damage} damage\n"
             player.health = player.health - damage
           }
           else {

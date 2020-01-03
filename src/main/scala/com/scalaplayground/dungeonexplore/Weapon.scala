@@ -11,11 +11,15 @@ abstract class Weapon {
   var attackBonus: Int = 0
   var isDroppable: Boolean = false
   val dropChance = Constants.WEAPON_DROP_PERCENTAGE
-  var attackText = s"swings at you with their ${this.name}"
+  //var attackText = s"swings at you with their ${this.name}"
 
   def attack: Int = {
     val damageDealt = Random.nextInt(damage._2) + damage._1
     damageDealt
+  }
+
+  def getAttackText: String = {
+    s"swings at you with their ${name}"
   }
 }
 
