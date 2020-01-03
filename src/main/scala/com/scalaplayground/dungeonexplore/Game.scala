@@ -54,6 +54,7 @@ object Game extends App {
   while(isPlaying) {
 
     if (player.health <= 0) {
+      print("\033c")
       println("**********************************")
       println(s"${player.name} was slain. RIP.")
       isPlaying = false
