@@ -64,7 +64,6 @@ class Item(startingPos: Position, dispChar: String, hoverDescription: String = "
       }
       case "NIGHT_BLADE" => {
         player.appendActionMessage("You hold the gleaming blade aloft. Outside, the clouds part for the first time in centuries. The town rejoices.\nThe heroes have won.... for now.")
-        player.weapon = new NightBlade
       }
       case "LEATHER_ARMOR" => {
         player.appendActionMessage("You don the Leather Armor. You look sexy.")

@@ -41,7 +41,7 @@ class Player(val name:String) {
     armor = newArmor
   }
 
-  def quaffPotion: Unit = {
+  def quaffPotion: Boolean = {
     if (numPotions > 0) {
       val healthRegained = Random.nextInt(6) + 1
       numPotions = numPotions - 1
@@ -51,6 +51,7 @@ class Player(val name:String) {
     else {
       appendActionMessage("You are out of potions!")
     }
+    return false
   }
 
   def move(xVel: Int, yVel: Int): Position = {

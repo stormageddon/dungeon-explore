@@ -148,7 +148,7 @@ class GameState(player:Player) {
     }
   }
 
-  def foo(monster:Monster) = {
+  def performPlayerAttack(monster:Monster) = {
     playerHasValidTarget(player, monster) match {
       case Some(m) => {
         val attack = player.performAttack(m.armorClass)
@@ -183,7 +183,7 @@ class GameState(player:Player) {
     val newPos = player.move(xVel, yVel)
     getMonsterAtPosition(newPos) match {
       case Some(monster) => {
-        foo(monster)
+        performPlayerAttack(monster)
         return false
       }
       case None => {
@@ -203,74 +203,16 @@ class GameState(player:Player) {
     val playerIsAlive = true
 
 
-    action match {
+    playerDidMove = action match {
       case QUAFF_POTION => player.quaffPotion
-      case MOVE_UP => {
-        playerDidMove = performPlayerMove(0, -1)
-      }
-      case MOVE_LEFT => {
-//        val newPos = player.move(-1, 0)
-//        player.position = getTileAtPosition(newPos.x, newPos.y) match {
-//          case Some(tile) => if (tile.passable) newPos else player.position
-//          case None => newPos
-//        }
-//        playerDidMove = true
-        playerDidMove = performPlayerMove(-1, 0)
-      }
-      case MOVE_DOWN => {
-//        val newPos = player.move(0, 1)
-//        player.position = getTileAtPosition(newPos.x, newPos.y) match {
-//          case Some(tile) => if (tile.passable) newPos else player.position
-//          case None => newPos
-//        }
-//        playerDidMove = true
-        playerDidMove = performPlayerMove(0, 1)
-      }
-      case MOVE_RIGHT => {
-//        val newPos = player.move(1, 0)
-//        player.position = getTileAtPosition(newPos.x, newPos.y) match {
-//          case Some(tile) => if (tile.passable) newPos else player.position
-//          case None => newPos
-//        }
-//        playerDidMove = true
-        playerDidMove = performPlayerMove(1, 0)
-      }
-      case MOVE_UP_LEFT => {
-//        val newPos = player.move(-1, -1)
-//        player.position = getTileAtPosition(newPos.x, newPos.y) match {
-//          case Some(tile) => if (tile.passable) newPos else player.position
-//          case None => newPos
-//        }
-//        playerDidMove = true
-        playerDidMove = performPlayerMove(-1, -1)
-      }
-      case MOVE_UP_RIGHT => {
-//        val newPos = player.move(1, -1)
-//        player.position = getTileAtPosition(newPos.x, newPos.y) match {
-//          case Some(tile) => if (tile.passable) newPos else player.position
-//          case None => newPos
-//        }
-//        playerDidMove = true
-        playerDidMove = performPlayerMove(1, -1)
-      }
-      case MOVE_DOWN_LEFT => {
-//        val newPos = player.move(-1, 1)
-//        player.position = getTileAtPosition(newPos.x, newPos.y) match {
-//          case Some(tile) => if (tile.passable) newPos else player.position
-//          case None => newPos
-//        }
-//        playerDidMove = true
-        playerDidMove = performPlayerMove(-1, 1)
-      }
-      case MOVE_DOWN_RIGHT => {
-//        val newPos = player.move(1, 1)
-//        player.position = getTileAtPosition(newPos.x, newPos.y) match {
-//          case Some(tile) => if (tile.passable) newPos else player.position
-//          case None => newPos
-//        }
-//        playerDidMove = true
-        playerDidMove = performPlayerMove(1, 1)
-      }
+      case MOVE_UP => performPlayerMove(0, -1)
+      case MOVE_LEFT => performPlayerMove(-1, 0)
+      case MOVE_DOWN => performPlayerMove(0, 1)
+      case MOVE_RIGHT => performPlayerMove(1, 0)
+      case MOVE_UP_LEFT => performPlayerMove(-1, -1)
+      case MOVE_UP_RIGHT => performPlayerMove(1, -1)
+      case MOVE_DOWN_LEFT => performPlayerMove(-1, 1)
+      case MOVE_DOWN_RIGHT => performPlayerMove(1, 1)
       case USE_ITEM => {
         // check for items
         droppedItems.filter(item => item.position.x == player.position.x && item.position.y == player.position.y).headOption match {
@@ -291,16 +233,17 @@ class GameState(player:Player) {
             }
           }
         }
-
+        false
       }
       case RUN_COMMAND => {
         runCommand
+        false
       }
       case ESCAPE => {
         // quit the game
-        return false
+        false
       }
-      case _ => Unit
+      case _ => false
     }
 
     if (monsters.length == 0) {
