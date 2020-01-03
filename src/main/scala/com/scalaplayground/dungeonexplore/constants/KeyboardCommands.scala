@@ -8,4 +8,5 @@ object KeyboardCommands {
   val MOVE_RIGHT = "d"
   val USE_ITEM = "u"
   val ESCAPE = "个"
+  val RUN_COMMAND = "/"
 }

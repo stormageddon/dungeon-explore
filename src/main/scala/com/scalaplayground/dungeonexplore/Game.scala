@@ -4,6 +4,8 @@ import net.team2xh.scurses.{Colors, Scurses}
 
 import scala.util.Random
 import com.scalaplayground.dungeonexplore.Monster._
+import com.scalaplayground.dungeonexplore.Weapon._
+import com.scalaplayground.dungeonexplore.Armor._
 import com.scalaplayground.dungeonexplore.constants.Constants._
 import com.scalaplayground.dungeonexplore.constants.KeyboardCommands._
 import com.scalaplayground.dungeonexplore.Item.Item
@@ -185,6 +187,9 @@ class GameState(player:Player) {
         }
 
       }
+      case RUN_COMMAND => {
+        runCommand
+      }
       case ESCAPE => {
         // quit the game
         return false
@@ -364,5 +369,36 @@ class GameState(player:Player) {
     println(player.actionMessage)
   }
 
-
+  def runCommand = {
+    val command = scala.io.StdIn.readLine.split(" ")
+    command(0) match {
+      case "spawn" => {
+        if (command(1) != null) {
+          println("Spawning creature")
+          monsters = command(1) match {
+            case "orc" => monsters ++ List(new Orc())
+            case "wolf" => monsters ++ List(new Wolf())
+            case "cel" => monsters ++ List(new CemHial())
+            case _ => monsters
+          }
+        }
+      }
+      case "give" => {
+        if (command(1) != null) {
+          command(1) match {
+            case "axe" => player.weapon = new FineGreatAxe()
+            case "night_blade" => player.weapon = new NightBlade()
+            case "dagger" => player.weapon = new FineDagger()
+            case "sword" => player.weapon = new FineShortSword()
+            case "spear" => player.weapon = new Spear()
+            case "dragon" => player.armor = new DragonScale()
+          }
+        }
+      }
+      case "heal" => {
+        player.health = player.maxHealth
+      }
+      case _ => println("Unknown command")
+    }
+  }
 }
