@@ -15,8 +15,45 @@ import com.scalaplayground.dungeonexplore._
 
 object Game extends App {
   def createPlayer: Player = {
-    println("What is your name, traveler?")
-    new Player(scala.io.StdIn.readLine(">> "))
+    print("\033c")
+    println("Hello, traveler.")
+    println("What is your name?")
+    val name = scala.io.StdIn.readLine(">> ")
+
+    println("What occupation have you?")
+    println("1. Barbarian")
+    println("2. Cleric")
+    println("3. Ranger")
+    println("4. Rogue")
+    println("5. Wizard")
+    print(">> ")
+    val charClass = scala.io.StdIn.readInt() match {
+      case 1 => "Barbarian"
+      case 2 => "Cleric"
+      case 3 => "Ranger"
+      case 4 => "Rogue"
+      case 5 => "Wizard"
+      case _ => "Barbarian"
+    }
+
+
+    println("What is your heritage?")
+    println("1. Dwarf")
+    println("2. Elf")
+    println("3. Halfling")
+    println("4. Human")
+    println("5. Lizardfolk")
+    print(">> ")
+    val charRace = scala.io.StdIn.readInt() match {
+      case 1 => "Dwarf"
+      case 2 => "Elf"
+      case 3 => "Halfling"
+      case 4 => "Human"
+      case 5 => "Lizardfolk"
+      case _ => "Human"
+    }
+
+    new Player(name, charClass, charRace)
   }
 
   var s: Scurses = new Scurses
@@ -56,7 +93,7 @@ object Game extends App {
     if (player.health <= 0) {
       print("\033c")
       println("**********************************")
-      println(s"${player.name} was slain. RIP.")
+      println(s"${player.name} the Level ${player.level} ${player.charRace} ${player.charClass} was slain. RIP.")
       isPlaying = false
     }
     else {

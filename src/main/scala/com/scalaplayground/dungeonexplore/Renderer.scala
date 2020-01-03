@@ -20,7 +20,7 @@ class Renderer(gs: GameState) {
 
   def renderStatsBar = {
     val p = gameState.getPlayer()
-    println(s"${p.name}")
+    println(s"${p.name}, the ${p.charRace} ${p.charClass} (Level ${p.level})")
     println(s"HP: ${p.health}    AC: ${p.armorClass + p.armor.armorBonus}     WIELDING: ${p.weapon.name} (${p.weapon.damage._1}-${p.weapon.damage._2} + ${p.weapon.attackBonus})     POTIONS: ${p.numPotions}")
     gameState.currTileDescription = "There is nothing here."
     gameState.droppedItems.map(item => {

@@ -8,9 +8,10 @@ import com.scalaplayground.dungeonexplore.constants.Constants._
 
 import scala.util.Random
 
-class Player(val name:String) {
+class Player(val name:String, val charClass:String, val charRace:String) {
   var health = STARTING_PLAYER_HEALTH
   var maxHealth = STARTING_PLAYER_HEALTH
+  var level = 1
   var weapon: Weapon = new RustyDagger
   var numPotions = 1
   val armorClass = 10
