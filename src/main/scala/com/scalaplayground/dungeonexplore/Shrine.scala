@@ -18,7 +18,7 @@ abstract class Shrine {
   }
 
   def render = {
-    print(displayChar)
+    print(dungeonHelper.padGameObjectChar(displayChar))
   }
 }
 

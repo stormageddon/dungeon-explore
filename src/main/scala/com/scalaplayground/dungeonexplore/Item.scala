@@ -1,7 +1,7 @@
 package com.scalaplayground.dungeonexplore.Item
 
 import com.scalaplayground.dungeonexplore.Armor._
-import com.scalaplayground.dungeonexplore.Player
+import com.scalaplayground.dungeonexplore.{DungeonHelper, Player}
 import com.scalaplayground.dungeonexplore.Position.Position
 import com.scalaplayground.dungeonexplore.Weapon._
 
@@ -10,9 +10,10 @@ class Item(startingPos: Position, dispChar: String, hoverDescription: String = "
   val displayChar: String = dispChar
   val tileDescription: String = hoverDescription
   val id: String = itemId
+  val dungeonHelper = new DungeonHelper
 
   def render(): Unit = {
-    print(displayChar)
+    print(dungeonHelper.padGameObjectChar(displayChar))
   }
 
   def interact(player: Player): Unit = {

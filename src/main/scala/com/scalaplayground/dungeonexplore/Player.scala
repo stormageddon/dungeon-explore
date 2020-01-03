@@ -16,14 +16,14 @@ class Player(val name:String) {
   val armorClass = 10
   var attackBonus = 2
   var armor: Armor = new Natural
-  var position = new Position(10, 10)
+  var position = new Position(4, 4)
   var dungeonHelper = new DungeonHelper
   val displayChar = "@"
   var actionMessage: String = ""
 
 
   def render = {
-    print(displayChar)
+    print(dungeonHelper.padGameObjectChar(displayChar))
   }
 
   def calculateDamage: Int = {

@@ -51,28 +51,30 @@ abstract class Monster {
   }
 
   def move(target: Option[Position]): Position = {
-    val newPosition = this.position
-    target match {
+
+    val newPosition: Position = target match {
       case Some(p) => {
         // try horizontal first
-        if (this.position.x < p.x - 1) {
-          this.position.x += 1
+        var calculatedPos = new Position(-1, -1)
+        if (position.x < p.x - 1) {
+          calculatedPos = new Position(position.x + 1, position.y)
         }
-        else if (this.position.x > p.x + 1) {
-          this.position.x -= 1
+        else if (position.x > p.x + 1) {
+          calculatedPos = new Position(position.x - 1, position.y)
         }
         // then try vertical
-        else if (this.position.y < p.y - 1) {
-          this.position.y += 1
+        else if (position.y < p.y - 1) {
+          calculatedPos = new Position(position.x, position.y + 1)
         }
-        else if (this.position.y > p.y + 1) {
-          this.position.y -= 1
+        else if (position.y > p.y + 1) {
+          calculatedPos = new Position(position.x, position.y - 1)
         }
+
+        calculatedPos
       }
-      case None => Unit
+      case None => position
     }
-    //    val x = dungeonHelper.clamp(this.position.x + 1, 0, NUM_ROWS)
-    //    val y = dungeonHelper.clamp(this.position.y + 1, 0, NUM_ROWS)
+
     newPosition
   }
 }
@@ -147,31 +149,6 @@ class Orc(startingPos: Position = new Position(0, 0)) extends Monster {
   )(Random.nextInt(6))
   armor = List(new Natural, new Leather, new Chain, new PlateMail)(Random.nextInt(4))
   displayChar = "o"
-
-  override def move(target: Option[Position]): Position = {
-    val newPosition = this.position
-    target match {
-      case Some(p) => {
-        // try horizontal first
-        if (this.position.x < p.x) {
-          this.position.x += 1
-        }
-        else if (this.position.x > p.x) {
-          this.position.x -= 1
-        }
-        // then try vertical
-        else if (this.position.y < p.y) {
-          this.position.y += 1
-        }
-        else if (this.position.y > p.y) {
-          this.position.y -= 1
-        }
-      }
-      case None => Unit
-    }
-
-    newPosition
-  }
 }
 
 class CemHial extends Monster {

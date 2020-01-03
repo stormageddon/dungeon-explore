@@ -11,7 +11,7 @@ import com.scalaplayground.dungeonexplore.constants.KeyboardCommands._
 import com.scalaplayground.dungeonexplore.Item.Item
 import com.scalaplayground.dungeonexplore.Position.Position
 import com.scalaplayground.dungeonexplore.Shrine._
-import com.scalaplayground.dungeonexplore.{DungeonHelper, Player, Renderer}
+import com.scalaplayground.dungeonexplore._
 
 object Game extends App {
   def createPlayer: Player = {
@@ -95,6 +95,25 @@ class GameState(player:Player) {
   var currTileDescription: String = "Nothing is here."
   var roundMessage: String = ""
   var monsterActionMessage: String = ""
+  var tiles = Seq[Tile]()
+
+
+  def randomMap = {
+    for (y <- 0 to NUM_ROWS - 1) {
+      for (x <- 0 to NUM_COLS - 1) {
+        val thisPos = new Position(x, y)
+        if (Random.nextInt(100) <= 25) {
+          tiles = tiles :+ List(new HorizontalWall(thisPos), new VerticalWall(thisPos))(Random.nextInt(2))
+        }
+        else {
+          tiles = tiles :+ new FloorTile(thisPos)
+        }
+      }
+    }
+  }
+
+  // setup map
+  randomMap
 
   def generateShrine(): Shrine = {
       Random.nextInt(100) match {
@@ -139,19 +158,67 @@ class GameState(player:Player) {
     action match {
       case QUAFF_POTION => player.quaffPotion
       case MOVE_UP => {
-        player.position = player.move(0,-1)
+        val newPos = player.move(0, -1)
+        player.position = getTileAtPosition(newPos.x, newPos.y) match {
+          case Some(tile) => if (tile.passable) newPos else player.position
+          case None => newPos
+        }
         playerDidMove = true
       }
       case MOVE_LEFT => {
-        player.position = player.move(-1, 0)
+        val newPos = player.move(-1, 0)
+        player.position = getTileAtPosition(newPos.x, newPos.y) match {
+          case Some(tile) => if (tile.passable) newPos else player.position
+          case None => newPos
+        }
         playerDidMove = true
       }
       case MOVE_DOWN => {
-        player.position = player.move(0, 1)
+        val newPos = player.move(0, 1)
+        player.position = getTileAtPosition(newPos.x, newPos.y) match {
+          case Some(tile) => if (tile.passable) newPos else player.position
+          case None => newPos
+        }
         playerDidMove = true
       }
       case MOVE_RIGHT => {
-        player.position = player.move(1, 0)
+        val newPos = player.move(1, 0)
+        player.position = getTileAtPosition(newPos.x, newPos.y) match {
+          case Some(tile) => if (tile.passable) newPos else player.position
+          case None => newPos
+        }
+        playerDidMove = true
+      }
+      case MOVE_UP_LEFT => {
+        val newPos = player.move(-1, -1)
+        player.position = getTileAtPosition(newPos.x, newPos.y) match {
+          case Some(tile) => if (tile.passable) newPos else player.position
+          case None => newPos
+        }
+        playerDidMove = true
+      }
+      case MOVE_UP_RIGHT => {
+        val newPos = player.move(1, -1)
+        player.position = getTileAtPosition(newPos.x, newPos.y) match {
+          case Some(tile) => if (tile.passable) newPos else player.position
+          case None => newPos
+        }
+        playerDidMove = true
+      }
+      case MOVE_DOWN_LEFT => {
+        val newPos = player.move(-1, 1)
+        player.position = getTileAtPosition(newPos.x, newPos.y) match {
+          case Some(tile) => if (tile.passable) newPos else player.position
+          case None => newPos
+        }
+        playerDidMove = true
+      }
+      case MOVE_DOWN_RIGHT => {
+        val newPos = player.move(1, 1)
+        player.position = getTileAtPosition(newPos.x, newPos.y) match {
+          case Some(tile) => if (tile.passable) newPos else player.position
+          case None => newPos
+        }
         playerDidMove = true
       }
       case USE_ITEM => {
@@ -222,7 +289,7 @@ class GameState(player:Player) {
           case None => Unit
         }
 
-        if (monsterHasValidTarget(monster, player)) {
+        if (monsterHasValidTarget(monster, player) && monster.isAlive) {
           val hitRoll = monster.performAttack
           monsterActionMessage = monsterActionMessage + s"attack roll of ${hitRoll} vs AC ${player.armorClass + player.armor.armorBonus}\n"
           if (hitRoll >= player.armorClass + player.armor.armorBonus) {
@@ -235,7 +302,20 @@ class GameState(player:Player) {
           }
         }
 
-        monster.position = monster.move(Some(player.position))
+        if (monster.isAlive) {
+          val newPos = monster.move(Some(player.position))
+          getTileAtPosition(newPos.x, newPos.y) match {
+            case Some(tile) => {
+              if (tile.passable) {
+                monster.position = newPos
+              } else {
+                // get random (legal) position
+                monster.position = monster.position
+              }
+            }
+            case None => newPos
+          }
+        }
       }
     })
 
@@ -282,6 +362,13 @@ class GameState(player:Player) {
   def getPlayer(): Player = {
     return player
   }
+
+  def getTileAtPosition(x: Int, y: Int): Option[Tile] = {
+    tiles.filter(tile => tile.position.x == x && tile.position.y == y).headOption
+  }
+
+
+
 
   /*
    * Commands are for debugging purposes

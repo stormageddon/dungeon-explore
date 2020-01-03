@@ -8,6 +8,7 @@ import com.scalaplayground.dungeonexplore.Item._
 
 class Renderer(gs: GameState) {
   val gameState = gs
+  val dungeonHelper = new DungeonHelper
 
   def renderMonsterActions(monsterMessage:String) = {
     println(monsterMessage)
@@ -41,6 +42,7 @@ class Renderer(gs: GameState) {
     val shrine: Shrine = gameState.shrine
     val player: Player = gameState.getPlayer()
     val droppedItems: List[Item] = gameState.droppedItems
+    val tiles: Seq[Tile] = gameState.tiles
 
     for (y <- 0 to NUM_ROWS - 1) {
       for (x <- 0 to NUM_COLS - 1) {
@@ -49,10 +51,9 @@ class Renderer(gs: GameState) {
         }
         else if (monsters.filter(m => m.position.x == x && m.position.y == y && m.isAlive).length > 0) {
           monsters.filter(m => m.position.x == x && m.position.y == y && m.isAlive).headOption match {
-            case Some(monster) => print(monster.displayChar)
+            case Some(monster) => print(dungeonHelper.padGameObjectChar(monster.displayChar))
             case None => Unit
           }
-
         }
         else if (shrine != null && shrine.position.x == x && shrine.position.y == y) {
           shrine.render
@@ -66,14 +67,19 @@ class Renderer(gs: GameState) {
           }
         }
         else {
-          print(".")
+          // find the tile that matches this position
+          val t = tiles.filter(tile => tile.position.x == x && tile.position.y == y).head
+          print(t.displayChar)
+          //print(".")
         }
-        print(" ")
+        //print(" ")
       }
       y match {
         case 0 => println("    w,a,s,d - Move")
-        case 1 => println("    q - Quaff a potion")
-        case 2 => println("    u - Use item on ground")
+        case 1 => println("    q,e,z,x - Move diagonally")
+        case 2 => println("    r - Quaff a potion")
+        case 3 => println("    u - Use item on ground")
+        case 4 => println("    ESC - quit")
         case _ => println("")
       }
     }
