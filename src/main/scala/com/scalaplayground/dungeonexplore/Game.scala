@@ -62,17 +62,8 @@ object Game extends App {
 
       print(">> ")
 
-
       val input = scala.io.StdIn.readLine.slice(0,1)
-
-      //val input = s.keypress.toChar
-
-      //val key = input.toString.asInstanceOf[String].slice(0,1)
-
       val key = input.toString.asInstanceOf[String]
-
-      //print("\033c")
-      //println(s"pressed: ${key}")
 
       if (key == "ESC") {
         isPlaying = false
@@ -87,12 +78,10 @@ object Game extends App {
   println(s"${gameState.monstersSlain} monsters were defeated. Nice job!")
   gameState.defeatedMonsters.keys.map(monsterType => println(s"${monsterType}'s killed: ${gameState.defeatedMonsters.get(monsterType).get}"))
   println("======== Ending gear ========")
-  println(s"Weapon: ${player.weapon.name} (${player.weapon.damage._1}d${player.weapon.damage._2}, ${player.weapon.attackBonus})")
+  println(s"Weapon: ${player.weapon.name} (${player.weapon.damage._1}-${player.weapon.damage._2}, ${player.weapon.attackBonus})")
   println(s"Armor: ${player.armor.name} (${player.armor.armorBonus})")
   println("**********************************")
 }
-
-
 
 class GameState(player:Player) {
   val dungeonHelper = new DungeonHelper
@@ -106,8 +95,6 @@ class GameState(player:Player) {
   var currTileDescription: String = "Nothing is here."
   var roundMessage: String = ""
   var monsterActionMessage: String = ""
-
-
 
   def generateShrine(): Shrine = {
       Random.nextInt(100) match {
@@ -214,6 +201,7 @@ class GameState(player:Player) {
               m.health = m.health - damage
             }
             if (m.health <= 0) {
+              monsterActionMessage = s"${monsterActionMessage}${m.name} was slain!\n"
               m.dropLoot match {
                 case Some(loot) => {
                   var newItem = new Item(new Position(m.position.x, m.position.y), dispChar = "!", itemId = loot._1, hoverDescription = loot._2)
@@ -248,18 +236,7 @@ class GameState(player:Player) {
 
         monster.position = monster.move(Some(player.position))
       }
-//      else {
-//        // Kick open a door
-//        print("You kick open another door.")
-//        monster = generateMonster()
-//      }
     })
-
-
-  //  if (playerDidMove) {
-
-      //player.performAttack
-    //}
 
     // generate new enemy?
     Random.nextInt(100) match {

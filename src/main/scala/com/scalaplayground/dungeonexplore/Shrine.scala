@@ -30,7 +30,7 @@ class HealthShrine(startingPosition: Position) extends Shrine {
     if (isActive) {
       super.interact(player)
       player.health = dungeonHelper.clamp(STARTING_PLAYER_HEALTH, 0, STARTING_PLAYER_HEALTH)
-      message = "You feel better as you look at the shrine."
+      message = "You feel healthier as you look at the shrine."
     }
     else {
       message = "The shrine's magic has been used."

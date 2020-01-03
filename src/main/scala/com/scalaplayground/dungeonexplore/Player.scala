@@ -42,10 +42,10 @@ class Player(val name:String) {
 
   def quaffPotion: Unit = {
     if (numPotions > 0) {
-      val healthRegained = dungeonHelper.clamp(Random.nextInt(6) + 1, 0 , maxHealth)
+      val healthRegained = Random.nextInt(6) + 1
       numPotions = numPotions - 1
       appendActionMessage(s"You quickly quaff a potion, regaining ${healthRegained} health. You have ${numPotions} left")
-      health = health + healthRegained
+      health = dungeonHelper.clamp(health + healthRegained, 0, maxHealth)
     }
     else {
       appendActionMessage("You are out of potions!")
