@@ -148,6 +148,54 @@ class GameState(player:Player) {
     }
   }
 
+  def foo(monster:Monster) = {
+    playerHasValidTarget(player, monster) match {
+      case Some(m) => {
+        val attack = player.performAttack(m.armorClass)
+        if (attack >= m.armorClass) {
+          val damage = player.weapon.attack
+          player.actionMessage = player.actionMessage + s"You stab with your ${player.weapon.name} dealing ${damage} damage!\n"
+          m.health = m.health - damage
+        }
+        if (m.health <= 0) {
+          monsterActionMessage = s"${monsterActionMessage}${m.name} was slain!\n"
+          m.dropLoot match {
+            case Some(loot) => {
+              var newItem = new Item(new Position(m.position.x, m.position.y), dispChar = "!", itemId = loot._1, hoverDescription = loot._2)
+              droppedItems = droppedItems :+ newItem
+              monsterActionMessage = monsterActionMessage + s"${m.name} dropped something with a loud clink.\n"
+            }
+            case None => None
+
+          }
+          monstersSlain += 1
+          generateMonster match {
+            case Some(monster) => monsters = monsters ++ List[Monster](monster)
+            case None => Unit
+          }
+        }
+      }
+      case None => Unit
+    }
+  }
+
+  def performPlayerMove(xVel: Int, yVel: Int): Boolean = {
+    val newPos = player.move(xVel, yVel)
+    getMonsterAtPosition(newPos) match {
+      case Some(monster) => {
+        foo(monster)
+        return false
+      }
+      case None => {
+        player.position = getTileAtPosition(newPos.x, newPos.y) match {
+          case Some(tile) => if (tile.passable) newPos else player.position
+          case None => newPos
+        }
+        return true
+      }
+    }
+  }
+
   def tick(action: String): Boolean = {
     print("\033c")
 
@@ -158,68 +206,70 @@ class GameState(player:Player) {
     action match {
       case QUAFF_POTION => player.quaffPotion
       case MOVE_UP => {
-        val newPos = player.move(0, -1)
-        player.position = getTileAtPosition(newPos.x, newPos.y) match {
-          case Some(tile) => if (tile.passable) newPos else player.position
-          case None => newPos
-        }
-        playerDidMove = true
+        playerDidMove = performPlayerMove(0, -1)
       }
       case MOVE_LEFT => {
-        val newPos = player.move(-1, 0)
-        player.position = getTileAtPosition(newPos.x, newPos.y) match {
-          case Some(tile) => if (tile.passable) newPos else player.position
-          case None => newPos
-        }
-        playerDidMove = true
+//        val newPos = player.move(-1, 0)
+//        player.position = getTileAtPosition(newPos.x, newPos.y) match {
+//          case Some(tile) => if (tile.passable) newPos else player.position
+//          case None => newPos
+//        }
+//        playerDidMove = true
+        playerDidMove = performPlayerMove(-1, 0)
       }
       case MOVE_DOWN => {
-        val newPos = player.move(0, 1)
-        player.position = getTileAtPosition(newPos.x, newPos.y) match {
-          case Some(tile) => if (tile.passable) newPos else player.position
-          case None => newPos
-        }
-        playerDidMove = true
+//        val newPos = player.move(0, 1)
+//        player.position = getTileAtPosition(newPos.x, newPos.y) match {
+//          case Some(tile) => if (tile.passable) newPos else player.position
+//          case None => newPos
+//        }
+//        playerDidMove = true
+        playerDidMove = performPlayerMove(0, 1)
       }
       case MOVE_RIGHT => {
-        val newPos = player.move(1, 0)
-        player.position = getTileAtPosition(newPos.x, newPos.y) match {
-          case Some(tile) => if (tile.passable) newPos else player.position
-          case None => newPos
-        }
-        playerDidMove = true
+//        val newPos = player.move(1, 0)
+//        player.position = getTileAtPosition(newPos.x, newPos.y) match {
+//          case Some(tile) => if (tile.passable) newPos else player.position
+//          case None => newPos
+//        }
+//        playerDidMove = true
+        playerDidMove = performPlayerMove(1, 0)
       }
       case MOVE_UP_LEFT => {
-        val newPos = player.move(-1, -1)
-        player.position = getTileAtPosition(newPos.x, newPos.y) match {
-          case Some(tile) => if (tile.passable) newPos else player.position
-          case None => newPos
-        }
-        playerDidMove = true
+//        val newPos = player.move(-1, -1)
+//        player.position = getTileAtPosition(newPos.x, newPos.y) match {
+//          case Some(tile) => if (tile.passable) newPos else player.position
+//          case None => newPos
+//        }
+//        playerDidMove = true
+        playerDidMove = performPlayerMove(-1, -1)
       }
       case MOVE_UP_RIGHT => {
-        val newPos = player.move(1, -1)
-        player.position = getTileAtPosition(newPos.x, newPos.y) match {
-          case Some(tile) => if (tile.passable) newPos else player.position
-          case None => newPos
-        }
-        playerDidMove = true
+//        val newPos = player.move(1, -1)
+//        player.position = getTileAtPosition(newPos.x, newPos.y) match {
+//          case Some(tile) => if (tile.passable) newPos else player.position
+//          case None => newPos
+//        }
+//        playerDidMove = true
+        playerDidMove = performPlayerMove(1, -1)
       }
       case MOVE_DOWN_LEFT => {
-        val newPos = player.move(-1, 1)
-        player.position = getTileAtPosition(newPos.x, newPos.y) match {
-          case Some(tile) => if (tile.passable) newPos else player.position
-          case None => newPos
-        }
-        playerDidMove = true
+//        val newPos = player.move(-1, 1)
+//        player.position = getTileAtPosition(newPos.x, newPos.y) match {
+//          case Some(tile) => if (tile.passable) newPos else player.position
+//          case None => newPos
+//        }
+//        playerDidMove = true
+        playerDidMove = performPlayerMove(-1, 1)
       }
       case MOVE_DOWN_RIGHT => {
-        val newPos = player.move(1, 1)
-        player.position = getTileAtPosition(newPos.x, newPos.y) match {
-          case Some(tile) => if (tile.passable) newPos else player.position
-          case None => newPos
-        }
-        playerDidMove = true
+//        val newPos = player.move(1, 1)
+//        player.position = getTileAtPosition(newPos.x, newPos.y) match {
+//          case Some(tile) => if (tile.passable) newPos else player.position
+//          case None => newPos
+//        }
+//        playerDidMove = true
+        playerDidMove = performPlayerMove(1, 1)
       }
       case USE_ITEM => {
         // check for items
@@ -260,35 +310,6 @@ class GameState(player:Player) {
     // Perform monster actions
     monsters.map(monster => {
       if (monster.isAlive) {
-        playerHasValidTarget(player, monster) match {
-          case Some(m) => {
-            val attack = player.performAttack(m.armorClass)
-            if (attack >= m.armorClass) {
-              val damage = player.weapon.attack
-              player.actionMessage = player.actionMessage + s"You stab with your ${player.weapon.name} dealing ${damage} damage!\n"
-              m.health = m.health - damage
-            }
-            if (m.health <= 0) {
-              monsterActionMessage = s"${monsterActionMessage}${m.name} was slain!\n"
-              m.dropLoot match {
-                case Some(loot) => {
-                  var newItem = new Item(new Position(m.position.x, m.position.y), dispChar = "!", itemId = loot._1, hoverDescription = loot._2)
-                  droppedItems = droppedItems :+ newItem
-                  monsterActionMessage = monsterActionMessage + s"${m.name} dropped something with a loud clink.\n"
-                }
-                case None => None
-
-              }
-              monstersSlain += 1
-              generateMonster match {
-                case Some(monster) => monsters = monsters ++ List[Monster](monster)
-                case None => Unit
-              }
-            }
-          }
-          case None => Unit
-        }
-
         if (monsterHasValidTarget(monster, player) && monster.isAlive) {
           val hitRoll = monster.performAttack
           monsterActionMessage = monsterActionMessage + s"attack roll of ${hitRoll} vs AC ${player.armorClass + player.armor.armorBonus}\n"
@@ -306,7 +327,7 @@ class GameState(player:Player) {
           val newPos = monster.move(Some(player.position))
           getTileAtPosition(newPos.x, newPos.y) match {
             case Some(tile) => {
-              if (tile.passable) {
+              if (tile.passable || monster.canAvoidObstacles) {
                 monster.position = newPos
               } else {
                 // get random (legal) position
@@ -361,6 +382,10 @@ class GameState(player:Player) {
 
   def getPlayer(): Player = {
     return player
+  }
+
+  def getMonsterAtPosition(position:Position): Option[Monster] = {
+    monsters.filter(monster => monster.isAlive && monster.position.x == position.x && monster.position.y == position.y).headOption
   }
 
   def getTileAtPosition(x: Int, y: Int): Option[Tile] = {

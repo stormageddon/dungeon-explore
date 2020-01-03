@@ -18,6 +18,7 @@ abstract class Monster {
   var position: Position = new Position(Random.nextInt(NUM_ROWS), Random.nextInt(NUM_COLS))
   var displayChar: String = "m"
   var dungeonHelper = new DungeonHelper
+  val canAvoidObstacles = false
 
   def isAlive: Boolean = {
     health > 0
@@ -187,56 +188,57 @@ class RockGolem extends Monster {
 class Dragon extends Monster {
   override val name = "Young Black Dragon"
   override var health = 15
+  override val canAvoidObstacles = true
   weapon = new Claws()
   weapon.damage = (3,8)
   displayChar = "D"
   armorClass = 13
   armor = new DragonScale()
 
-  override def move(target: Option[Position]): Position = {
-    val newPosition = this.position
-    target match {
-      case Some(p) => {
-        // try horizontal first
-        if (this.position.x < p.x) {
-          this.position.x += 1
-        }
-        else if (this.position.x > p.x) {
-          this.position.x -= 1
-        }
-        // then try vertical
-        else if (this.position.y < p.y) {
-          this.position.y += 1
-        }
-        else if (this.position.y > p.y) {
-          this.position.y -= 1
-        }
-      }
-      case None => Unit
-    }
-    // move twice
-    target match {
-      case Some(p) => {
-        // try horizontal first
-        if (this.position.x < p.x) {
-          this.position.x += 1
-        }
-        else if (this.position.x > p.x) {
-          this.position.x -= 1
-        }
-        // then try vertical
-        else if (this.position.y < p.y) {
-          this.position.y += 1
-        }
-        else if (this.position.y > p.y) {
-          this.position.y -= 1
-        }
-      }
-      case None => Unit
-    }
-
-    newPosition
-  }
+//  override def move(target: Option[Position]): Position = {
+//    val newPosition = this.position
+//    target match {
+//      case Some(p) => {
+//        // try horizontal first
+//        if (this.position.x < p.x) {
+//          this.position.x += 1
+//        }
+//        else if (this.position.x > p.x) {
+//          this.position.x -= 1
+//        }
+//        // then try vertical
+//        else if (this.position.y < p.y) {
+//          this.position.y += 1
+//        }
+//        else if (this.position.y > p.y) {
+//          this.position.y -= 1
+//        }
+//      }
+//      case None => Unit
+//    }
+//    // move twice
+//    target match {
+//      case Some(p) => {
+//        // try horizontal first
+//        if (this.position.x < p.x) {
+//          this.position.x += 1
+//        }
+//        else if (this.position.x > p.x) {
+//          this.position.x -= 1
+//        }
+//        // then try vertical
+//        else if (this.position.y < p.y) {
+//          this.position.y += 1
+//        }
+//        else if (this.position.y > p.y) {
+//          this.position.y -= 1
+//        }
+//      }
+//      case None => Unit
+//    }
+//
+//    newPosition
+//  }
 
   override def performAttack: Int = {
 

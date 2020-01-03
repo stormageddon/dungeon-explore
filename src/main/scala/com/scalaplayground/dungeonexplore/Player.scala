@@ -20,6 +20,7 @@ class Player(val name:String) {
   var dungeonHelper = new DungeonHelper
   val displayChar = "@"
   var actionMessage: String = ""
+  var canAvoidObstacles = false
 
 
   def render = {
