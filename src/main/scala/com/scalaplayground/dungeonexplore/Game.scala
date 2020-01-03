@@ -13,44 +13,74 @@ import com.scalaplayground.dungeonexplore.Position.Position
 import com.scalaplayground.dungeonexplore.Shrine._
 import com.scalaplayground.dungeonexplore._
 
+import scala.io.Source
+
 object Game extends App {
   def createPlayer: Player = {
     print("\033c")
-    println("Hello, traveler.")
-    println("What is your name?")
-    val name = scala.io.StdIn.readLine(">> ")
 
-    println("What occupation have you?")
-    println("1. Barbarian")
-    println("2. Cleric")
-    println("3. Ranger")
-    println("4. Rogue")
-    println("5. Wizard")
-    print(">> ")
-    val charClass = scala.io.StdIn.readInt() match {
-      case 1 => "Barbarian"
-      case 2 => "Cleric"
-      case 3 => "Ranger"
-      case 4 => "Rogue"
-      case 5 => "Wizard"
-      case _ => "Barbarian"
+    // try to read configuration first
+    val filename = "config.txt"
+    var name: String = ""
+    var charClass: String = ""
+    var charRace: String = ""
+
+    try {
+      for (line <- Source.fromFile(filename).getLines) {
+        println(line)
+        val configLine: Seq[String] = line.split(":")
+        configLine(0) match {
+          case "name" => name = configLine(1)
+          case "class" => charClass = configLine(1)
+          case "race" => charRace = configLine(1)
+          case _ => println(s"Unknown config: ${configLine(0)}")
+        }
+      }
+    }
+    catch {
+      case _ => println("No readable config file was found")
     }
 
+    println("Hello, traveler.")
+    if (name == null || name == None || name == "") {
+      println("What is your name?")
+      name = scala.io.StdIn.readLine(">> ")
+    }
 
-    println("What is your heritage?")
-    println("1. Dwarf")
-    println("2. Elf")
-    println("3. Halfling")
-    println("4. Human")
-    println("5. Lizardfolk")
-    print(">> ")
-    val charRace = scala.io.StdIn.readInt() match {
-      case 1 => "Dwarf"
-      case 2 => "Elf"
-      case 3 => "Halfling"
-      case 4 => "Human"
-      case 5 => "Lizardfolk"
-      case _ => "Human"
+    if (charClass == null || charClass == None || charClass == "") {
+      println("What occupation have you?")
+      println("1. Barbarian")
+      println("2. Cleric")
+      println("3. Ranger")
+      println("4. Rogue")
+      println("5. Wizard")
+      print(">> ")
+      charClass = scala.io.StdIn.readInt() match {
+        case 1 => "Barbarian"
+        case 2 => "Cleric"
+        case 3 => "Ranger"
+        case 4 => "Rogue"
+        case 5 => "Wizard"
+        case _ => "Barbarian"
+      }
+    }
+
+    if (charRace == null || charRace == None || charRace == "") {
+      println("What is your heritage?")
+      println("1. Dwarf")
+      println("2. Elf")
+      println("3. Halfling")
+      println("4. Human")
+      println("5. Lizardfolk")
+      print(">> ")
+      charRace = scala.io.StdIn.readInt() match {
+        case 1 => "Dwarf"
+        case 2 => "Elf"
+        case 3 => "Halfling"
+        case 4 => "Human"
+        case 5 => "Lizardfolk"
+        case _ => "Human"
+      }
     }
 
     new Player(name, charClass, charRace)
@@ -199,7 +229,7 @@ class GameState(player:Player) {
           monsterActionMessage = s"${monsterActionMessage}${m.name} was slain!\n"
           m.dropLoot match {
             case Some(loot) => {
-              var newItem = new Item(new Position(m.position.x, m.position.y), dispChar = "!", itemId = loot._1, hoverDescription = loot._2)
+              val newItem = new Item(new Position(m.position.x, m.position.y), dispChar = "!", itemId = loot._1, hoverDescription = loot._2)
               droppedItems = droppedItems :+ newItem
               monsterActionMessage = monsterActionMessage + s"${m.name} dropped something with a loud clink.\n"
             }
