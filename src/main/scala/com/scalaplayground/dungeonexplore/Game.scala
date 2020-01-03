@@ -173,8 +173,8 @@ class GameState(player:Player) {
             item.interact(player)
             droppedItems = droppedItems.filterNot( i => i == item)
             if(item.id == "NIGHT_BLADE") {
-              renderPlayerActions()
-              renderMonsterActions(monsterActionMessage)
+              renderer.renderPlayerActions
+              renderer.renderMonsterActions(monsterActionMessage)
               return false
             }
           }
@@ -274,9 +274,9 @@ class GameState(player:Player) {
     }
 
     renderer.renderGameState
-    renderStatsBar()
-    renderPlayerActions()
-    renderMonsterActions(monsterActionMessage)
+    renderer.renderStatsBar
+    renderer.renderPlayerActions
+    renderer.renderMonsterActions(monsterActionMessage)
 
     player.endRound
     monsterActionMessage = ""
@@ -303,32 +303,6 @@ class GameState(player:Player) {
 
   def getPlayer(): Player = {
     return player
-  }
-
-  def renderStatsBar(): Unit = {
-    val p = getPlayer
-    println(s"${p.name}")
-    println(s"HP: ${p.health}    AC: ${p.armorClass + p.armor.armorBonus}     WIELDING: ${p.weapon.name} (${p.weapon.damage._1}-${p.weapon.damage._2} + ${p.weapon.attackBonus})     POTIONS (q): ${p.numPotions}")
-    currTileDescription = "There is nothing here."
-    droppedItems.map(item => {
-      if (item.position.x == player.position.x && item.position.y == player.position.y) {
-        currTileDescription = item.tileDescription
-      }
-    })
-    if (shrine != null && shrine.position.x == player.position.x && shrine.position.y == player.position.y) {
-      currTileDescription = shrine.tileDescription
-    }
-    println(s"${currTileDescription}")
-    println(s"${roundMessage}")
-    roundMessage = ""
-  }
-
-  def renderMonsterActions(monsterMessage:String) = {
-    println(monsterMessage)
-  }
-
-  def renderPlayerActions() = {
-    println(player.actionMessage)
   }
 
   /*

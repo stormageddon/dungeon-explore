@@ -9,6 +9,33 @@ import com.scalaplayground.dungeonexplore.Item._
 class Renderer(gs: GameState) {
   val gameState = gs
 
+  def renderMonsterActions(monsterMessage:String) = {
+    println(monsterMessage)
+  }
+
+  def renderPlayerActions() = {
+    println(gameState.getPlayer.actionMessage)
+  }
+
+  def renderStatsBar = {
+    val p = gameState.getPlayer()
+    println(s"${p.name}")
+    println(s"HP: ${p.health}    AC: ${p.armorClass + p.armor.armorBonus}     WIELDING: ${p.weapon.name} (${p.weapon.damage._1}-${p.weapon.damage._2} + ${p.weapon.attackBonus})     POTIONS: ${p.numPotions}")
+    gameState.currTileDescription = "There is nothing here."
+    gameState.droppedItems.map(item => {
+      if (item.position.x == p.position.x && item.position.y == p.position.y) {
+        gameState.currTileDescription = item.tileDescription
+      }
+    })
+    val shrine = gameState.shrine
+    if (shrine != null && shrine.position.x == p.position.x && shrine.position.y == p.position.y) {
+      gameState.currTileDescription = shrine.tileDescription
+    }
+    println(s"${gameState.currTileDescription}")
+    println(s"${gameState.roundMessage}")
+    gameState.roundMessage = ""
+  }
+
   def renderGameState: Unit = {
     val monsters: List[Monster] = gameState.monsters
     val shrine: Shrine = gameState.shrine
