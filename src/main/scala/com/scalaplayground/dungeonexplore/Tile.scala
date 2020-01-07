@@ -8,7 +8,22 @@ abstract class Tile {
   val id: String
   val displayChar: String
   val passable: Boolean = false
+  var dist: Double = Double.MaxValue
+  var neighbors: Seq[Vertex] = Seq[Vertex]()
 
+  override def toString: String = {
+    s"Tile: ${position.toString}"
+  }
+
+  def getNeighbors: Seq[Vertex] = {
+    neighbors
+  }
+}
+
+class Vertex(val tile: Tile, val weightedDist: Int) {
+  override def toString(): String = {
+    s"{tile: ${tile.position.toString} -> ${weightedDist}}"
+  }
 }
 
 class EmptyTile(pos: Position) extends Tile {

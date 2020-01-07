@@ -9,6 +9,7 @@ import com.scalaplayground.dungeonexplore.Armor._
 import com.scalaplayground.dungeonexplore.constants.Constants._
 import com.scalaplayground.dungeonexplore.constants.KeyboardCommands._
 import com.scalaplayground.dungeonexplore.Item.Item
+import com.scalaplayground.dungeonexplore.PathFinding.Dijkstra
 import com.scalaplayground.dungeonexplore.Position.Position
 import com.scalaplayground.dungeonexplore.Shrine._
 import com.scalaplayground.dungeonexplore._
@@ -38,7 +39,7 @@ object Game extends App {
       }
     }
     catch {
-      case _ => println("No readable config file was found")
+      case _: Throwable => println("No readable config file was found")
     }
 
     println("Hello, traveler.")
@@ -178,6 +179,50 @@ class GameState(player:Player) {
         }
       }
     }
+
+
+    // TODO: Don't assume weightedDist of 1 or do shitty repeat stuff
+    tiles.map(tile => {
+      getTileAtPosition(tile.position.x - 1, tile.position.y - 1) match {
+        case Some(t) => tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+        case None => Unit
+      }
+
+      getTileAtPosition(tile.position.x, tile.position.y - 1) match {
+        case Some(t) => tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+        case None => Unit
+      }
+
+      getTileAtPosition(tile.position.x + 1, tile.position.y - 1) match {
+        case Some(t) => tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+        case None => Unit
+      }
+
+      getTileAtPosition(tile.position.x - 1, tile.position.y) match {
+        case Some(t) => tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+        case None => Unit
+      }
+
+      getTileAtPosition(tile.position.x + 1, tile.position.y) match {
+        case Some(t) => tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+        case None => Unit
+      }
+
+      getTileAtPosition(tile.position.x - 1, tile.position.y + 1) match {
+        case Some(t) => tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+        case None => Unit
+      }
+
+      getTileAtPosition(tile.position.x, tile.position.y + 1) match {
+        case Some(t) => tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+        case None => Unit
+      }
+
+      getTileAtPosition(tile.position.x + 1, tile.position.y + 1) match {
+        case Some(t) => tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+        case None => Unit
+      }
+    })
   }
 
   // setup map
@@ -335,7 +380,9 @@ class GameState(player:Player) {
         }
 
         if (monster.isAlive) {
-          val newPos = monster.move(Some(player.position))
+          //val newPos = monster.move(Some(player.position))
+          val playerTile = getTileAtPosition(player.position.x, player.position.y)
+          val newPos = monster.move(playerTile, tiles, getTileAtPosition(monster.position.x, monster.position.y))
           getTileAtPosition(newPos.x, newPos.y) match {
             case Some(tile) => {
               if (tile.passable || monster.canAvoidObstacles) {

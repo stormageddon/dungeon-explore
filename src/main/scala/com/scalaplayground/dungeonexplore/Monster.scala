@@ -6,7 +6,8 @@ import scala.util.Random
 import com.scalaplayground.dungeonexplore.constants.Constants._
 import com.scalaplayground.dungeonexplore.Position.Position
 import com.scalaplayground.dungeonexplore.Weapon._
-import com.scalaplayground.dungeonexplore.DungeonHelper
+import com.scalaplayground.dungeonexplore.{DungeonHelper, Tile}
+import com.scalaplayground.dungeonexplore.PathFinding.Dijkstra
 
 abstract class Monster {
   val name: String
@@ -51,10 +52,33 @@ abstract class Monster {
     None
   }
 
-  def move(target: Option[Position]): Position = {
+  def move(target: Option[Tile], tiles: Seq[Tile], currTile: Option[Tile]): Position = {
+    println("move")
+    val dijkstra = new Dijkstra
 
-    val newPosition: Position = target match {
-      case Some(p) => {
+    val nextMove: Option[Tile] = target match {
+      case Some(_) => {
+        currTile match {
+          case Some(_) => {
+            val path = dijkstra.findShortestPath(tiles, currTile.get, target.get)
+            println(s"Shortest Path from ${currTile.get.position.toString} to ${target.get.position.toString} is : ${path}")
+            Option(path(1))
+          }
+          case None => {
+            println("No currTile")
+            None
+          }
+        }
+      }
+      case None => {
+        println("No target tile")
+        None
+      }
+    }
+
+    val newPosition: Position = nextMove match {
+      case Some(tile) => {
+        val p = tile.position
         // try horizontal first
         var calculatedPos = new Position(-1, -1)
         if (position.x < p.x - 1) {
@@ -88,7 +112,7 @@ class GiantRat extends Monster {
   position = new Position(1,1)
   displayChar = "r"
 
-  override def move(target: Option[Position]): Position = {
+  override def move(target: Option[Tile], tiles: Seq[Tile], currTile: Option[Tile]): Position = {
     val possibleMoves = Seq(
       new Position(this.position.x + 1, this.position.y),
       new Position(this.position.x - 1, this.position.y),
