@@ -180,8 +180,6 @@ class PathFindingTest extends FlatSpec with Matchers {
 
   }
 
-
-
   it should "work for large board" in {
 
     var tiles = Seq[Tile]()
