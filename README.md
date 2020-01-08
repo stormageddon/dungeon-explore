@@ -1,11 +1,11 @@
 # dungeon-explore
 A NetHack-style dungeon crawl game written in Scala
 
-Run:
+### Run:
     sbt clean compile run
     
-Run tests:
+### Run tests:
     sbt clean compile test
     
-Build jar file for distribution
+### Build jar file for distribution
     sbt assembly
