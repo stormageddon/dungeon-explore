@@ -51,7 +51,6 @@ class Dijkstra {
     }
 
     var shortestPath = Seq[Tile](target)
-    println(s"prev: ${prev}")
     prev(target) match {
       case Some(next) => {
         var x = next
@@ -65,11 +64,11 @@ class Dijkstra {
       }
     }
 
-    return shortestPath
+    return shortestPath.reverse
   }
 
   def getDistanceBetweenNodes(tile: Tile, vertex: Vertex): Double = {
-    1.0 // for now always return 1
+    vertex.weightedDist
   }
 
   def getNodeWithSmallestDist(tiles: Seq[Tile], dist: Map[Tile, Double]): Tile = {

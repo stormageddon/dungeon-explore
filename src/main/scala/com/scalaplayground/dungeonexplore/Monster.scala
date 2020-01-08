@@ -53,7 +53,6 @@ abstract class Monster {
   }
 
   def move(target: Option[Tile], tiles: Seq[Tile], currTile: Option[Tile]): Position = {
-    println("move")
     val dijkstra = new Dijkstra
 
     val nextMove: Option[Tile] = target match {
@@ -61,41 +60,31 @@ abstract class Monster {
         currTile match {
           case Some(_) => {
             val path = dijkstra.findShortestPath(tiles, currTile.get, target.get)
-            println(s"Shortest Path from ${currTile.get.position.toString} to ${target.get.position.toString} is : ${path}")
-            Option(path(1))
+            if (path.size > 1) {
+              if (Option(path(1)).get == target.get) {
+                Option(path(0))
+              }
+              else {
+                Option(path(1))
+              }
+            }
+            else {
+              Option(path(0))
+            }
           }
           case None => {
-            println("No currTile")
             None
           }
         }
       }
       case None => {
-        println("No target tile")
         None
       }
     }
 
     val newPosition: Position = nextMove match {
       case Some(tile) => {
-        val p = tile.position
-        // try horizontal first
-        var calculatedPos = new Position(-1, -1)
-        if (position.x < p.x - 1) {
-          calculatedPos = new Position(position.x + 1, position.y)
-        }
-        else if (position.x > p.x + 1) {
-          calculatedPos = new Position(position.x - 1, position.y)
-        }
-        // then try vertical
-        else if (position.y < p.y - 1) {
-          calculatedPos = new Position(position.x, position.y + 1)
-        }
-        else if (position.y > p.y + 1) {
-          calculatedPos = new Position(position.x, position.y - 1)
-        }
-
-        calculatedPos
+        tile.position
       }
       case None => position
     }

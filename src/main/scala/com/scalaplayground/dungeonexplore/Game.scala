@@ -181,46 +181,79 @@ class GameState(player:Player) {
     }
 
 
-    // TODO: Don't assume weightedDist of 1 or do shitty repeat stuff
     tiles.map(tile => {
-      getTileAtPosition(tile.position.x - 1, tile.position.y - 1) match {
-        case Some(t) => tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
-        case None => Unit
-      }
+      if (tile.passable) {
+        getTileAtPosition(tile.position.x - 1, tile.position.y - 1) match {
+          case Some(t) => {
+            if (t.passable) {
+              tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+            }
+          }
+          case None => Unit
+        }
 
-      getTileAtPosition(tile.position.x, tile.position.y - 1) match {
-        case Some(t) => tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
-        case None => Unit
-      }
+        getTileAtPosition(tile.position.x, tile.position.y - 1) match {
+          case Some(t) => {
+            if (t.passable) {
+              tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+            }
+          }
+          case None => Unit
+        }
 
-      getTileAtPosition(tile.position.x + 1, tile.position.y - 1) match {
-        case Some(t) => tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
-        case None => Unit
-      }
+        getTileAtPosition(tile.position.x + 1, tile.position.y - 1) match {
+          case Some(t) => {
+            if (t.passable) {
+              tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+            }
+          }
+          case None => Unit
+        }
 
-      getTileAtPosition(tile.position.x - 1, tile.position.y) match {
-        case Some(t) => tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
-        case None => Unit
-      }
+        getTileAtPosition(tile.position.x - 1, tile.position.y) match {
+          case Some(t) => {
+            if (t.passable) {
+              tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+            }
+          }
+          case None => Unit
+        }
 
-      getTileAtPosition(tile.position.x + 1, tile.position.y) match {
-        case Some(t) => tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
-        case None => Unit
-      }
+        getTileAtPosition(tile.position.x + 1, tile.position.y) match {
+          case Some(t) => {
+            if (t.passable) {
+              tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+            }
+          }
+          case None => Unit
+        }
 
-      getTileAtPosition(tile.position.x - 1, tile.position.y + 1) match {
-        case Some(t) => tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
-        case None => Unit
-      }
+        getTileAtPosition(tile.position.x - 1, tile.position.y + 1) match {
+          case Some(t) => {
+            if (t.passable) {
+              tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+            }
+          }
+          case None => Unit
+        }
 
-      getTileAtPosition(tile.position.x, tile.position.y + 1) match {
-        case Some(t) => tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
-        case None => Unit
-      }
+        getTileAtPosition(tile.position.x, tile.position.y + 1) match {
+          case Some(t) => {
+            if (t.passable) {
+              tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+            }
+          }
+          case None => Unit
+        }
 
-      getTileAtPosition(tile.position.x + 1, tile.position.y + 1) match {
-        case Some(t) => tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
-        case None => Unit
+        getTileAtPosition(tile.position.x + 1, tile.position.y + 1) match {
+          case Some(t) => {
+            if (t.passable) {
+              tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+            }
+          }
+          case None => Unit
+        }
       }
     })
   }
