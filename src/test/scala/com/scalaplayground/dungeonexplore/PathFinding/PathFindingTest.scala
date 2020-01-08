@@ -48,7 +48,7 @@ class PathFindingTest extends FlatSpec with Matchers {
     var tile_0_0 = new EmptyTile(new Position(0, 0))
     var tile_0_1 = new EmptyTile(new Position(0, 1))
     var tile_0_2 = new EmptyTile(new Position(0, 2))
-    var tile_1_0 = new EmptyTile(new Position(1, 0))
+    var tile_1_0 = new VerticalWall(new Position(1, 0))
     var tile_1_1 = new EmptyTile(new Position(1, 1))
     var tile_1_2 = new EmptyTile(new Position(1, 2))
     var tile_2_0 = new EmptyTile(new Position(2, 0))
@@ -74,45 +74,80 @@ class PathFindingTest extends FlatSpec with Matchers {
     )
 
     tiles.map(tile => {
-      getTileAtPosition(tiles, tile.position.x - 1, tile.position.y - 1) match {
-        case Some(t) => tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
-        case None => Unit
+      if (tile.passable) {
+        getTileAtPosition(tiles, tile.position.x - 1, tile.position.y - 1) match {
+          case Some(t) => {
+            if (t.passable) {
+              tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+            }
+          }
+          case None => Unit
+        }
+
+        getTileAtPosition(tiles, tile.position.x, tile.position.y - 1) match {
+          case Some(t) => {
+            if (t.passable) {
+              tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+            }
+          }
+          case None => Unit
+        }
+
+        getTileAtPosition(tiles, tile.position.x + 1, tile.position.y - 1) match {
+          case Some(t) => {
+            if (t.passable) {
+              tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+            }
+          }
+          case None => Unit
+        }
+
+        getTileAtPosition(tiles, tile.position.x - 1, tile.position.y) match {
+          case Some(t) => {
+            if (t.passable) {
+              tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+            }
+          }
+          case None => Unit
+        }
+
+        getTileAtPosition(tiles, tile.position.x + 1, tile.position.y) match {
+          case Some(t) => {
+            if (t.passable) {
+              tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+            }
+          }
+          case None => Unit
+        }
+
+        getTileAtPosition(tiles, tile.position.x - 1, tile.position.y + 1) match {
+          case Some(t) => {
+            if (t.passable) {
+              tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+            }
+          }
+          case None => Unit
+        }
+
+        getTileAtPosition(tiles, tile.position.x, tile.position.y + 1) match {
+          case Some(t) => {
+            if (t.passable) {
+              tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+            }
+          }
+          case None => Unit
+        }
+
+        getTileAtPosition(tiles, tile.position.x + 1, tile.position.y + 1) match {
+          case Some(t) => {
+            if (t.passable) {
+              tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+            }
+          }
+          case None => Unit
+        }
       }
 
-      getTileAtPosition(tiles, tile.position.x, tile.position.y - 1) match {
-        case Some(t) => tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
-        case None => Unit
-      }
-
-      getTileAtPosition(tiles, tile.position.x + 1, tile.position.y - 1) match {
-        case Some(t) => tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
-        case None => Unit
-      }
-
-      getTileAtPosition(tiles, tile.position.x - 1, tile.position.y) match {
-        case Some(t) => tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
-        case None => Unit
-      }
-
-      getTileAtPosition(tiles, tile.position.x + 1, tile.position.y) match {
-        case Some(t) => tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
-        case None => Unit
-      }
-
-      getTileAtPosition(tiles, tile.position.x - 1, tile.position.y + 1) match {
-        case Some(t) => tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
-        case None => Unit
-      }
-
-      getTileAtPosition(tiles, tile.position.x, tile.position.y + 1) match {
-        case Some(t) => tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
-        case None => Unit
-      }
-
-      getTileAtPosition(tiles, tile.position.x + 1, tile.position.y + 1) match {
-        case Some(t) => tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
-        case None => Unit
-      }
     })
 
     val testBoard: Seq[Tile] = Seq[Tile](
@@ -132,8 +167,8 @@ class PathFindingTest extends FlatSpec with Matchers {
 
     val expectedPath = Seq[Tile](
       tile_0_0,
-      tile_1_0,
-      tile_2_1,
+      tile_1_1,
+      tile_2_2,
       tile_3_2
     )
 
