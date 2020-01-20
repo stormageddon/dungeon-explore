@@ -27,9 +27,9 @@ class Dijkstra {
         tile != u
       })
 
-      if (u == target) {
-        Q = Seq[Tile]()
-      }
+      //if (u == target) {
+       // Q = Seq[Tile]()
+      //}
 
       /*
       for each neighbor v of u:	// where v has not yet been removed from Q.
@@ -39,6 +39,7 @@ class Dijkstra {
       	previous[v] := u
        */
       u.getNeighbors.foreach(neighbor => {
+        //println(s"${u.toString} neighbbor: ${neighbor.toString()}")
         if (Q.contains(neighbor.tile)) {
           val alt = dist(u) + getDistanceBetweenNodes(u, neighbor)
           if (alt < dist(neighbor.tile)) {
@@ -47,7 +48,6 @@ class Dijkstra {
           }
         }
       })
-
     }
 
     var shortestPath = Seq[Tile](target)

@@ -5,6 +5,7 @@ import com.scalaplayground.dungeonexplore.Armor._
 import com.scalaplayground.dungeonexplore.Weapon._
 import com.scalaplayground.dungeonexplore.Position.Position
 import com.scalaplayground.dungeonexplore.constants.Constants._
+import net.team2xh.scurses.Scurses
 
 import scala.util.Random
 
@@ -17,15 +18,15 @@ class Player(val name:String, val charClass:String, val charRace:String) {
   val armorClass = 10
   var attackBonus = 2
   var armor: Armor = new Natural
-  var position = new Position(4, 4)
+  var position = new Position(10, 14)
   var dungeonHelper = new DungeonHelper
   val displayChar = "@"
   var actionMessage: String = ""
   var canAvoidObstacles = false
 
 
-  def render = {
-    print(dungeonHelper.padGameObjectChar(displayChar))
+  def render(screen:Scurses) = {
+    screen.put(position.x, position.y, displayChar)//dungeonHelper.padGameObjectChar(displayChar))
   }
 
   def calculateDamage: Int = {
@@ -56,7 +57,7 @@ class Player(val name:String, val charClass:String, val charRace:String) {
   }
 
   def move(xVel: Int, yVel: Int): Position = {
-    new Position(dungeonHelper.clamp(this.position.x + xVel, 0, NUM_ROWS), dungeonHelper.clamp(this.position.y + yVel, 0, NUM_COLS))
+    new Position(dungeonHelper.clamp(this.position.x + xVel, 0, NUM_COLS - 1), dungeonHelper.clamp(this.position.y + yVel, 0, NUM_ROWS - 1))
   }
 
   def endRound = {

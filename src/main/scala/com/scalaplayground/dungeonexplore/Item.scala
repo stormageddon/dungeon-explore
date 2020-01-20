@@ -4,6 +4,7 @@ import com.scalaplayground.dungeonexplore.Armor._
 import com.scalaplayground.dungeonexplore.{DungeonHelper, Player}
 import com.scalaplayground.dungeonexplore.Position.Position
 import com.scalaplayground.dungeonexplore.Weapon._
+import net.team2xh.scurses.Scurses
 
 class Item(startingPos: Position, dispChar: String, hoverDescription: String = "A swirling potion lies here.", itemId: String = "POTION") {
   val position: Position = startingPos
@@ -12,8 +13,8 @@ class Item(startingPos: Position, dispChar: String, hoverDescription: String = "
   val id: String = itemId
   val dungeonHelper = new DungeonHelper
 
-  def render(): Unit = {
-    print(dungeonHelper.padGameObjectChar(displayChar))
+  def render(x: Int, y: Int, screen: Scurses): Unit = {
+    screen.put(x, y, displayChar)//dungeonHelper.padGameObjectChar(displayChar))
   }
 
   def interact(player: Player): Unit = {

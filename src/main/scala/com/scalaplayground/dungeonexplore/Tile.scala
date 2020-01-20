@@ -30,20 +30,20 @@ class EmptyTile(pos: Position) extends Tile {
   override val position = pos
   override val id = "EMPTY_TILE"
   override val displayChar = " "
-  override val passable: Boolean = true
+  override val passable: Boolean = false
 }
 
 class FloorTile(pos: Position) extends Tile {
   override val position = pos
   override val id = "FLOOR_TILE"
-  override val displayChar = " . "
+  override val displayChar = "."
   override val passable: Boolean = true
 }
 
 class VerticalWall(pos:Position) extends Tile {
   override val position = pos
   override val id = "VERTICAL_WALL"
-  override val displayChar = " | "
+  override val displayChar = "|"
 }
 
 class HorizontalWall(pos:Position) extends Tile {

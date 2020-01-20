@@ -37,9 +37,6 @@ abstract class Monster {
 
   def dropLoot: Option[(String, String)] = {
     val roll = Random.nextInt(100)
-    //else if (roll <= WEAPON_DROP_PERCENTAGE && weapon.isDroppable) {
-    //  return Some((weapon.id, weapon.name))
-    //}
     if (roll <= weapon.dropChance && weapon.isDroppable) {
       return Some((weapon.id, weapon.name))
     }
@@ -93,12 +90,12 @@ abstract class Monster {
   }
 }
 
-class GiantRat extends Monster {
+class GiantRat(pos: Position) extends Monster {
   override val name = "Giant Rat"
   override var health = 1
   weapon = new Claws
   weapon.damage = (1,2)
-  position = new Position(1,1)
+  position = new Position(pos.y, pos.x)
   displayChar = "r"
 
   override def move(target: Option[Tile], tiles: Seq[Tile], currTile: Option[Tile]): Position = {
@@ -112,32 +109,35 @@ class GiantRat extends Monster {
     )
 
     val p = possibleMoves(Random.nextInt(possibleMoves.length))
-    p.x = dungeonHelper.clamp(p.x, 0, NUM_ROWS)
-    p.y = dungeonHelper.clamp(p.y, 0, NUM_COLS)
+    p.x = dungeonHelper.clamp(p.x, 0, NUM_COLS - 1)
+    p.y = dungeonHelper.clamp(p.y, 0, NUM_ROWS - 1)
     p
   }
 }
 
-class Goblin extends Monster {
+class Goblin(pos: Position) extends Monster {
   override val name = "Goblin"
   override var health = 1
+  position = new Position(pos.y, pos.x)
   attackBonus = 2
   weapon = List(new RustyDagger,new Dagger,new FineDagger)(Random.nextInt(3))
   armor = List(new Natural, new Leather)(Random.nextInt(2))
   displayChar = "g"
 }
 
-class Wolf extends Monster {
+class Wolf(pos: Position) extends Monster {
   override val name = "Wolf"
   override var health = 3
+  position = new Position(pos.y, pos.x)
   armorClass = 10
   weapon = new Claws
   displayChar = "w"
 }
 
-class Kobold extends Monster {
+class Kobold(pos: Position) extends Monster {
   override val name = "Kobold"
   override var health = 2
+  position = new Position(pos.y, pos.x)
   weapon = List(
     new Spear,
     new RustyShortSword,
@@ -149,10 +149,10 @@ class Kobold extends Monster {
   displayChar = "k"
 }
 
-class Orc(startingPos: Position = new Position(0, 0)) extends Monster {
+class Orc(pos: Position) extends Monster {
   override val name = "Orc"
   override var health = 3
-  position = startingPos
+  position = new Position(pos.y, pos.x)
   weapon = List(
     new RustyShortSword,
     new ShortSword,
@@ -165,20 +165,22 @@ class Orc(startingPos: Position = new Position(0, 0)) extends Monster {
   displayChar = "o"
 }
 
-class CemHial extends Monster {
+class CemHial(pos: Position) extends Monster {
   override val name = "Cem Hial, the Necromancer"
   override var health = 20
+  position = new Position(pos.y, pos.x)
   weapon = new NightBlade
   armorClass = 15
   displayChar = "C"
 }
 
-class DireWolf extends Monster {
+class DireWolf(pos: Position) extends Monster {
   override val name = "Dire Wolf"
   override var health = 7
   weapon = new Claws()
   weapon.damage = (1,6)
   displayChar = "W"
+  position = new Position(pos.y, pos.x)
 
   override def calculateDamage: Int = {
     val roll = Random.nextInt(10)
@@ -190,18 +192,20 @@ class DireWolf extends Monster {
   }
 }
 
-class RockGolem extends Monster {
+class RockGolem(pos: Position) extends Monster {
   override val name = "Rock Golem"
   override var health = 8
+  position = new Position(pos.y, pos.x)
   weapon = new Claws()
   weapon.damage = (1,8)
   displayChar = "G"
 }
 
-class Dragon extends Monster {
+class Dragon(pos: Position) extends Monster {
   override val name = "Young Black Dragon"
   override var health = 15
   override val canAvoidObstacles = true
+  position = new Position(pos.y, pos.x)
   weapon = new Claws()
   weapon.damage = (3,8)
   displayChar = "D"

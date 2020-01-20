@@ -3,6 +3,7 @@ package com.scalaplayground.dungeonexplore.Game
 import net.team2xh.scurses.{Colors, Scurses}
 
 import scala.util.Random
+import scala.collection.mutable._
 import com.scalaplayground.dungeonexplore.Monster._
 import com.scalaplayground.dungeonexplore.Weapon._
 import com.scalaplayground.dungeonexplore.Armor._
@@ -14,6 +15,7 @@ import com.scalaplayground.dungeonexplore.Position.Position
 import com.scalaplayground.dungeonexplore.Shrine._
 import com.scalaplayground.dungeonexplore._
 
+import scala.collection.mutable
 import scala.io.Source
 
 object Game extends App {
@@ -111,7 +113,7 @@ object Game extends App {
   s.refresh()
   val player = createPlayer
 
-  val gameState = new GameState(player)
+  val gameState = new GameState(player, s)
   var isPlaying = true
 
   print("\033c")
@@ -152,121 +154,350 @@ object Game extends App {
   println("**********************************")
 }
 
-class GameState(player:Player) {
+class GameState(player:Player, screen: Scurses) {
   val dungeonHelper = new DungeonHelper
-  val renderer = new Renderer(this)
+  val renderer = new Renderer(this, screen)
   var defeatedMonsters = Map[String,Int]()
-  var shouldGenerateMonster = true
-  var monsters: List[Monster] = List[Monster](generateMonster().get)
+  var tiles = mutable.Seq[mutable.Seq[Tile]]()
+  var rooms: mutable.Seq[Room] = mutable.Seq[Room]()
+  var shouldGenerateMonster = false//true
+  var monsters: List[Monster] = List[Monster]()
   var monstersSlain = 0
-  var shrine = generateShrine()
+
   var droppedItems = List[Item]()
   var currTileDescription: String = "Nothing is here."
   var roundMessage: String = ""
   var monsterActionMessage: String = ""
-  var tiles = Seq[Tile]()
 
+
+
+  for (x <- 0 to NUM_COLS - 1) {
+    tiles = tiles :+ Seq[Tile]()
+    for (y <- 0 to NUM_ROWS - 1) {
+      val thisPos = new Position(x, y)
+      tiles(x) = tiles(x) :+ new EmptyTile(thisPos)
+    }
+  }
+
+  def generateNeighbors = {
+    tiles.map(row => {
+      row.map(tile => {
+        if (tile.passable) {
+          getTileAtPosition(tile.position.x - 1, tile.position.y - 1) match {
+            case Some(t) => {
+              if (t.passable) {
+                tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+              }
+            }
+            case None => Unit
+          }
+
+          getTileAtPosition(tile.position.x, tile.position.y - 1) match {
+            case Some(t) => {
+              if (t.passable) {
+                tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+              }
+            }
+            case None => Unit
+          }
+
+          getTileAtPosition(tile.position.x + 1, tile.position.y - 1) match {
+            case Some(t) => {
+              if (t.passable) {
+                tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+              }
+            }
+            case None => Unit
+          }
+
+          getTileAtPosition(tile.position.x - 1, tile.position.y) match {
+            case Some(t) => {
+              if (t.passable) {
+                tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+              }
+            }
+            case None => Unit
+          }
+
+          getTileAtPosition(tile.position.x + 1, tile.position.y) match {
+            case Some(t) => {
+              if (t.passable) {
+                tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+              }
+            }
+            case None => Unit
+          }
+
+          getTileAtPosition(tile.position.x - 1, tile.position.y + 1) match {
+            case Some(t) => {
+              if (t.passable) {
+                tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+              }
+            }
+            case None => Unit
+          }
+
+          getTileAtPosition(tile.position.x, tile.position.y + 1) match {
+            case Some(t) => {
+              if (t.passable) {
+                tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+              }
+            }
+            case None => Unit
+          }
+
+          getTileAtPosition(tile.position.x + 1, tile.position.y + 1) match {
+            case Some(t) => {
+              if (t.passable) {
+                tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+              }
+            }
+            case None => Unit
+          }
+        }
+      })
+    })
+  }
 
   def randomMap = {
-    for (y <- 0 to NUM_ROWS - 1) {
-      for (x <- 0 to NUM_COLS - 1) {
+    for (x <- 0 to NUM_COLS - 1) {
+      tiles = tiles :+ Seq[Tile]()
+      for (y <- 0 to NUM_ROWS - 1) {
         val thisPos = new Position(x, y)
-        if (Random.nextInt(100) <= 15) {
-          tiles = tiles :+ List(new HorizontalWall(thisPos), new VerticalWall(thisPos))(Random.nextInt(2))
-        }
-        else {
-          tiles = tiles :+ new FloorTile(thisPos)
-        }
+        tiles(x) = tiles(x) :+ new EmptyTile(thisPos)
       }
     }
 
 
-    tiles.map(tile => {
-      if (tile.passable) {
-        getTileAtPosition(tile.position.x - 1, tile.position.y - 1) match {
-          case Some(t) => {
-            if (t.passable) {
-              tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
-            }
-          }
-          case None => Unit
-        }
+    // make rooms
+    rooms = createRooms
 
-        getTileAtPosition(tile.position.x, tile.position.y - 1) match {
-          case Some(t) => {
-            if (t.passable) {
-              tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
-            }
-          }
-          case None => Unit
-        }
 
-        getTileAtPosition(tile.position.x + 1, tile.position.y - 1) match {
-          case Some(t) => {
-            if (t.passable) {
-              tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
-            }
-          }
-          case None => Unit
-        }
 
-        getTileAtPosition(tile.position.x - 1, tile.position.y) match {
-          case Some(t) => {
-            if (t.passable) {
-              tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
-            }
-          }
-          case None => Unit
-        }
+    //val roomStart: Position = new Position(4, 5)
+//    rooms.map(room => {
+//      for (y <- room.startPosition.y to room.startPosition.y + room.height) {
+//        for (x <- room.startPosition.x to room.startPosition.x + room.width) {
+//          if (x == room.startPosition.x || x == room.startPosition.x + room.width) {
+//            tiles(y)(x) = new VerticalWall(new Position(x, y))
+//          }
+//
+//          if (y == room.startPosition.y || y == room.startPosition.y + room.height) {
+//            tiles(y)(x) = new HorizontalWall(new Position(x, y))
+//          }
+//        }
+//      }
+//    })
 
-        getTileAtPosition(tile.position.x + 1, tile.position.y) match {
-          case Some(t) => {
-            if (t.passable) {
-              tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
-            }
-          }
-          case None => Unit
-        }
 
-        getTileAtPosition(tile.position.x - 1, tile.position.y + 1) match {
-          case Some(t) => {
-            if (t.passable) {
-              tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
-            }
-          }
-          case None => Unit
-        }
 
-        getTileAtPosition(tile.position.x, tile.position.y + 1) match {
-          case Some(t) => {
-            if (t.passable) {
-              tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+    tiles.map(row => {
+      row.map(tile => {
+        if (tile.passable) {
+          getTileAtPosition(tile.position.x - 1, tile.position.y - 1) match {
+            case Some(t) => {
+              if (t.passable) {
+                tile.neighbors = tile.neighbors :+ new Vertex(t, 2)
+              }
             }
+            case None => Unit
           }
-          case None => Unit
-        }
 
-        getTileAtPosition(tile.position.x + 1, tile.position.y + 1) match {
-          case Some(t) => {
-            if (t.passable) {
-              tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+          getTileAtPosition(tile.position.x, tile.position.y - 1) match {
+            case Some(t) => {
+              if (t.passable) {
+                tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+              }
             }
+            case None => Unit
           }
-          case None => Unit
+
+          getTileAtPosition(tile.position.x + 1, tile.position.y - 1) match {
+            case Some(t) => {
+              if (t.passable) {
+                tile.neighbors = tile.neighbors :+ new Vertex(t, 2)
+              }
+            }
+            case None => Unit
+          }
+
+          getTileAtPosition(tile.position.x - 1, tile.position.y) match {
+            case Some(t) => {
+              if (t.passable) {
+                tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+              }
+            }
+            case None => Unit
+          }
+
+          getTileAtPosition(tile.position.x + 1, tile.position.y) match {
+            case Some(t) => {
+              if (t.passable) {
+                tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+              }
+            }
+            case None => Unit
+          }
+
+          getTileAtPosition(tile.position.x - 1, tile.position.y + 1) match {
+            case Some(t) => {
+              if (t.passable) {
+                tile.neighbors = tile.neighbors :+ new Vertex(t, 2)
+              }
+            }
+            case None => Unit
+          }
+
+          getTileAtPosition(tile.position.x, tile.position.y + 1) match {
+            case Some(t) => {
+              if (t.passable) {
+                tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
+              }
+            }
+            case None => Unit
+          }
+
+          getTileAtPosition(tile.position.x + 1, tile.position.y + 1) match {
+            case Some(t) => {
+              if (t.passable) {
+                tile.neighbors = tile.neighbors :+ new Vertex(t, 2)
+              }
+            }
+            case None => Unit
+          }
         }
-      }
+      })
     })
   }
 
   // setup map
   randomMap
 
+  var shrine = generateShrine()
+
+  monsters = generateMonster match {
+    case Some(monster) => monsters :+ monster
+    case None => monsters
+  }
+
+
+  def createRooms: mutable.Seq[Room] = {
+    var listOfRooms: Seq[Room] = Seq[Room]()
+
+    for (roomIterator <- 0 to MAX_NUM_ROOMS) {
+      // Create a room
+      val w = MIN_ROOM_WIDTH + Random.nextInt( MAX_ROOM_WIDTH - MIN_ROOM_WIDTH + 1)
+      val h = MIN_ROOM_HEIGHT + Random.nextInt( MAX_ROOM_HEIGHT - MIN_ROOM_HEIGHT + 1)
+      val randomPosition = new Position(Random.nextInt(NUM_COLS - w - 4) + 2, Random.nextInt(NUM_ROWS - h - 4) + 2)
+
+      val newRoom = new Room(randomPosition, w, h)
+
+      // validate the room
+      val isValid = !listOfRooms.exists(room => room.intersects(newRoom))
+
+
+
+      if (isValid) {
+        // Tunnel out the room
+        for (x <- newRoom.startPosition.x to newRoom.startPosition.x + newRoom.width) {
+          for (y <- newRoom.startPosition.y to newRoom.startPosition.y + newRoom.height) {
+            tiles(x)(y) = new FloorTile(new Position(x, y))
+          }
+        }
+
+        if (listOfRooms.length == 0) {
+          player.position = newRoom.getCenter
+        }
+        else {
+          // Tunnel out a hallway to the previous room
+          val prevCenter = listOfRooms(listOfRooms.length - 1).getCenter
+
+          val x1 = newRoom.getCenter.x
+          val y1 = newRoom.getCenter.y
+          val x2 = prevCenter.x
+          val y2 = prevCenter.y
+
+          Random.nextInt(1) match {
+            case 0 => {
+              for (x <- Math.min(x1, x2) to Math.max(x1, x2)) {
+                tiles(x)(y1) = new FloorTile(new Position(x, y1))
+              }
+
+              for (y <- Math.min(y1, y2) to Math.max(y1, y2)) {
+                tiles(x2)(y) = new FloorTile(new Position(x2, y))
+              }
+            }
+            case 1 => {
+              for (y <- Math.min(y1, y2) to Math.max(y1, y2)) {
+                tiles(x1)(y) = new FloorTile(new Position(x1, y))
+              }
+
+              for (x <- Math.min(x1, x2) to Math.max(x1, x2)) {
+                tiles(x)(y2) = new FloorTile(new Position(x, y2))
+              }
+            }
+          }
+
+
+
+//          val firstRoomX = Math.min(newRoom.getCenter.x, prevCenter.x)
+//          val firstRoomY = Math.min(newRoom.getCenter.y, prevCenter.y)
+//          val secondRoomX = Math.max(newRoom.getCenter.x, prevCenter.x)
+//          val secondRoomY = Math.max(newRoom.getCenter.y, prevCenter.y)
+//
+//          for (y <- firstRoomY to secondRoomY) {
+//            tiles(firstRoomX)(y) = new FloorTile(new Position(firstRoomX, y))
+//          }
+//
+//          for (x <- firstRoomX to secondRoomX) {
+//            tiles(x)(newRoom.getCenter.y) = new FloorTile(new Position(x, secondRoomY))
+//          }
+
+
+//          Random.nextInt(1) match {
+//            case 0 => {
+//              for (x <- firstRoomX to secondRoomX) {
+//                tiles(x)(firstRoomY) = new FloorTile(new Position(x, firstRoomY))
+//              }
+//
+//              for (y <- firstRoomY to secondRoomY) {
+//                tiles(prevCenter.x)(y) = new FloorTile(new Position(secondRoomX, y))
+//              }
+//            }
+//            case 1 => {
+//              for (y <- firstRoomY to secondRoomY) {
+//                tiles(firstRoomX)(y) = new FloorTile(new Position(firstRoomX, y))
+//              }
+//
+//              for (x <- firstRoomX to secondRoomX) {
+//                tiles(x)(newRoom.getCenter.y) = new FloorTile(new Position(x, secondRoomY))
+//              }
+//            }
+//          }
+
+        }
+
+        // Add room to the list
+        listOfRooms = listOfRooms :+ newRoom
+      }
+    }
+
+    println(s"List of rooms: ${listOfRooms.map(room => room.getCenter.toString.concat(room.startPosition.toString))}")
+    listOfRooms
+  }
+
   def generateShrine(): Shrine = {
+    val randPos = if (rooms.length > 0) {
+      rooms(Random.nextInt(rooms.length - 1)).getRandomPosition
+    } else {
+      new Position(20,20)
+    }
+
       Random.nextInt(100) match {
-        case it if 0 until 50 contains it => return new HealthShrine(new Position(Random.nextInt(20),Random.nextInt(20)))
-        case it if 50 until 75 contains it => return new StrengthShrine(new Position(Random.nextInt(20),Random.nextInt(20)))
-        case it if 75 until 90 contains it => return new HolyShrine(new Position(Random.nextInt(20),Random.nextInt(20)))
-        case it if 90 until 100 contains it => return new CursedShrine(new Position(Random.nextInt(20),Random.nextInt(20)))
+        case it if 0 until 50 contains it => return new HealthShrine(randPos)
+        case it if 50 until 75 contains it => return new StrengthShrine(randPos)
+        case it if 75 until 90 contains it => return new HolyShrine(randPos)
+        case it if 90 until 100 contains it => return new CursedShrine(randPos)
       }
   }
 
@@ -274,22 +505,30 @@ class GameState(player:Player) {
     if (!shouldGenerateMonster || (monsters != null && monsters.filter(m => m.isAlive).length >= MAX_MONSTERS_ALIVE)) {
       return None
     }
+    var freeTiles: Seq[Tile] = Seq[Tile]()
+    tiles.map(row => {
+      row.map(tile => {
+        if (tile.passable) {
+          freeTiles = freeTiles :+ tile
+        }
+      })
+    })
     if (monstersSlain >= 20) {
 
       monsterActionMessage = s"The door before you creaks open and an inhuman howl escapes from inside. A grayish light reveals the final resting place of Cem Hial...\n\n${monsterActionMessage}"
       shouldGenerateMonster = false
-      return Some(new CemHial())
+      return Some(new CemHial(freeTiles(Random.nextInt(freeTiles.size - 1)).position))
     }
     else {
       return Random.nextInt(100) match {
-        case it if 0 until 25 contains it => Some(new Goblin())
-        case it if 25 until 50 contains it => Some(new Kobold())
-        case it if 50 until 60 contains it => Some(new GiantRat())
-        case it if 60 until 75 contains it => Some(new Orc())
-        case it if 75 until 81 contains it => Some(new Wolf())
-        case it if 81 until 93 contains it => Some(new DireWolf())
-        case it if 93 until 98 contains it => Some(new RockGolem())
-        case it if 98 until 100 contains it => Some(new Dragon())
+        case it if 0 until 25 contains it => Some(new Goblin(freeTiles(Random.nextInt(freeTiles.size - 1)).position))
+        case it if 25 until 50 contains it => Some(new Kobold(freeTiles(Random.nextInt(freeTiles.size - 1)).position))
+        case it if 50 until 60 contains it => Some(new GiantRat(freeTiles(Random.nextInt(freeTiles.size - 1)).position))
+        case it if 60 until 75 contains it => Some(new Orc(freeTiles(Random.nextInt(freeTiles.size - 1)).position))
+        case it if 75 until 81 contains it => Some(new Wolf(freeTiles(Random.nextInt(freeTiles.size - 1)).position))
+        case it if 81 until 93 contains it => Some(new DireWolf(freeTiles(Random.nextInt(freeTiles.size - 1)).position))
+        case it if 93 until 98 contains it => Some(new RockGolem(freeTiles(Random.nextInt(freeTiles.size - 1)).position))
+        case it if 98 until 100 contains it => Some(new Dragon(freeTiles(Random.nextInt(freeTiles.size - 1)).position))
       }
     }
   }
@@ -315,6 +554,7 @@ class GameState(player:Player) {
 
           }
           monstersSlain += 1
+          monsters = monsters.filter(monster => monster != m)
           generateMonster match {
             case Some(monster) => monsters = monsters ++ List[Monster](monster)
             case None => Unit
@@ -347,7 +587,6 @@ class GameState(player:Player) {
 
     var playerDidMove = false
     val playerIsAlive = true
-
 
     playerDidMove = action match {
       case QUAFF_POTION => player.quaffPotion
@@ -392,10 +631,6 @@ class GameState(player:Player) {
       case _ => false
     }
 
-    if (monsters.length == 0) {
-      return playerIsAlive
-    }
-
     // Perform monster actions
     monsters.map(monster => {
       if (monster.isAlive) {
@@ -415,7 +650,7 @@ class GameState(player:Player) {
         if (monster.isAlive) {
           //val newPos = monster.move(Some(player.position))
           val playerTile = getTileAtPosition(player.position.x, player.position.y)
-          val newPos = monster.move(playerTile, tiles, getTileAtPosition(monster.position.x, monster.position.y))
+          val newPos = monster.move(playerTile, tiles.flatten, getTileAtPosition(monster.position.x, monster.position.y))
           getTileAtPosition(newPos.x, newPos.y) match {
             case Some(tile) => {
               if (tile.passable || monster.canAvoidObstacles) {
@@ -436,18 +671,18 @@ class GameState(player:Player) {
       case it if 0 until 5 contains it => {
         generateMonster match {
           case Some(monster) => monsters = monsters ++ List[Monster](monster)
-          case None => Unit
+          case None => ()
         }
 
       }
-      case _ => Unit
+      case _ => ()
     }
 
     renderer.renderGameState
     renderer.renderStatsBar
     renderer.renderPlayerActions
     renderer.renderMonsterActions(monsterActionMessage)
-
+    screen.refresh()
     player.endRound
     monsterActionMessage = ""
 
@@ -480,7 +715,8 @@ class GameState(player:Player) {
   }
 
   def getTileAtPosition(x: Int, y: Int): Option[Tile] = {
-    tiles.filter(tile => tile.position.x == x && tile.position.y == y).headOption
+    if (x < 0 || x >= NUM_COLS || y < 0 || y >= NUM_ROWS) return None
+    Option(tiles(x)(y))
   }
 
 
@@ -494,14 +730,14 @@ class GameState(player:Player) {
     command(0) match {
       case "spawn" => {
         if (command(1) != null) {
-          println("Spawning creature")
-          monsters = command(1) match {
-            case "orc" => monsters ++ List(new Orc())
-            case "wolf" => monsters ++ List(new Wolf())
-            case "cel" => monsters ++ List(new CemHial())
-            case "dragon" => monsters ++ List(new Dragon())
-            case _ => monsters
-          }
+//          println("Spawning creature")
+//          monsters = command(1) match {
+//            case "orc" => monsters ++ List(new Orc())
+//            case "wolf" => monsters ++ List(new Wolf())
+//            case "cel" => monsters ++ List(new CemHial())
+//            case "dragon" => monsters ++ List(new Dragon())
+//            case _ => monsters
+//          }
         }
       }
       case "give" => {
@@ -518,6 +754,12 @@ class GameState(player:Player) {
       }
       case "heal" => {
         player.health = player.maxHealth
+      }
+      case "n" => {
+        val dijkstra = new Dijkstra
+        val source = getTileAtPosition(command(1).toInt, command(2).toInt).get
+        screen.put(0, NUM_ROWS, source.neighbors.toString)
+        screen.put(0, NUM_ROWS + 1, dijkstra.findShortestPath(tiles.flatten, source, getTileAtPosition(player.position.x, player.position.y).get).toString)
       }
       case _ => println("Unknown command")
     }

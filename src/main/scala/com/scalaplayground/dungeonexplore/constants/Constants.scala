@@ -5,7 +5,12 @@ object Constants {
   val WEAPON_DROP_PERCENTAGE = 25
   val ARMOR_DROP_PERCENTAGE = 45
   val STARTING_PLAYER_HEALTH = 100
-  val NUM_ROWS = 20
-  val NUM_COLS = 20
+  val NUM_ROWS = 30
+  val NUM_COLS = 80
   val MAX_MONSTERS_ALIVE = 5
+  val MIN_ROOM_WIDTH = 3
+  val MAX_ROOM_WIDTH = 6
+  val MIN_ROOM_HEIGHT = 3
+  val MAX_ROOM_HEIGHT = 5
+  val MAX_NUM_ROOMS = 10
 }
