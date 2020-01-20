@@ -9,8 +9,8 @@ object Constants {
   val NUM_COLS = 80
   val MAX_MONSTERS_ALIVE = 5
   val MIN_ROOM_WIDTH = 3
-  val MAX_ROOM_WIDTH = 6
-  val MIN_ROOM_HEIGHT = 3
-  val MAX_ROOM_HEIGHT = 5
-  val MAX_NUM_ROOMS = 10
+  val MAX_ROOM_WIDTH = 8
+  val MIN_ROOM_HEIGHT = 2
+  val MAX_ROOM_HEIGHT = 6
+  val MAX_NUM_ROOMS = 15
 }

@@ -9,9 +9,9 @@ class Room(val startPosition: Position, val width: Int, val height: Int) {
                             Math.ceil((startPosition.y + height + startPosition.y).toDouble / 2.toDouble).toInt)
 
   def intersects(otherRoom: Room): Boolean = {
-    return ((startPosition.x > otherRoom.startPosition.x + otherRoom.width) ||
+    return ((startPosition.x < otherRoom.startPosition.x + otherRoom.width) &&
             (startPosition.x + width > otherRoom.startPosition.x)) &&
-            ((startPosition.y > otherRoom.startPosition.y + otherRoom.height) ||
+            ((startPosition.y < otherRoom.startPosition.y + otherRoom.height) &&
             (startPosition.y + height > otherRoom.startPosition.y))
   }
 

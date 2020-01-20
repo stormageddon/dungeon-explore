@@ -272,24 +272,52 @@ class GameState(player:Player, screen: Scurses) {
     // make rooms
     rooms = createRooms
 
+    // build walls
+    for (x <- 0 to NUM_COLS - 1) {
+      for (y <- 0 to NUM_ROWS - 1) {
+        if (getTileAtPosition(x, y).get.passable) {
+          // North
+          getTileAtPosition(x, y - 1) match {
+            case Some(tile) => {
+              if (!tile.passable) {
+                tiles(x)(y - 1) = new HorizontalWall(new Position(x, y - 1))
+              }
+            }
+            case None => ()
+          }
 
+          // South
+          getTileAtPosition(x, y + 1) match {
+            case Some(tile) => {
+              if (!tile.passable) {
+                tiles(x)(y + 1) = new HorizontalWall(new Position(x, y + 1))
+              }
+            }
+            case None => ()
+          }
 
-    //val roomStart: Position = new Position(4, 5)
-//    rooms.map(room => {
-//      for (y <- room.startPosition.y to room.startPosition.y + room.height) {
-//        for (x <- room.startPosition.x to room.startPosition.x + room.width) {
-//          if (x == room.startPosition.x || x == room.startPosition.x + room.width) {
-//            tiles(y)(x) = new VerticalWall(new Position(x, y))
-//          }
-//
-//          if (y == room.startPosition.y || y == room.startPosition.y + room.height) {
-//            tiles(y)(x) = new HorizontalWall(new Position(x, y))
-//          }
-//        }
-//      }
-//    })
+          // East
+          getTileAtPosition(x - 1, y) match {
+            case Some(tile) => {
+              if (!tile.passable) {
+                tiles(x - 1)(y) = new VerticalWall(new Position(x - 1, y))
+              }
+            }
+            case None => ()
+          }
 
-
+          // West
+          getTileAtPosition(x + 1, y) match {
+            case Some(tile) => {
+              if (!tile.passable) {
+                tiles(x + 1)(y) = new VerticalWall(new Position(x + 1, y))
+              }
+            }
+            case None => ()
+          }
+        }
+      }
+    }
 
     tiles.map(row => {
       row.map(tile => {
@@ -388,14 +416,16 @@ class GameState(player:Player, screen: Scurses) {
       // Create a room
       val w = MIN_ROOM_WIDTH + Random.nextInt( MAX_ROOM_WIDTH - MIN_ROOM_WIDTH + 1)
       val h = MIN_ROOM_HEIGHT + Random.nextInt( MAX_ROOM_HEIGHT - MIN_ROOM_HEIGHT + 1)
-      val randomPosition = new Position(Random.nextInt(NUM_COLS - w - 4) + 2, Random.nextInt(NUM_ROWS - h - 4) + 2)
+      val randomPosition = new Position(Random.nextInt(NUM_COLS - w - 4), Random.nextInt(NUM_ROWS - h - 4))
+//      val w = 2
+//      val h = 2
+//      val randomPosition = new Position(17, 17)
 
       val newRoom = new Room(randomPosition, w, h)
 
       // validate the room
       val isValid = !listOfRooms.exists(room => room.intersects(newRoom))
-
-
+      println(s"Trying room at ${newRoom.startPosition.toString} - ${isValid}")
 
       if (isValid) {
         // Tunnel out the room
@@ -487,8 +517,10 @@ class GameState(player:Player, screen: Scurses) {
   }
 
   def generateShrine(): Shrine = {
-    val randPos = if (rooms.length > 0) {
+    val randPos = if (rooms.length > 1) {
       rooms(Random.nextInt(rooms.length - 1)).getRandomPosition
+    } else if (rooms.length > 0) {
+      rooms(0).getRandomPosition
     } else {
       new Position(20,20)
     }

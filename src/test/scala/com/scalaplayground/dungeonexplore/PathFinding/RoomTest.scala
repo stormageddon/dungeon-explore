@@ -43,6 +43,18 @@ class RoomTest extends FlatSpec with Matchers {
     result shouldBe false
   }
 
+  it should "return false if the rooms do not overlap" in {
+    // arrange
+    val room = new Room(new Position(17, 17), 2, 2)
+    val otherRoom = new Room(new Position(10, 8), 2, 2)
+
+    // act
+    val result = room.intersects(otherRoom)
+
+    // assert
+    result shouldBe false
+  }
+
   it should "return true if the rooms are identical" in {
     // arrange
     val room = new Room(new Position(2, 2), 3, 3)
