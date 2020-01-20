@@ -80,9 +80,7 @@ class Renderer(gs: GameState, screen: Scurses) {
           //val t = tiles.filter(tile => tile.position.x == x && tile.position.y == y).head
           val t = tiles(x)(y)
           screen.put(x, y, t.displayChar)
-          //print(".")
         }
-        //print(" ")
       }
 
       x match {

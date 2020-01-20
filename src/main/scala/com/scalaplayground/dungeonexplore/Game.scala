@@ -30,7 +30,6 @@ object Game extends App {
 
     try {
       for (line <- Source.fromFile(filename).getLines) {
-        println(line)
         val configLine: Seq[String] = line.split(":")
         configLine(0) match {
           case "name" => name = configLine(1)
@@ -51,7 +50,7 @@ object Game extends App {
     }
 
     if (charClass == null || charClass == None || charClass == "") {
-      println("What occupation have you?")
+      println("What path do you walk?")
       println("1. Barbarian")
       println("2. Cleric")
       println("3. Ranger")
@@ -405,7 +404,6 @@ class GameState(player:Player, screen: Scurses) {
 
   monsters = generateMonster match {
     case Some(monster) => {
-      println(s"generated ${monster.name}")
       monsters :+ monster
     }
     case None => monsters
@@ -511,7 +509,6 @@ class GameState(player:Player, screen: Scurses) {
       }
     }
 
-    println(s"List of rooms: ${listOfRooms.map(room => room.getCenter.toString.concat(room.startPosition.toString))}")
     listOfRooms
   }
 
@@ -687,9 +684,8 @@ class GameState(player:Player, screen: Scurses) {
         }
 
         if (monster.isAlive) {
-          //val newPos = monster.move(Some(player.position))
           val playerTile = getTileAtPosition(player.position.x, player.position.y)
-          val newPos = monster.move(playerTile, tiles.flatten, getTileAtPosition(monster.position.x, monster.position.y))
+          val newPos = monster.move(playerTile, tiles, getTileAtPosition(monster.position.x, monster.position.y))
           getTileAtPosition(newPos.x, newPos.y) match {
             case Some(tile) => {
               if (tile.passable || monster.canAvoidObstacles) {

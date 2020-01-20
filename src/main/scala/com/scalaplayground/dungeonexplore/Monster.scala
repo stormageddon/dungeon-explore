@@ -49,45 +49,48 @@ abstract class Monster {
     None
   }
 
-  def move(target: Option[Tile], tiles: Seq[Tile], currTile: Option[Tile]): Position = {
-    val dijkstra = new Dijkstra
+  // DIJKSTRA MOVE
 
-    val nextMove: Option[Tile] = target match {
-      case Some(_) => {
-        currTile match {
-          case Some(_) => {
-            val path = dijkstra.findShortestPath(tiles, currTile.get, target.get)
-            if (path.size > 1) {
-              if (Option(path(1)).get == target.get) {
-                Option(path(0))
+    def move(target: Option[Tile], tiles: Seq[Seq[Tile]], currTile: Option[Tile]): Position = {
+      val dijkstra = new Dijkstra
+
+      val nextMove: Option[Tile] = target match {
+        case Some(targetTile) => {
+          currTile match {
+            case Some(currentTile) => {
+              val path = dijkstra.findShortestPath(tiles.flatten, currTile.get, target.get)
+              if (path.size > 1) {
+                if (Option(path(1)).get == target.get) {
+                  Option(path(0))
+                }
+                else {
+                  Option(path(1))
+                }
               }
               else {
-                Option(path(1))
+                Option(path(0))
               }
             }
-            else {
-              Option(path(0))
+            case None => {
+              None
             }
           }
-          case None => {
-            None
-          }
+        }
+        case None => {
+          None
         }
       }
-      case None => {
-        None
+
+      val newPosition: Position = nextMove match {
+        case Some(tile) => {
+          tile.position
+        }
+        case None => position
       }
+
+      newPosition
     }
 
-    val newPosition: Position = nextMove match {
-      case Some(tile) => {
-        tile.position
-      }
-      case None => position
-    }
-
-    newPosition
-  }
 }
 
 class GiantRat(pos: Position) extends Monster {
@@ -98,21 +101,21 @@ class GiantRat(pos: Position) extends Monster {
   position = new Position(pos.y, pos.x)
   displayChar = "r"
 
-  override def move(target: Option[Tile], tiles: Seq[Tile], currTile: Option[Tile]): Position = {
-    val possibleMoves = Seq(
-      new Position(this.position.x + 1, this.position.y),
-      new Position(this.position.x - 1, this.position.y),
-      new Position(this.position.x, this.position.y + 1),
-      new Position(this.position.x, this.position.y - 1),
-      new Position(this.position.x + 1, this.position.y + 1),
-      new Position(this.position.x - 1, this.position.y - 1)
-    )
-
-    val p = possibleMoves(Random.nextInt(possibleMoves.length))
-    p.x = dungeonHelper.clamp(p.x, 0, NUM_COLS - 1)
-    p.y = dungeonHelper.clamp(p.y, 0, NUM_ROWS - 1)
-    p
-  }
+//  override def move(target: Option[Tile], tiles: Seq[Tile], currTile: Option[Tile]): Position = {
+//    val possibleMoves = Seq(
+//      new Position(this.position.x + 1, this.position.y),
+//      new Position(this.position.x - 1, this.position.y),
+//      new Position(this.position.x, this.position.y + 1),
+//      new Position(this.position.x, this.position.y - 1),
+//      new Position(this.position.x + 1, this.position.y + 1),
+//      new Position(this.position.x - 1, this.position.y - 1)
+//    )
+//
+//    val p = possibleMoves(Random.nextInt(possibleMoves.length))
+//    p.x = dungeonHelper.clamp(p.x, 0, NUM_COLS - 1)
+//    p.y = dungeonHelper.clamp(p.y, 0, NUM_ROWS - 1)
+//    p
+//  }
 }
 
 class Goblin(pos: Position) extends Monster {

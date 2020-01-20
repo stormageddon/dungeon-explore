@@ -20,7 +20,6 @@ class Room(val startPosition: Position, val width: Int, val height: Int) {
   }
 
   def getRandomPosition: Position = {
-    //start + rnd.nextInt( (end - start) + 1 )
     val x = startPosition.x + Random.nextInt( width + 1)
     val y = startPosition.y + Random.nextInt( height + 1)
 

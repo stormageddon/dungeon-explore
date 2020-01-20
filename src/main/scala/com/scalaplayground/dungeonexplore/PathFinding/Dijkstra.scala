@@ -39,7 +39,6 @@ class Dijkstra {
       	previous[v] := u
        */
       u.getNeighbors.foreach(neighbor => {
-        //println(s"${u.toString} neighbbor: ${neighbor.toString()}")
         if (Q.contains(neighbor.tile)) {
           val alt = dist(u) + getDistanceBetweenNodes(u, neighbor)
           if (alt < dist(neighbor.tile)) {
