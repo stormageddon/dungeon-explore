@@ -32,10 +32,10 @@ class HealthShrine(startingPosition: Position) extends Shrine {
     if (isActive) {
       super.interact(player)
       player.health = dungeonHelper.clamp(STARTING_PLAYER_HEALTH, 0, STARTING_PLAYER_HEALTH)
-      message = "You feel healthier as you look at the shrine.\n"
+      message = "You feel healthier as you look at the shrine."
     }
     else {
-      message = "The shrine's magic has been used.\n"
+      message = "The shrine's magic has been used."
     }
     message
   }
@@ -50,10 +50,10 @@ class StrengthShrine(startingPosition: Position) extends Shrine {
     if (isActive) {
       super.interact(player)
       player.attackBonus = player.attackBonus + 2
-      message = "It makes you feel stronger to look at the shrine.\n"
+      message = "It makes you feel stronger to look at the shrine."
     }
     else {
-      message = "The shrine's magic has been used\n"
+      message = "The shrine's magic has been used"
     }
     message
   }
@@ -68,10 +68,10 @@ class HolyShrine(startingPosition: Position) extends Shrine {
       super.interact(player)
       player.weapon.attackBonus = player.weapon.attackBonus + 2
       player.weapon.name = s"Blessed ${player.weapon.name}"
-      message = "You dip your weapon in the crystal water of the shrine and it gleams brilliantly.\n"
+      message = "You dip your weapon in the crystal water of the shrine and it gleams brilliantly."
     }
     else {
-      message = "The shrine's magic has been used\n"
+      message = "The shrine's magic has been used"
     }
     message
   }
@@ -85,10 +85,10 @@ class CursedShrine(startingPosition: Position) extends Shrine {
     if (isActive) {
       super.interact(player)
       player.health = player.health - 1
-      message = "You feel sick looking at the shrine.\n"
+      message = "You feel sick looking at the shrine."
     }
     else {
-      message = "The shrine's magic has been used\n"
+      message = "The shrine's magic has been used"
     }
     message
   }

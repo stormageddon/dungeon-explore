@@ -23,12 +23,8 @@ class Renderer(gs: GameState, screen: Scurses) {
 
   def renderStatsBar = {
     val p = gameState.getPlayer()
-    var offset = 5
-    //screen.put(0, NUM_ROWS, s"Number of monsters: ${gameState.monsters.toString}")
-    gameState.monsters.map(monster => {
-      screen.put(0, NUM_ROWS + offset, s"${monster.name} - ${monster.position.toString}, ")
-      offset = offset + 1
-    })
+    var offset = 2
+
     screen.put(0, NUM_ROWS + offset + 1, s"${p.name}, the ${p.charRace} ${p.charClass} (Level ${p.level})")
     screen.put(0, NUM_ROWS + offset + 2, s"HP: ${p.health}    AC: ${p.armorClass + p.armor.armorBonus}     WIELDING: ${p.weapon.name} (${p.weapon.damage._1}-${p.weapon.damage._2} + ${p.weapon.attackBonus})     POTIONS: ${p.numPotions}")
     gameState.currTileDescription = "There is nothing here."

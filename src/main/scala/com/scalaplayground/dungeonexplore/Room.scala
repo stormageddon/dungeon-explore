@@ -19,9 +19,9 @@ class Room(val startPosition: Position, val width: Int, val height: Int) {
     return center
   }
 
-  def getRandomPosition: Position = {
-    val x = startPosition.x + Random.nextInt( width + 1)
-    val y = startPosition.y + Random.nextInt( height + 1)
+  def getRandomValidPosition: Position = {
+    val x = startPosition.x + Random.nextInt( width - 3) + 1
+    val y = startPosition.y + Random.nextInt( height - 3) + 1
 
     return new Position(x,y)
   }

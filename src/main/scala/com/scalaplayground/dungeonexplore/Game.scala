@@ -272,6 +272,7 @@ class GameState(player:Player, screen: Scurses) {
     rooms = createRooms
 
     // build walls
+    /*
     for (x <- 0 to NUM_COLS - 1) {
       for (y <- 0 to NUM_ROWS - 1) {
         if (getTileAtPosition(x, y).get.passable) {
@@ -317,7 +318,11 @@ class GameState(player:Player, screen: Scurses) {
         }
       }
     }
+    */
 
+    shrine = generateShrine()
+
+    // Populate Neighbors of tiles
     tiles.map(row => {
       row.map(tile => {
         if (tile.passable) {
@@ -400,15 +405,7 @@ class GameState(player:Player, screen: Scurses) {
   // setup map
   randomMap
 
-  var shrine = generateShrine()
-
-  monsters = generateMonster match {
-    case Some(monster) => {
-      monsters :+ monster
-    }
-    case None => monsters
-  }
-
+  var shrine: Shrine = generateShrine
 
   def createRooms: mutable.Seq[Room] = {
     var listOfRooms: Seq[Room] = Seq[Room]()
@@ -428,7 +425,14 @@ class GameState(player:Player, screen: Scurses) {
         // Tunnel out the room
         for (x <- newRoom.startPosition.x to newRoom.startPosition.x + newRoom.width) {
           for (y <- newRoom.startPosition.y to newRoom.startPosition.y + newRoom.height) {
-            tiles(x)(y) = new FloorTile(new Position(x, y))
+            if (getTileAtPosition(x, y).get.isInstanceOf[EmptyTile] && (x == newRoom.startPosition.x || x == newRoom.startPosition.x + newRoom.width)) {
+              tiles(x)(y) = new VerticalWall(new Position(x, y))
+            } else if (getTileAtPosition(x, y).get.isInstanceOf[EmptyTile] && (y == newRoom.startPosition.y || y == newRoom.startPosition.y + newRoom.height)) {
+              tiles(x)(y) = new HorizontalWall(new Position(x, y))
+            }
+            else {
+              tiles(x)(y) = new FloorTile(new Position(x, y))
+            }
           }
         }
 
@@ -447,61 +451,52 @@ class GameState(player:Player, screen: Scurses) {
           Random.nextInt(1) match {
             case 0 => {
               for (x <- Math.min(x1, x2) to Math.max(x1, x2)) {
-                tiles(x)(y1) = new FloorTile(new Position(x, y1))
+                tiles(x)(y1).isInstanceOf[FloorTile] match {
+                  case true => ()
+                  case false => {
+                    tiles(x)(y1) = new FloorTile(new Position(x, y1), "#")
+                  }
+                }
+                //tiles(x)(y1) = new FloorTile(new Position(x, y1))
               }
 
               for (y <- Math.min(y1, y2) to Math.max(y1, y2)) {
-                tiles(x2)(y) = new FloorTile(new Position(x2, y))
+                tiles(x2)(y).isInstanceOf[FloorTile] match {
+                  case true => ()
+                  case false => tiles(x2)(y) = new FloorTile(new Position(x2, y), "#")
+                }
+                //tiles(x2)(y) = new FloorTile(new Position(x2, y))
               }
             }
             case 1 => {
               for (y <- Math.min(y1, y2) to Math.max(y1, y2)) {
-                tiles(x1)(y) = new FloorTile(new Position(x1, y))
+                tiles(x1)(y).isInstanceOf[FloorTile] match {
+                  case true => ()
+                  case false => tiles(x1)(y) = new FloorTile(new Position(x1, y), "#")
+                }
+                //tiles(x1)(y) = new FloorTile(new Position(x1, y))
               }
 
               for (x <- Math.min(x1, x2) to Math.max(x1, x2)) {
-                tiles(x)(y2) = new FloorTile(new Position(x, y2))
+                tiles(x)(y2).isInstanceOf[FloorTile] match {
+                  case true => ()
+                  case false => tiles(x)(y2) = new FloorTile(new Position(x, y2), "#")
+                }
+                //tiles(x)(y2) = new FloorTile(new Position(x, y2))
               }
             }
           }
 
+          // Fill the room
 
-
-//          val firstRoomX = Math.min(newRoom.getCenter.x, prevCenter.x)
-//          val firstRoomY = Math.min(newRoom.getCenter.y, prevCenter.y)
-//          val secondRoomX = Math.max(newRoom.getCenter.x, prevCenter.x)
-//          val secondRoomY = Math.max(newRoom.getCenter.y, prevCenter.y)
-//
-//          for (y <- firstRoomY to secondRoomY) {
-//            tiles(firstRoomX)(y) = new FloorTile(new Position(firstRoomX, y))
-//          }
-//
-//          for (x <- firstRoomX to secondRoomX) {
-//            tiles(x)(newRoom.getCenter.y) = new FloorTile(new Position(x, secondRoomY))
-//          }
-
-
-//          Random.nextInt(1) match {
-//            case 0 => {
-//              for (x <- firstRoomX to secondRoomX) {
-//                tiles(x)(firstRoomY) = new FloorTile(new Position(x, firstRoomY))
-//              }
-//
-//              for (y <- firstRoomY to secondRoomY) {
-//                tiles(prevCenter.x)(y) = new FloorTile(new Position(secondRoomX, y))
-//              }
-//            }
-//            case 1 => {
-//              for (y <- firstRoomY to secondRoomY) {
-//                tiles(firstRoomX)(y) = new FloorTile(new Position(firstRoomX, y))
-//              }
-//
-//              for (x <- firstRoomX to secondRoomX) {
-//                tiles(x)(newRoom.getCenter.y) = new FloorTile(new Position(x, secondRoomY))
-//              }
+//          for (i <- 0 to Random.nextInt(3)) {
+//            monsters = if (monsters == null) List[Monster]() else monsters
+//            val randPos = newRoom.getRandomPosition
+//            monsters = generateMonster(new Position(randPos.y, randPos.x)) match {
+//              case Some(monster) => monsters :+ monster
+//              case None => monsters
 //            }
 //          }
-
         }
 
         // Add room to the list
@@ -514,9 +509,9 @@ class GameState(player:Player, screen: Scurses) {
 
   def generateShrine(): Shrine = {
     val randPos = if (rooms.length > 1) {
-      rooms(Random.nextInt(rooms.length - 1)).getRandomPosition
+      rooms(Random.nextInt(rooms.length - 1)).getRandomValidPosition
     } else if (rooms.length > 0) {
-      rooms(0).getRandomPosition
+      rooms(0).getRandomValidPosition
     } else {
       new Position(20,20)
     }
@@ -529,42 +524,39 @@ class GameState(player:Player, screen: Scurses) {
       }
   }
 
-  def generateMonster(): Option[Monster] = {
+  def generateMonster(pos:Position): Option[Monster] = {
     if (!shouldGenerateMonster || (monsters != null && monsters.filter(m => m.isAlive).length >= MAX_MONSTERS_ALIVE)) {
       return None
     }
     if (monstersSlain >= 20) {
       monsterActionMessage = s"The door before you creaks open and an inhuman howl escapes from inside. A grayish light reveals the final resting place of Cem Hial...\n\n${monsterActionMessage}"
       shouldGenerateMonster = false
-      val randPos = if (rooms.length > 1) {
-        rooms(Random.nextInt(rooms.length - 1)).getRandomPosition
-      } else if (rooms.length > 0) {
-        rooms(0).getRandomPosition
-      } else {
-        // This really shouldn't happen
-        new Position(20,20)
-      }
-      return Some(new CemHial(randPos))
+//      val randPos = if (rooms.length > 1) {
+//        rooms(Random.nextInt(rooms.length - 1)).getRandomPosition
+//      } else if (rooms.length > 0) {
+//        rooms(0).getRandomPosition
+//      } else {
+//        // This really shouldn't happen
+//        new Position(20,20)
+//      }
+      return Some(new CemHial(pos))
     }
     else {
-      val randPos = if (rooms.length > 1) {
-        rooms(Random.nextInt(rooms.length - 1)).getRandomPosition
-      } else if (rooms.length > 0) {
-        rooms(0).getRandomPosition
-      } else {
-        // This really shouldn't happen
-        new Position(20,20)
-      }
+//      val randPos = if (rooms.length > 1) {
+//        rooms(Random.nextInt(rooms.length - 1)).getRandomPosition
+//      } else {//if (rooms.length > 0) {
+//        rooms(0).getRandomPosition
+//      }
 
       return Random.nextInt(100) match {
-        case it if 0 until 25 contains it => Some(new Goblin(randPos))
-        case it if 25 until 50 contains it => Some(new Kobold(randPos))
-        case it if 50 until 60 contains it => Some(new GiantRat(randPos))
-        case it if 60 until 75 contains it => Some(new Orc(randPos))
-        case it if 75 until 81 contains it => Some(new Wolf(randPos))
-        case it if 81 until 93 contains it => Some(new DireWolf(randPos))
-        case it if 93 until 98 contains it => Some(new RockGolem(randPos))
-        case it if 98 until 100 contains it => Some(new Dragon(randPos))
+        case it if 0 until 25 contains it => Some(new Goblin(pos))
+        case it if 25 until 50 contains it => Some(new Kobold(pos))
+        case it if 50 until 60 contains it => Some(new GiantRat(pos))
+        case it if 60 until 75 contains it => Some(new Orc(pos))
+        case it if 75 until 81 contains it => Some(new Wolf(pos))
+        case it if 81 until 93 contains it => Some(new DireWolf(pos))
+        case it if 93 until 98 contains it => Some(new RockGolem(pos))
+        case it if 98 until 100 contains it => Some(new Dragon(pos))
       }
     }
   }
@@ -591,10 +583,10 @@ class GameState(player:Player, screen: Scurses) {
           }
           monstersSlain += 1
           monsters = monsters.filter(monster => monster != m)
-          generateMonster match {
-            case Some(monster) => monsters = monsters ++ List[Monster](monster)
-            case None => Unit
-          }
+//          generateMonster match {
+//            case Some(monster) => monsters = monsters ++ List[Monster](monster)
+//            case None => Unit
+//          }
         }
       }
       case None => Unit
@@ -609,8 +601,17 @@ class GameState(player:Player, screen: Scurses) {
         return false
       }
       case None => {
+        val currPlayerPosition = player.position
         player.position = getTileAtPosition(newPos.x, newPos.y) match {
-          case Some(tile) => if (tile.passable) newPos else player.position
+          case Some(tile) => {
+            if (tile.passable) {
+              getTileAtPosition(currPlayerPosition.x, currPlayerPosition.y).get.occupied = false
+              getTileAtPosition(newPos.x, newPos.y).get.occupied = true
+              newPos
+            } else {
+              player.position
+            }
+          }
           case None => newPos
         }
         return true
@@ -688,8 +689,10 @@ class GameState(player:Player, screen: Scurses) {
           val newPos = monster.move(playerTile, tiles, getTileAtPosition(monster.position.x, monster.position.y))
           getTileAtPosition(newPos.x, newPos.y) match {
             case Some(tile) => {
-              if (tile.passable || monster.canAvoidObstacles) {
+              if ((tile.passable || monster.canAvoidObstacles) && !tile.occupied) {
+                getTileAtPosition(monster.position.x, monster.position.y).get.occupied = false
                 monster.position = newPos
+                getTileAtPosition(monster.position.x, monster.position.y).get.occupied = true
               } else {
                 // get random (legal) position
                 monster.position = monster.position
@@ -702,16 +705,16 @@ class GameState(player:Player, screen: Scurses) {
     })
 
     // generate new enemy?
-    Random.nextInt(100) match {
-      case it if 0 until 5 contains it => {
-        generateMonster match {
-          case Some(monster) => monsters = monsters ++ List[Monster](monster)
-          case None => ()
-        }
-
-      }
-      case _ => ()
-    }
+//    Random.nextInt(100) match {
+//      case it if 0 until 5 contains it => {
+//        generateMonster match {
+//          case Some(monster) => monsters = monsters ++ List[Monster](monster)
+//          case None => ()
+//        }
+//
+//      }
+//      case _ => ()
+//    }
 
     renderer.renderGameState
     renderer.renderStatsBar

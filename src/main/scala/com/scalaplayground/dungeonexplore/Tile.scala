@@ -6,8 +6,9 @@ abstract class Tile {
 
   val position: Position
   val id: String
-  val displayChar: String
+  var displayChar: String
   val passable: Boolean = false
+  var occupied: Boolean = false
   var dist: Double = Double.MaxValue
   var neighbors: Seq[Vertex] = Seq[Vertex]()
 
@@ -26,28 +27,28 @@ class Vertex(val tile: Tile, val weightedDist: Int) {
   }
 }
 
-class EmptyTile(pos: Position) extends Tile {
+class EmptyTile(pos: Position, dispChar: String = " ") extends Tile {
   override val position = pos
   override val id = "EMPTY_TILE"
-  override val displayChar = " "
+  override var displayChar = dispChar
   override val passable: Boolean = false
 }
 
-class FloorTile(pos: Position) extends Tile {
+class FloorTile(pos: Position, dispChar: String = ".") extends Tile {
   override val position = pos
   override val id = "FLOOR_TILE"
-  override val displayChar = "."
+  override var displayChar = dispChar
   override val passable: Boolean = true
 }
 
-class VerticalWall(pos:Position) extends Tile {
+class VerticalWall(pos:Position, dispChar: String = "|") extends Tile {
   override val position = pos
   override val id = "VERTICAL_WALL"
-  override val displayChar = "|"
+  override var displayChar = dispChar
 }
 
-class HorizontalWall(pos:Position) extends Tile {
+class HorizontalWall(pos:Position, dispChar: String = "---") extends Tile {
   override val position = pos
   override val id = "HORIZONTAL_WALL"
-  override val displayChar = "---"
+  override var displayChar = dispChar
 }

@@ -48,7 +48,7 @@ class Item(startingPos: Position, dispChar: String, hoverDescription: String = "
         player.weapon = new FineShortSword
       }
       case "RUSTY_GREAT_AXE" => {
-        println("You picked up the Rusty Great Axe")
+        player.appendActionMessage("You picked up the Rusty Great Axe")
         player.weapon = new RustyGreatAxe
       }
       case "GREAT_AXE" => {
