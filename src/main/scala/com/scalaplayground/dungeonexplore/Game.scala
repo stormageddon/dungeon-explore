@@ -160,7 +160,7 @@ class GameState(player:Player, screen: Scurses) {
   var defeatedMonsters = Map[String,Int]()
   var tiles = mutable.Seq[mutable.Seq[Tile]]()
   var rooms: mutable.Seq[Room] = mutable.Seq[Room]()
-  var shouldGenerateMonster = false//true
+  var shouldGenerateMonster = true
   var monsters: List[Monster] = List[Monster]()
   var monstersSlain = 0
 
@@ -404,7 +404,10 @@ class GameState(player:Player, screen: Scurses) {
   var shrine = generateShrine()
 
   monsters = generateMonster match {
-    case Some(monster) => monsters :+ monster
+    case Some(monster) => {
+      println(s"generated ${monster.name}")
+      monsters :+ monster
+    }
     case None => monsters
   }
 
@@ -417,15 +420,11 @@ class GameState(player:Player, screen: Scurses) {
       val w = MIN_ROOM_WIDTH + Random.nextInt( MAX_ROOM_WIDTH - MIN_ROOM_WIDTH + 1)
       val h = MIN_ROOM_HEIGHT + Random.nextInt( MAX_ROOM_HEIGHT - MIN_ROOM_HEIGHT + 1)
       val randomPosition = new Position(Random.nextInt(NUM_COLS - w - 4), Random.nextInt(NUM_ROWS - h - 4))
-//      val w = 2
-//      val h = 2
-//      val randomPosition = new Position(17, 17)
 
       val newRoom = new Room(randomPosition, w, h)
 
       // validate the room
       val isValid = !listOfRooms.exists(room => room.intersects(newRoom))
-      println(s"Trying room at ${newRoom.startPosition.toString} - ${isValid}")
 
       if (isValid) {
         // Tunnel out the room
@@ -537,30 +536,38 @@ class GameState(player:Player, screen: Scurses) {
     if (!shouldGenerateMonster || (monsters != null && monsters.filter(m => m.isAlive).length >= MAX_MONSTERS_ALIVE)) {
       return None
     }
-    var freeTiles: Seq[Tile] = Seq[Tile]()
-    tiles.map(row => {
-      row.map(tile => {
-        if (tile.passable) {
-          freeTiles = freeTiles :+ tile
-        }
-      })
-    })
     if (monstersSlain >= 20) {
-
       monsterActionMessage = s"The door before you creaks open and an inhuman howl escapes from inside. A grayish light reveals the final resting place of Cem Hial...\n\n${monsterActionMessage}"
       shouldGenerateMonster = false
-      return Some(new CemHial(freeTiles(Random.nextInt(freeTiles.size - 1)).position))
+      val randPos = if (rooms.length > 1) {
+        rooms(Random.nextInt(rooms.length - 1)).getRandomPosition
+      } else if (rooms.length > 0) {
+        rooms(0).getRandomPosition
+      } else {
+        // This really shouldn't happen
+        new Position(20,20)
+      }
+      return Some(new CemHial(randPos))
     }
     else {
+      val randPos = if (rooms.length > 1) {
+        rooms(Random.nextInt(rooms.length - 1)).getRandomPosition
+      } else if (rooms.length > 0) {
+        rooms(0).getRandomPosition
+      } else {
+        // This really shouldn't happen
+        new Position(20,20)
+      }
+
       return Random.nextInt(100) match {
-        case it if 0 until 25 contains it => Some(new Goblin(freeTiles(Random.nextInt(freeTiles.size - 1)).position))
-        case it if 25 until 50 contains it => Some(new Kobold(freeTiles(Random.nextInt(freeTiles.size - 1)).position))
-        case it if 50 until 60 contains it => Some(new GiantRat(freeTiles(Random.nextInt(freeTiles.size - 1)).position))
-        case it if 60 until 75 contains it => Some(new Orc(freeTiles(Random.nextInt(freeTiles.size - 1)).position))
-        case it if 75 until 81 contains it => Some(new Wolf(freeTiles(Random.nextInt(freeTiles.size - 1)).position))
-        case it if 81 until 93 contains it => Some(new DireWolf(freeTiles(Random.nextInt(freeTiles.size - 1)).position))
-        case it if 93 until 98 contains it => Some(new RockGolem(freeTiles(Random.nextInt(freeTiles.size - 1)).position))
-        case it if 98 until 100 contains it => Some(new Dragon(freeTiles(Random.nextInt(freeTiles.size - 1)).position))
+        case it if 0 until 25 contains it => Some(new Goblin(randPos))
+        case it if 25 until 50 contains it => Some(new Kobold(randPos))
+        case it if 50 until 60 contains it => Some(new GiantRat(randPos))
+        case it if 60 until 75 contains it => Some(new Orc(randPos))
+        case it if 75 until 81 contains it => Some(new Wolf(randPos))
+        case it if 81 until 93 contains it => Some(new DireWolf(randPos))
+        case it if 93 until 98 contains it => Some(new RockGolem(randPos))
+        case it if 98 until 100 contains it => Some(new Dragon(randPos))
       }
     }
   }
