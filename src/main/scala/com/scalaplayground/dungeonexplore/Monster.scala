@@ -7,7 +7,7 @@ import com.scalaplayground.dungeonexplore.constants.Constants._
 import com.scalaplayground.dungeonexplore.Position.Position
 import com.scalaplayground.dungeonexplore.Weapon._
 import com.scalaplayground.dungeonexplore.{DungeonHelper, Tile}
-import com.scalaplayground.dungeonexplore.PathFinding.Dijkstra
+import com.scalaplayground.dungeonexplore.PathFinding.{AStar, Dijkstra}
 
 abstract class Monster {
   val name: String
@@ -52,13 +52,15 @@ abstract class Monster {
   // DIJKSTRA MOVE
 
   def move(target: Option[Tile], tiles: Seq[Seq[Tile]], currTile: Option[Tile]): Position = {
-    val dijkstra = new Dijkstra
+    //val dijkstra = new Dijkstra
+    val aStar = new AStar
 
     val nextMove: Option[Tile] = target match {
       case Some(targetTile) => {
         currTile match {
           case Some(currentTile) => {
-            val path = dijkstra.findShortestPath(tiles.flatten, currTile.get, target.get)
+            //val path = dijkstra.findShortestPath(tiles.flatten, currTile.get, target.get)
+            val path = aStar.findShortestPath(tiles.flatten, currTile.get, target.get)
             if (path.size > 1) {
               if (Option(path(1)).get == target.get) {
                 Option(path(0))
