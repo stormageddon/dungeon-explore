@@ -12,5 +12,5 @@ object Constants {
   val MAX_ROOM_WIDTH = 10//5
   val MIN_ROOM_HEIGHT = 5
   val MAX_ROOM_HEIGHT = 8//5
-  val MAX_NUM_ROOMS = 8
+  val MAX_NUM_ROOMS = 15
 }

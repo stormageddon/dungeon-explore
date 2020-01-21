@@ -453,12 +453,14 @@ class GameState(player:Player, screen: Scurses) {
         }
         else {
           // Tunnel out a hallway to the previous room
-          val prevCenter = listOfRooms(listOfRooms.length - 1).getCenter
+          val prevCenter = listOfRooms(listOfRooms.length - 1).getRandomValidPosition
 
-          val x1 = newRoom.getCenter.x
-          val y1 = newRoom.getCenter.y
+          val newRoomEntrance = newRoom.getRandomValidPosition
+          val x1 = newRoomEntrance.x
+          val y1 = newRoomEntrance.y
           val x2 = prevCenter.x
           val y2 = prevCenter.y
+
 
           Random.nextInt(1) match {
             case 0 => {
@@ -496,14 +498,14 @@ class GameState(player:Player, screen: Scurses) {
           }
 
           // Fill the room
-//          for (i <- 0 to Random.nextInt(3)) {
-//            monsters = if (monsters == null) List[Monster]() else monsters
-//            val randPos = newRoom.getRandomPosition
-//            monsters = generateMonster(new Position(randPos.y, randPos.x)) match {
-//              case Some(monster) => monsters :+ monster
-//              case None => monsters
-//            }
-//          }
+          for (i <- 0 to Random.nextInt(3)) {
+            monsters = if (monsters == null) List[Monster]() else monsters
+            val randPos = newRoom.getRandomValidPosition
+            monsters = generateMonster(new Position(randPos.y, randPos.x)) match {
+              case Some(monster) => monsters :+ monster
+              case None => monsters
+            }
+          }
         }
 
         // Add room to the list
