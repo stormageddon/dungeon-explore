@@ -133,7 +133,7 @@ object Game extends App {
       print(">> ")
 
       val input = scala.io.StdIn.readLine.slice(0,1)
-      val key = input.toString.asInstanceOf[String]
+      val key = input.toString
 
       if (key == "ESC") {
         isPlaying = false
@@ -167,16 +167,32 @@ class GameState(player:Player, screen: Scurses) {
   var currTileDescription: String = "Nothing is here."
   var roundMessage: String = ""
   var monsterActionMessage: String = ""
+  var shrine: Shrine = generateShrine
+  var dungeonLevel = 0
 
-
-
-  for (x <- 0 to NUM_COLS - 1) {
-    tiles = tiles :+ Seq[Tile]()
-    for (y <- 0 to NUM_ROWS - 1) {
-      val thisPos = new Position(x, y)
-      tiles(x) = tiles(x) :+ new EmptyTile(thisPos)
-    }
+  def resetState = {
+    tiles = mutable.Seq[mutable.Seq[Tile]]()
+    rooms = mutable.Seq[Room]()
+    monsters = List[Monster]()
+    droppedItems = List[Item]()
   }
+
+  def createFloor = {
+    resetState
+    for (x <- 0 to NUM_COLS - 1) {
+      tiles = tiles :+ Seq[Tile]()
+      for (y <- 0 to NUM_ROWS - 1) {
+        val thisPos = new Position(x, y)
+        tiles(x) = tiles(x) :+ new EmptyTile(thisPos)
+      }
+    }
+
+    // setup map
+    randomMap
+    dungeonLevel = dungeonLevel + 1
+  }
+
+  createFloor
 
   def generateNeighbors = {
     tiles.map(row => {
@@ -403,11 +419,6 @@ class GameState(player:Player, screen: Scurses) {
     setSurroundingTilesVisible(getPlayer.position)
   }
 
-  // setup map
-  randomMap
-
-  var shrine: Shrine = generateShrine
-
   def createRooms: mutable.Seq[Room] = {
     var listOfRooms: Seq[Room] = Seq[Room]()
 
@@ -458,7 +469,6 @@ class GameState(player:Player, screen: Scurses) {
                     tiles(x)(y1) = new FloorTile(new Position(x, y1), "#")
                   }
                 }
-                //tiles(x)(y1) = new FloorTile(new Position(x, y1))
               }
 
               for (y <- Math.min(y1, y2) to Math.max(y1, y2)) {
@@ -466,7 +476,6 @@ class GameState(player:Player, screen: Scurses) {
                   case true => ()
                   case false => tiles(x2)(y) = new FloorTile(new Position(x2, y), "#")
                 }
-                //tiles(x2)(y) = new FloorTile(new Position(x2, y))
               }
             }
             case 1 => {
@@ -475,7 +484,6 @@ class GameState(player:Player, screen: Scurses) {
                   case true => ()
                   case false => tiles(x1)(y) = new FloorTile(new Position(x1, y), "#")
                 }
-                //tiles(x1)(y) = new FloorTile(new Position(x1, y))
               }
 
               for (x <- Math.min(x1, x2) to Math.max(x1, x2)) {
@@ -483,13 +491,11 @@ class GameState(player:Player, screen: Scurses) {
                   case true => ()
                   case false => tiles(x)(y2) = new FloorTile(new Position(x, y2), "#")
                 }
-                //tiles(x)(y2) = new FloorTile(new Position(x, y2))
               }
             }
           }
 
           // Fill the room
-
 //          for (i <- 0 to Random.nextInt(3)) {
 //            monsters = if (monsters == null) List[Monster]() else monsters
 //            val randPos = newRoom.getRandomPosition
@@ -504,6 +510,11 @@ class GameState(player:Player, screen: Scurses) {
         listOfRooms = listOfRooms :+ newRoom
       }
     }
+
+//    droppedItems = droppedItems :+ new Item(listOfRooms(Random.nextInt(listOfRooms.length - 1)).getRandomValidPosition, "!", "test potion", "POTION")
+
+    // create stairs
+    droppedItems = droppedItems :+ new Item(listOfRooms.last.getRandomValidPosition, "v", "The stairwell descends into darkness", "DOWN_STAIR")
 
     listOfRooms
   }
@@ -532,23 +543,10 @@ class GameState(player:Player, screen: Scurses) {
     if (monstersSlain >= 20) {
       monsterActionMessage = s"The door before you creaks open and an inhuman howl escapes from inside. A grayish light reveals the final resting place of Cem Hial...\n\n${monsterActionMessage}"
       shouldGenerateMonster = false
-//      val randPos = if (rooms.length > 1) {
-//        rooms(Random.nextInt(rooms.length - 1)).getRandomPosition
-//      } else if (rooms.length > 0) {
-//        rooms(0).getRandomPosition
-//      } else {
-//        // This really shouldn't happen
-//        new Position(20,20)
-//      }
+
       return Some(new CemHial(pos))
     }
     else {
-//      val randPos = if (rooms.length > 1) {
-//        rooms(Random.nextInt(rooms.length - 1)).getRandomPosition
-//      } else {//if (rooms.length > 0) {
-//        rooms(0).getRandomPosition
-//      }
-
       return Random.nextInt(100) match {
         case it if 0 until 25 contains it => Some(new Goblin(pos))
         case it if 25 until 50 contains it => Some(new Kobold(pos))
@@ -584,10 +582,6 @@ class GameState(player:Player, screen: Scurses) {
           }
           monstersSlain += 1
           monsters = monsters.filter(monster => monster != m)
-//          generateMonster match {
-//            case Some(monster) => monsters = monsters ++ List[Monster](monster)
-//            case None => Unit
-//          }
         }
       }
       case None => Unit
@@ -608,7 +602,8 @@ class GameState(player:Player, screen: Scurses) {
             if (tile.passable) {
               getTileAtPosition(currPlayerPosition.x, currPlayerPosition.y).get.occupied = false
               getTileAtPosition(newPos.x, newPos.y).get.occupied = true
-              setSurroundingTilesNotVisible(currPlayerPosition)
+
+              setTilesNotVisible
               setSurroundingTilesVisible(newPos)
 
               newPos
@@ -643,12 +638,17 @@ class GameState(player:Player, screen: Scurses) {
         // check for items
         droppedItems.filter(item => item.position.x == player.position.x && item.position.y == player.position.y).headOption match {
           case Some(item) => {
-            item.interact(player)
-            droppedItems = droppedItems.filterNot( i => i == item)
-            if(item.id == "NIGHT_BLADE") {
+            if (item.id == "DOWN_STAIR") {
+              createFloor
+            }
+            else if(item.id == "NIGHT_BLADE") {
               renderer.renderPlayerActions
               renderer.renderMonsterActions(monsterActionMessage)
               return false
+            }
+            else {
+              item.interact(player)
+              droppedItems = droppedItems.filterNot( i => i == item)
             }
           }
           case _ => {
@@ -708,18 +708,6 @@ class GameState(player:Player, screen: Scurses) {
       }
     })
 
-    // generate new enemy?
-//    Random.nextInt(100) match {
-//      case it if 0 until 5 contains it => {
-//        generateMonster match {
-//          case Some(monster) => monsters = monsters ++ List[Monster](monster)
-//          case None => ()
-//        }
-//
-//      }
-//      case _ => ()
-//    }
-
     renderer.renderGameState
     renderer.renderStatsBar
     renderer.renderPlayerActions
@@ -763,133 +751,24 @@ class GameState(player:Player, screen: Scurses) {
 
   def setSurroundingTilesVisible(playerPos: Position) = {
     //// update tiles with visibility
-    // up-left
-    getTileAtPosition(playerPos.x - 1, playerPos.y - 1) match {
-      case Some(tile) => {
-        tile.currentlyVisible = true
-        tile.hasBeenSeen = true
+    for (x <- player.position.x - player.sightDistance to player.position.x + player.sightDistance) {
+      for (y <- player.position.y - player.sightDistance to player.position.y + player.sightDistance) {
+        getTileAtPosition(x, y) match {
+          case Some(tile) => {
+            tile.currentlyVisible = true
+            tile.hasBeenSeen = true
+          }
+          case None => ()
+        }
       }
-      case None => ()
-    }
-    // up
-    getTileAtPosition(playerPos.x, playerPos.y - 1) match {
-      case Some(tile) => {
-        tile.currentlyVisible = true
-        tile.hasBeenSeen = true
-      }
-      case None => ()
-    }
-    // up-right
-    getTileAtPosition(playerPos.x + 1, playerPos.y - 1) match {
-      case Some(tile) => {
-        tile.currentlyVisible = true
-        tile.hasBeenSeen = true
-      }
-      case None => ()
-    }
-    // left
-    getTileAtPosition(playerPos.x - 1, playerPos.y) match {
-      case Some(tile) => {
-        tile.currentlyVisible = true
-        tile.hasBeenSeen = true
-      }
-      case None => ()
-    }
-    // right
-    getTileAtPosition(playerPos.x + 1, playerPos.y) match {
-      case Some(tile) => {
-        tile.currentlyVisible = true
-        tile.hasBeenSeen = true
-      }
-      case None => ()
-    }
-    // bottom-left
-    getTileAtPosition(playerPos.x - 1, playerPos.y + 1) match {
-      case Some(tile) => {
-        tile.currentlyVisible = true
-        tile.hasBeenSeen = true
-      }
-      case None => ()
-    }
-    // bottom
-    getTileAtPosition(playerPos.x, playerPos.y + 1) match {
-      case Some(tile) => {
-        tile.currentlyVisible = true
-        tile.hasBeenSeen = true
-      }
-      case None => ()
-    }
-    // bottom-right
-    getTileAtPosition(playerPos.x + 1, playerPos.y + 1) match {
-      case Some(tile) => {
-        tile.currentlyVisible = true
-        tile.hasBeenSeen = true
-      }
-      case None => ()
     }
   }
 
-
-  def setSurroundingTilesNotVisible(playerPos: Position) = {
-    //// update tiles with visibility
-    // up-left
-    getTileAtPosition(playerPos.x - 1, playerPos.y - 1) match {
-      case Some(tile) => {
-        tile.currentlyVisible = false
-      }
-      case None => ()
-    }
-    // up
-    getTileAtPosition(playerPos.x, playerPos.y - 1) match {
-      case Some(tile) => {
-        tile.currentlyVisible = false
-      }
-      case None => ()
-    }
-    // up-right
-    getTileAtPosition(playerPos.x + 1, playerPos.y - 1) match {
-      case Some(tile) => {
-        tile.currentlyVisible = false
-      }
-      case None => ()
-    }
-    // left
-    getTileAtPosition(playerPos.x - 1, playerPos.y) match {
-      case Some(tile) => {
-        tile.currentlyVisible = false
-      }
-      case None => ()
-    }
-    // right
-    getTileAtPosition(playerPos.x + 1, playerPos.y) match {
-      case Some(tile) => {
-        tile.currentlyVisible = false
-      }
-      case None => ()
-    }
-    // bottom-left
-    getTileAtPosition(playerPos.x - 1, playerPos.y + 1) match {
-      case Some(tile) => {
-        tile.currentlyVisible = false
-      }
-      case None => ()
-    }
-    // bottom
-    getTileAtPosition(playerPos.x, playerPos.y + 1) match {
-      case Some(tile) => {
-        tile.currentlyVisible = false
-      }
-      case None => ()
-    }
-    // bottom-right
-    getTileAtPosition(playerPos.x + 1, playerPos.y + 1) match {
-      case Some(tile) => {
-        tile.currentlyVisible = false
-      }
-      case None => ()
-    }
+  def setTilesNotVisible = {
+    tiles.foreach(row => {
+      row.foreach(tile => tile.currentlyVisible = false)
+    })
   }
-
 
   /*
    * Commands are for debugging purposes

@@ -66,7 +66,7 @@ class Player(val name:String, val charClass:String, val charRace:String) {
   }
 
   def appendActionMessage(message:String): Unit = {
-    actionMessage = actionMessage + message + "\n"
+    actionMessage = actionMessage + message
   }
 }
 

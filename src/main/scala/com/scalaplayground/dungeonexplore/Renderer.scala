@@ -14,11 +14,11 @@ class Renderer(gs: GameState, screen: Scurses) {
   val dungeonHelper = new DungeonHelper
 
   def renderMonsterActions(monsterMessage:String) = {
-    screen.put(0, NUM_ROWS + 6, monsterMessage)
+    screen.put(0, NUM_ROWS + 7, monsterMessage)
   }
 
   def renderPlayerActions() = {
-    screen.put(0, NUM_ROWS + 5, gameState.getPlayer.actionMessage)
+    screen.put(0, NUM_ROWS + 6, gameState.getPlayer.actionMessage)
   }
 
   def renderStatsBar = {
@@ -27,6 +27,7 @@ class Renderer(gs: GameState, screen: Scurses) {
 
     screen.put(0, NUM_ROWS + offset + 1, s"${p.name}, the ${p.charRace} ${p.charClass} (Level ${p.level})")
     screen.put(0, NUM_ROWS + offset + 2, s"HP: ${p.health}    AC: ${p.armorClass + p.armor.armorBonus}     WIELDING: ${p.weapon.name} (${p.weapon.damage._1}-${p.weapon.damage._2} + ${p.weapon.attackBonus})     POTIONS: ${p.numPotions}")
+    screen.put(0, NUM_ROWS + offset + 3, s"Dungeon level: ${gameState.dungeonLevel}")
     gameState.currTileDescription = "There is nothing here."
     gameState.droppedItems.map(item => {
       if (item.position.x == p.position.x && item.position.y == p.position.y) {
@@ -37,8 +38,8 @@ class Renderer(gs: GameState, screen: Scurses) {
     if (shrine != null && shrine.position.x == p.position.x && shrine.position.y == p.position.y) {
       gameState.currTileDescription = shrine.tileDescription
     }
-    screen.put(0, NUM_ROWS + offset + 3, s"${gameState.currTileDescription}")
-    screen.put(0, NUM_ROWS + offset + 4, s"${gameState.roundMessage}")
+    screen.put(0, NUM_ROWS + offset + 4, s"${gameState.currTileDescription}")
+    screen.put(0, NUM_ROWS + offset + 5, s"${gameState.roundMessage}")
     gameState.roundMessage = ""
   }
 
@@ -60,13 +61,15 @@ class Renderer(gs: GameState, screen: Scurses) {
             case None => Unit
           }
         }
-        else if (shrine != null && shrine.position.x == x && shrine.position.y == y) {
+        else if (shrine != null && shrine.position.x == x && shrine.position.y == y && gameState.getTileAtPosition(shrine.position.x, shrine.position.y).get.currentlyVisible) {
           shrine.render(x, y, screen)
         }
         else if ( droppedItems.filter(i => i.position.x == x && i.position.y == y).length > 0 ) {
           droppedItems.filter(i => i.position.x == x && i.position.y == y).headOption match {
             case Some(item) => {
-              item.render(x, y, screen)
+              if (gameState.getTileAtPosition(item.position.x, item.position.y).get.currentlyVisible) {
+                item.render(x, y, screen)
+              }
             }
             case None => Unit
           }

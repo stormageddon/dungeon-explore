@@ -1,6 +1,7 @@
 package com.scalaplayground.dungeonexplore.Item
 
 import com.scalaplayground.dungeonexplore.Armor._
+import com.scalaplayground.dungeonexplore.Game.GameState
 import com.scalaplayground.dungeonexplore.{DungeonHelper, Player}
 import com.scalaplayground.dungeonexplore.Position.Position
 import com.scalaplayground.dungeonexplore.Weapon._
@@ -14,73 +15,73 @@ class Item(startingPos: Position, dispChar: String, hoverDescription: String = "
   val dungeonHelper = new DungeonHelper
 
   def render(x: Int, y: Int, screen: Scurses): Unit = {
-    screen.put(x, y, displayChar)//dungeonHelper.padGameObjectChar(displayChar))
+    screen.put(x, y, displayChar)
   }
 
-  def interact(player: Player): Unit = {
+  def interact(target: Player): Unit = {
     id match {
       case "POTION" => {
-        player.numPotions = player.numPotions + 1
-        player.appendActionMessage("You picked up a potion!")
+        target.numPotions = target.numPotions + 1
+        target.appendActionMessage("You picked up a potion!")
       }
       case "RUSTY_DAGGER" => {
-        player.appendActionMessage("You picked up the Rusty Dagger")
-        player.weapon = new RustyDagger
+        target.appendActionMessage("You picked up the Rusty Dagger")
+        target.weapon = new RustyDagger
       }
       case "DAGGER" => {
-        player.appendActionMessage("You picked up the Dagger")
-        player.weapon = new Dagger
+        target.appendActionMessage("You picked up the Dagger")
+        target.weapon = new Dagger
       }
       case "FINE_DAGGER" => {
-        player.weapon = new FineDagger
-        player.appendActionMessage("You picked up the Fine Dagger")
+        target.weapon = new FineDagger
+        target.appendActionMessage("You picked up the Fine Dagger")
       }
       case "RUSTY_SHORT_SWORD" => {
-        player.appendActionMessage("You picked up the Rusty Short Sword")
-        player.weapon = new RustyShortSword
+        target.appendActionMessage("You picked up the Rusty Short Sword")
+        target.weapon = new RustyShortSword
       }
       case "SHORT_SWORD" => {
-        player.appendActionMessage("You picked up the Short Sword")
-        player.weapon = new ShortSword
+        target.appendActionMessage("You picked up the Short Sword")
+        target.weapon = new ShortSword
       }
       case "FINE_SHORT_SWORD" => {
-        player.appendActionMessage("You picked up the Fine Short Sword")
-        player.weapon = new FineShortSword
+        target.appendActionMessage("You picked up the Fine Short Sword")
+        target.weapon = new FineShortSword
       }
       case "RUSTY_GREAT_AXE" => {
-        player.appendActionMessage("You picked up the Rusty Great Axe")
-        player.weapon = new RustyGreatAxe
+        target.appendActionMessage("You picked up the Rusty Great Axe")
+        target.weapon = new RustyGreatAxe
       }
       case "GREAT_AXE" => {
-        player.appendActionMessage("You picked up the Great Axe")
-        player.weapon = new GreatAxe
+        target.appendActionMessage("You picked up the Great Axe")
+        target.weapon = new GreatAxe
       }
       case "FINE_GREAT_AXE" => {
-        player.appendActionMessage("You picked up the Fine Great Axe")
-        player.weapon = new FineGreatAxe
+        target.appendActionMessage("You picked up the Fine Great Axe")
+        target.weapon = new FineGreatAxe
       }
       case "SPEAR" => {
-        player.appendActionMessage("You picked up the Spear")
-        player.weapon = new Spear
+        target.appendActionMessage("You picked up the Spear")
+        target.weapon = new Spear
       }
       case "NIGHT_BLADE" => {
-        player.appendActionMessage("You hold the gleaming blade aloft. Outside, the clouds part for the first time in centuries. The town rejoices.\nThe heroes have won.... for now.")
+        target.appendActionMessage("You hold the gleaming blade aloft. Outside, the clouds part for the first time in centuries. The town rejoices.\nThe heroes have won.... for now.")
       }
       case "LEATHER_ARMOR" => {
-        player.appendActionMessage("You don the Leather Armor. You look sexy.")
-        player.donArmor(new Leather)
+        target.appendActionMessage("You don the Leather Armor. You look sexy.")
+        target.donArmor(new Leather)
       }
       case "CHAINMAIL" => {
-        player.appendActionMessage("You don the Chain Mail. It's a bit snug.")
-        player.donArmor(new Chain)
+        target.appendActionMessage("You don the Chain Mail. It's a bit snug.")
+        target.donArmor(new Chain)
       }
       case "PLATE_MAIL" => {
-        player.appendActionMessage("You don the Plate Mail. It feels heavy, yet protective.")
-        player.donArmor(new PlateMail)
+        target.appendActionMessage("You don the Plate Mail. It feels heavy, yet protective.")
+        target.donArmor(new PlateMail)
       }
       case "DRAGON_SCALE" => {
-        player.appendActionMessage("You don the Dragon Scale. You feel totally protected.")
-        player.donArmor(new DragonScale)
+        target.appendActionMessage("You don the Dragon Scale. You feel totally protected.")
+        target.donArmor(new DragonScale)
       }
 
     }
