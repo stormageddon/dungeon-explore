@@ -49,17 +49,20 @@ abstract class Monster {
     None
   }
 
-  // DIJKSTRA MOVE
 
   def move(target: Option[Tile], tiles: Seq[Seq[Tile]], currTile: Option[Tile]): Position = {
-    //val dijkstra = new Dijkstra
     val aStar = new AStar
 
     val nextMove: Option[Tile] = target match {
       case Some(targetTile) => {
         currTile match {
           case Some(currentTile) => {
-            //val path = dijkstra.findShortestPath(tiles.flatten, currTile.get, target.get)
+            // check if monster is within range to notice
+            if (Math.abs(currentTile.position.x - targetTile.position.x) + Math.abs(currentTile.position.y - targetTile.position.y) > 5) {
+              // don't move
+              return currentTile.position
+            }
+
             val path = aStar.findShortestPath(tiles.flatten, currTile.get, target.get)
             if (path.size > 1) {
               if (Option(path(1)).get == target.get) {

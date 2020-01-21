@@ -145,8 +145,10 @@ object Game extends App {
   }
 
   // End Game state
-  println(s"${gameState.monstersSlain} monsters were defeated. Nice job!")
+  println(s"${player.name}, a level ${player.level} ${player.charRace} ${player.charClass} stats")
+  println(s"${gameState.monstersSlain} monsters were defeated.")
   gameState.defeatedMonsters.keys.map(monsterType => println(s"${monsterType}'s killed: ${gameState.defeatedMonsters.get(monsterType).get}"))
+  println(s"Dungeon level reached: ${gameState.dungeonLevel}")
   println("======== Ending gear ========")
   println(s"Weapon: ${player.weapon.name} (${player.weapon.damage._1}-${player.weapon.damage._2}, ${player.weapon.attackBonus})")
   println(s"Armor: ${player.armor.name} (${player.armor.armorBonus})")

@@ -10,7 +10,7 @@ abstract class Tile {
   val passable: Boolean = false
   var occupied: Boolean = false
   var currentlyVisible: Boolean = false
-  var hasBeenSeen: Boolean = true
+  var hasBeenSeen: Boolean = false
   var dist: Double = Double.MaxValue
   var neighbors: Seq[Vertex] = Seq[Vertex]()
 

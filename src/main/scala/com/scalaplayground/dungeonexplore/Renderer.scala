@@ -57,7 +57,14 @@ class Renderer(gs: GameState, screen: Scurses) {
         }
         else if (monsters.filter(m => m.position.x == x && m.position.y == y && m.isAlive).length > 0) {
           monsters.filter(m => m.position.x == x && m.position.y == y && m.isAlive).headOption match {
-            case Some(monster) => screen.put(x, y, monster.displayChar)//dungeonHelper.padGameObjectChar(monster.displayChar))
+            case Some(monster) => {
+              if (gameState.getTileAtPosition(x, y).get.currentlyVisible) {
+                screen.put(x, y, monster.displayChar)
+              }
+              else {
+                screen.put(x, y, " ") // hide monster if it's not visible
+              }
+            }//dungeonHelper.padGameObjectChar(monster.displayChar))
             case None => Unit
           }
         }
