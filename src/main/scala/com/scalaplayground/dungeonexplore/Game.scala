@@ -145,7 +145,6 @@ object Game extends App {
   }
 
   // End Game state
-  println(s"${player.name}, a level ${player.level} ${player.charRace} ${player.charClass} stats")
   println(s"${gameState.monstersSlain} monsters were defeated.")
   gameState.defeatedMonsters.keys.map(monsterType => println(s"${monsterType}'s killed: ${gameState.defeatedMonsters.get(monsterType).get}"))
   println(s"Dungeon level reached: ${gameState.dungeonLevel}")
@@ -169,7 +168,7 @@ class GameState(player:Player, screen: Scurses) {
   var currTileDescription: String = "Nothing is here."
   var roundMessage: String = ""
   var monsterActionMessage: String = ""
-  var shrine: Shrine = generateShrine
+  var shrine: Shrine = new HealthShrine(new Position(-1, -1)) // creat a fake shrine for now
   var dungeonLevel = 0
 
   def resetState = {
@@ -338,7 +337,10 @@ class GameState(player:Player, screen: Scurses) {
     }
     */
 
-    shrine = generateShrine()
+    val shouldCreateShrine = Random.nextInt(100) + 1
+    if (shouldCreateShrine < 20) {
+      shrine = generateShrine
+    }
 
     // Populate Neighbors of tiles
     tiles.map(row => {
@@ -515,11 +517,15 @@ class GameState(player:Player, screen: Scurses) {
       }
     }
 
-//    droppedItems = droppedItems :+ new Item(listOfRooms(Random.nextInt(listOfRooms.length - 1)).getRandomValidPosition, "!", "test potion", "POTION")
-
     // create stairs
     droppedItems = droppedItems :+ new Item(listOfRooms.last.getRandomValidPosition, "v", "The stairwell descends into darkness", "DOWN_STAIR")
 
+    if (dungeonLevel == 5) {
+      println("Create Cem Hial")
+      // Final level only has Cem Hial
+      monsters = List(new CemHial(listOfRooms.head.getCenter))
+      return Seq[Room](listOfRooms.head)
+    }
     listOfRooms
   }
 
@@ -544,12 +550,12 @@ class GameState(player:Player, screen: Scurses) {
     if (!shouldGenerateMonster || (monsters != null && monsters.filter(m => m.isAlive).length >= MAX_MONSTERS_ALIVE)) {
       return None
     }
-    if (monstersSlain >= 20) {
-      monsterActionMessage = s"The door before you creaks open and an inhuman howl escapes from inside. A grayish light reveals the final resting place of Cem Hial...\n\n${monsterActionMessage}"
-      shouldGenerateMonster = false
-
-      return Some(new CemHial(pos))
-    }
+//    if (monstersSlain >= 20) {
+//      monsterActionMessage = s"The door before you creaks open and an inhuman howl escapes from inside. A grayish light reveals the final resting place of Cem Hial...\n\n${monsterActionMessage}"
+//      shouldGenerateMonster = false
+//
+//      return Some(new CemHial(pos))
+//    }
     else {
       return Random.nextInt(100) match {
         case it if 0 until 25 contains it => Some(new Goblin(pos))

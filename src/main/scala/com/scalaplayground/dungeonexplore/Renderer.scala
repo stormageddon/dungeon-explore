@@ -64,7 +64,7 @@ class Renderer(gs: GameState, screen: Scurses) {
               else {
                 screen.put(x, y, " ") // hide monster if it's not visible
               }
-            }//dungeonHelper.padGameObjectChar(monster.displayChar))
+            }
             case None => Unit
           }
         }
