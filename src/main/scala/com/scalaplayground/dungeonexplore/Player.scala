@@ -17,6 +17,7 @@ class Player(val name:String, val charClass:String, val charRace:String) {
   var numPotions = 1
   val armorClass = 10
   var attackBonus = 2
+  var sightDistance = 2
   var armor: Armor = new Natural
   var position = new Position(10, 14)
   var dungeonHelper = new DungeonHelper

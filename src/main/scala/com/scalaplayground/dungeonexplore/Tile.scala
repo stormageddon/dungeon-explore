@@ -9,6 +9,8 @@ abstract class Tile {
   var displayChar: String
   val passable: Boolean = false
   var occupied: Boolean = false
+  var currentlyVisible: Boolean = false
+  var hasBeenSeen: Boolean = false
   var dist: Double = Double.MaxValue
   var neighbors: Seq[Vertex] = Seq[Vertex]()
 

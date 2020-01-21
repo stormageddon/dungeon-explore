@@ -5,7 +5,7 @@ import com.scalaplayground.dungeonexplore.constants.Constants._
 import com.scalaplayground.dungeonexplore.Monster._
 import com.scalaplayground.dungeonexplore.Shrine._
 import com.scalaplayground.dungeonexplore.Item._
-import net.team2xh.scurses.Scurses
+import net.team2xh.scurses.{Colors, Scurses}
 
 import scala.collection.mutable
 
@@ -75,7 +75,21 @@ class Renderer(gs: GameState, screen: Scurses) {
           // find the tile that matches this position
           //val t = tiles.filter(tile => tile.position.x == x && tile.position.y == y).head
           val t = tiles(x)(y)
-          screen.put(x, y, t.displayChar)
+
+          if (t.hasBeenSeen && t.currentlyVisible) {
+//            if ((t.position.x > player.position.x && t.position.x <= player.position.x + player.sightDistance) // right
+//                || (t.position.x < player.position.x && t.position.x >= player.position.x - player.sightDistance) // left
+//                || (t.position.y > player.position.y && t.position.y <= player.position.y + player.sightDistance) // below
+//                || (t.position.y < player.position.y && t.position.y >= player.position.y - player.sightDistance) // above
+//            ) {
+            screen.put(x, y, t.displayChar)
+          }
+          else if (t.hasBeenSeen && !t.currentlyVisible) {
+            screen.put(x, y, t.displayChar, Colors.BRIGHT_BLACK)
+          }
+          else {
+            screen.put(x, y, " ")
+          }
         }
       }
 

@@ -400,6 +400,7 @@ class GameState(player:Player, screen: Scurses) {
         }
       })
     })
+    setSurroundingTilesVisible(getPlayer.position)
   }
 
   // setup map
@@ -607,6 +608,9 @@ class GameState(player:Player, screen: Scurses) {
             if (tile.passable) {
               getTileAtPosition(currPlayerPosition.x, currPlayerPosition.y).get.occupied = false
               getTileAtPosition(newPos.x, newPos.y).get.occupied = true
+              setSurroundingTilesNotVisible(currPlayerPosition)
+              setSurroundingTilesVisible(newPos)
+
               newPos
             } else {
               player.position
@@ -757,7 +761,134 @@ class GameState(player:Player, screen: Scurses) {
     Option(tiles(x)(y))
   }
 
+  def setSurroundingTilesVisible(playerPos: Position) = {
+    //// update tiles with visibility
+    // up-left
+    getTileAtPosition(playerPos.x - 1, playerPos.y - 1) match {
+      case Some(tile) => {
+        tile.currentlyVisible = true
+        tile.hasBeenSeen = true
+      }
+      case None => ()
+    }
+    // up
+    getTileAtPosition(playerPos.x, playerPos.y - 1) match {
+      case Some(tile) => {
+        tile.currentlyVisible = true
+        tile.hasBeenSeen = true
+      }
+      case None => ()
+    }
+    // up-right
+    getTileAtPosition(playerPos.x + 1, playerPos.y - 1) match {
+      case Some(tile) => {
+        tile.currentlyVisible = true
+        tile.hasBeenSeen = true
+      }
+      case None => ()
+    }
+    // left
+    getTileAtPosition(playerPos.x - 1, playerPos.y) match {
+      case Some(tile) => {
+        tile.currentlyVisible = true
+        tile.hasBeenSeen = true
+      }
+      case None => ()
+    }
+    // right
+    getTileAtPosition(playerPos.x + 1, playerPos.y) match {
+      case Some(tile) => {
+        tile.currentlyVisible = true
+        tile.hasBeenSeen = true
+      }
+      case None => ()
+    }
+    // bottom-left
+    getTileAtPosition(playerPos.x - 1, playerPos.y + 1) match {
+      case Some(tile) => {
+        tile.currentlyVisible = true
+        tile.hasBeenSeen = true
+      }
+      case None => ()
+    }
+    // bottom
+    getTileAtPosition(playerPos.x, playerPos.y + 1) match {
+      case Some(tile) => {
+        tile.currentlyVisible = true
+        tile.hasBeenSeen = true
+      }
+      case None => ()
+    }
+    // bottom-right
+    getTileAtPosition(playerPos.x + 1, playerPos.y + 1) match {
+      case Some(tile) => {
+        tile.currentlyVisible = true
+        tile.hasBeenSeen = true
+      }
+      case None => ()
+    }
+  }
 
+
+  def setSurroundingTilesNotVisible(playerPos: Position) = {
+    //// update tiles with visibility
+    // up-left
+    getTileAtPosition(playerPos.x - 1, playerPos.y - 1) match {
+      case Some(tile) => {
+        tile.currentlyVisible = false
+      }
+      case None => ()
+    }
+    // up
+    getTileAtPosition(playerPos.x, playerPos.y - 1) match {
+      case Some(tile) => {
+        tile.currentlyVisible = false
+      }
+      case None => ()
+    }
+    // up-right
+    getTileAtPosition(playerPos.x + 1, playerPos.y - 1) match {
+      case Some(tile) => {
+        tile.currentlyVisible = false
+      }
+      case None => ()
+    }
+    // left
+    getTileAtPosition(playerPos.x - 1, playerPos.y) match {
+      case Some(tile) => {
+        tile.currentlyVisible = false
+      }
+      case None => ()
+    }
+    // right
+    getTileAtPosition(playerPos.x + 1, playerPos.y) match {
+      case Some(tile) => {
+        tile.currentlyVisible = false
+      }
+      case None => ()
+    }
+    // bottom-left
+    getTileAtPosition(playerPos.x - 1, playerPos.y + 1) match {
+      case Some(tile) => {
+        tile.currentlyVisible = false
+      }
+      case None => ()
+    }
+    // bottom
+    getTileAtPosition(playerPos.x, playerPos.y + 1) match {
+      case Some(tile) => {
+        tile.currentlyVisible = false
+      }
+      case None => ()
+    }
+    // bottom-right
+    getTileAtPosition(playerPos.x + 1, playerPos.y + 1) match {
+      case Some(tile) => {
+        tile.currentlyVisible = false
+      }
+      case None => ()
+    }
+  }
 
 
   /*
