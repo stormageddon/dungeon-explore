@@ -189,8 +189,8 @@ class GameState(player:Player, screen: Scurses) {
     }
 
     // setup map
-    randomMap
     dungeonLevel = dungeonLevel + 1
+    randomMap
   }
 
   createFloor
