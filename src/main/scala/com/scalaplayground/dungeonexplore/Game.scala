@@ -587,7 +587,6 @@ class GameState(player:Player, screen: Scurses) {
                 case _ => true
               }
 
-              // TODO: Set item description text color for enchanted items.
               val newItem = new Item(new Position(m.position.x, m.position.y), dispChar = "!", itemId = loot._1, hoverDescription = loot._2, isIdentified = identified)
               droppedItems = droppedItems :+ newItem
               monsterActionMessage = monsterActionMessage + s"${m.name} dropped something with a loud clink.\n"

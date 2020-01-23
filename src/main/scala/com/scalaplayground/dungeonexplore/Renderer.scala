@@ -33,9 +33,6 @@ class Renderer(gs: GameState, screen: Scurses) {
     gameState.droppedItems.map(item => {
       if (item.position.x == p.position.x && item.position.y == p.position.y) {
         gameState.currTileDescription = item.tileDescription
-//        if (item.id == "POTION") {
-//          descriptionTextColor = Colors.BRIGHT_GREEN
-//        }
         descriptionTextColor = if (!item.identified) Colors.BRIGHT_BLUE else Colors.DIM_WHITE
       }
     })
