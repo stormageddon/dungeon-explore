@@ -1,18 +1,18 @@
 package com.scalaplayground.dungeonexplore.Item
 
 import com.scalaplayground.dungeonexplore.Armor._
-import com.scalaplayground.dungeonexplore.Game.GameState
 import com.scalaplayground.dungeonexplore.{DungeonHelper, Player}
 import com.scalaplayground.dungeonexplore.Position.Position
 import com.scalaplayground.dungeonexplore.Weapon._
-import net.team2xh.scurses.Scurses
+import net.team2xh.scurses.{Colors, Scurses}
 
-class Item(startingPos: Position, dispChar: String, hoverDescription: String = "A swirling potion lies here.", itemId: String = "POTION") {
+class Item(startingPos: Position, dispChar: String, hoverDescription: String = "A swirling potion lies here.", itemId: String = "POTION", isIdentified: Boolean = true) {
   val position: Position = startingPos
   val displayChar: String = dispChar
   val tileDescription: String = hoverDescription
   val id: String = itemId
   val dungeonHelper = new DungeonHelper
+  val identified: Boolean = isIdentified
 
   def render(x: Int, y: Int, screen: Scurses): Unit = {
     screen.put(x, y, displayChar)

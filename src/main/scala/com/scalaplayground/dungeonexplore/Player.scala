@@ -5,7 +5,7 @@ import com.scalaplayground.dungeonexplore.Armor._
 import com.scalaplayground.dungeonexplore.Weapon._
 import com.scalaplayground.dungeonexplore.Position.Position
 import com.scalaplayground.dungeonexplore.constants.Constants._
-import net.team2xh.scurses.Scurses
+import net.team2xh.scurses.{Colors, Scurses}
 
 import scala.util.Random
 
@@ -27,7 +27,7 @@ class Player(val name:String, val charClass:String, val charRace:String) {
 
 
   def render(screen:Scurses) = {
-    screen.put(position.x, position.y, displayChar)//dungeonHelper.padGameObjectChar(displayChar))
+    screen.put(position.x, position.y, displayChar, Colors.DIM_GREEN)//dungeonHelper.padGameObjectChar(displayChar))
   }
 
   def calculateDamage: Int = {

@@ -24,6 +24,7 @@ class Renderer(gs: GameState, screen: Scurses) {
   def renderStatsBar = {
     val p = gameState.getPlayer()
     var offset = 2
+    var descriptionTextColor = Colors.DIM_WHITE
 
     screen.put(0, NUM_ROWS + offset + 1, s"${p.name}, the ${p.charRace} ${p.charClass} (Level ${p.level})")
     screen.put(0, NUM_ROWS + offset + 2, s"HP: ${p.health}    AC: ${p.armorClass + p.armor.armorBonus}     WIELDING: ${p.weapon.name} (${p.weapon.damage._1}-${p.weapon.damage._2} + ${p.weapon.attackBonus})     POTIONS: ${p.numPotions}")
@@ -32,13 +33,17 @@ class Renderer(gs: GameState, screen: Scurses) {
     gameState.droppedItems.map(item => {
       if (item.position.x == p.position.x && item.position.y == p.position.y) {
         gameState.currTileDescription = item.tileDescription
+//        if (item.id == "POTION") {
+//          descriptionTextColor = Colors.BRIGHT_GREEN
+//        }
+        descriptionTextColor = if (!item.identified) Colors.BRIGHT_BLUE else Colors.DIM_WHITE
       }
     })
     val shrine = gameState.shrine
     if (shrine != null && shrine.position.x == p.position.x && shrine.position.y == p.position.y) {
       gameState.currTileDescription = shrine.tileDescription
     }
-    screen.put(0, NUM_ROWS + offset + 4, s"${gameState.currTileDescription}")
+    screen.put(0, NUM_ROWS + offset + 4, s"${gameState.currTileDescription}", descriptionTextColor)
     screen.put(0, NUM_ROWS + offset + 5, s"${gameState.roundMessage}")
     gameState.roundMessage = ""
   }

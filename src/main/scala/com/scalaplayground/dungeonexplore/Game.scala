@@ -517,14 +517,16 @@ class GameState(player:Player, screen: Scurses) {
       }
     }
 
-    // create stairs
-    droppedItems = droppedItems :+ new Item(listOfRooms.last.getRandomValidPosition, "v", "The stairwell descends into darkness", "DOWN_STAIR")
 
     if (dungeonLevel == 5) {
-      println("Create Cem Hial")
       // Final level only has Cem Hial
-      monsters = List(new CemHial(listOfRooms.head.getCenter))
+      val randPos = listOfRooms.head.getRandomValidPosition
+      monsters = List[Monster](new CemHial(new Position(randPos.y, randPos.x)))
       return Seq[Room](listOfRooms.head)
+    }
+    else {
+      // create stairs
+      droppedItems = droppedItems :+ new Item(listOfRooms.last.getRandomValidPosition, "v", "The stairwell descends into darkness", "DOWN_STAIR")
     }
     listOfRooms
   }
@@ -550,22 +552,16 @@ class GameState(player:Player, screen: Scurses) {
     if (!shouldGenerateMonster || (monsters != null && monsters.filter(m => m.isAlive).length >= MAX_MONSTERS_ALIVE)) {
       return None
     }
-//    if (monstersSlain >= 20) {
-//      monsterActionMessage = s"The door before you creaks open and an inhuman howl escapes from inside. A grayish light reveals the final resting place of Cem Hial...\n\n${monsterActionMessage}"
-//      shouldGenerateMonster = false
-//
-//      return Some(new CemHial(pos))
-//    }
     else {
       return Random.nextInt(100) match {
         case it if 0 until 25 contains it => Some(new Goblin(pos))
         case it if 25 until 50 contains it => Some(new Kobold(pos))
         case it if 50 until 60 contains it => Some(new GiantRat(pos))
         case it if 60 until 75 contains it => Some(new Orc(pos))
-        case it if 75 until 81 contains it => Some(new Wolf(pos))
-        case it if 81 until 93 contains it => Some(new DireWolf(pos))
-        case it if 93 until 98 contains it => Some(new RockGolem(pos))
-        case it if 98 until 100 contains it => Some(new Dragon(pos))
+        case it if 75 until 85 contains it => Some(new Wolf(pos))
+        case it if 85 until 95 contains it => Some(new DireWolf(pos))
+        case it if 95 until 100 contains it => Some(new RockGolem(pos))
+        //case it if 98 until 100 contains it => Some(new Dragon(pos))
       }
     }
   }
@@ -583,7 +579,16 @@ class GameState(player:Player, screen: Scurses) {
           monsterActionMessage = s"${monsterActionMessage}${m.name} was slain!\n"
           m.dropLoot match {
             case Some(loot) => {
-              val newItem = new Item(new Position(m.position.x, m.position.y), dispChar = "!", itemId = loot._1, hoverDescription = loot._2)
+              val identified = loot._1 match {
+                case ("FINE_DAGGER" | "DAGGER"
+                     | "FINE_SHORT_SWORD" | "SHORT_SWORD"
+                     | "FINE_GREAT_AXE" | "GREAT_AXE"
+                     | "NIGHT_BLADE") => false
+                case _ => true
+              }
+
+              // TODO: Set item description text color for enchanted items.
+              val newItem = new Item(new Position(m.position.x, m.position.y), dispChar = "!", itemId = loot._1, hoverDescription = loot._2, isIdentified = identified)
               droppedItems = droppedItems :+ newItem
               monsterActionMessage = monsterActionMessage + s"${m.name} dropped something with a loud clink.\n"
             }
