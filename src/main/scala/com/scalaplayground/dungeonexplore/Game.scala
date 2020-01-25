@@ -5,7 +5,6 @@ import net.team2xh.scurses.{Colors, Scurses}
 import scala.util.Random
 import scala.collection.mutable._
 import com.scalaplayground.dungeonexplore.Monster._
-import com.scalaplayground.dungeonexplore.Weapon._
 import com.scalaplayground.dungeonexplore.Armor._
 import com.scalaplayground.dungeonexplore.constants.Constants._
 import com.scalaplayground.dungeonexplore.constants.KeyboardCommands._
@@ -13,6 +12,7 @@ import com.scalaplayground.dungeonexplore.Item.Item
 import com.scalaplayground.dungeonexplore.PathFinding.Dijkstra
 import com.scalaplayground.dungeonexplore.Position.Position
 import com.scalaplayground.dungeonexplore.Shrine._
+import com.scalaplayground.dungeonexplore.Weapons._
 import com.scalaplayground.dungeonexplore._
 
 import scala.collection.mutable
@@ -337,6 +337,7 @@ class GameState(player:Player, screen: Scurses) {
     }
     */
 
+    shrine = new HealthShrine(new Position(-1, -1)) // create a fake shrine for now
     val shouldCreateShrine = Random.nextInt(100) + 1
     if (shouldCreateShrine < 20) {
       shrine = generateShrine
@@ -579,15 +580,15 @@ class GameState(player:Player, screen: Scurses) {
           monsterActionMessage = s"${monsterActionMessage}${m.name} was slain!\n"
           m.dropLoot match {
             case Some(loot) => {
-              val identified = loot._1 match {
-                case ("FINE_DAGGER" | "DAGGER"
-                     | "FINE_SHORT_SWORD" | "SHORT_SWORD"
-                     | "FINE_GREAT_AXE" | "GREAT_AXE"
-                     | "NIGHT_BLADE") => false
-                case _ => true
-              }
+//              val identified = loot._1 match {
+//                case ("FINE_DAGGER" | "DAGGER"
+//                     | "FINE_SHORT_SWORD" | "SHORT_SWORD"
+//                     | "FINE_GREAT_AXE" | "GREAT_AXE"
+//                     | "NIGHT_BLADE") => false
+//                case _ => true
+//              }
 
-              val newItem = new Item(new Position(m.position.x, m.position.y), dispChar = "!", itemId = loot._1, hoverDescription = loot._2, isIdentified = identified)
+              val newItem = new Item(new Position(m.position.x, m.position.y), dispChar = "!", itemId = loot._1, hoverDescription = loot._2)
               droppedItems = droppedItems :+ newItem
               monsterActionMessage = monsterActionMessage + s"${m.name} dropped something with a loud clink.\n"
             }
@@ -805,10 +806,10 @@ class GameState(player:Player, screen: Scurses) {
       case "give" => {
         if (command(1) != null) {
           command(1) match {
-            case "axe" => player.weapon = new FineGreatAxe()
+            case "axe" => player.weapon = new FineWeaponDecorator(new GreatAxe)
             case "night_blade" => player.weapon = new NightBlade()
-            case "dagger" => player.weapon = new FineDagger()
-            case "sword" => player.weapon = new FineShortSword()
+            case "dagger" => player.weapon = new FineWeaponDecorator(new Dagger)
+            case "sword" => player.weapon = new FineWeaponDecorator(new ShortSword)
             case "spear" => player.weapon = new Spear()
             case "dragon_scale" => player.armor = new DragonScale()
           }

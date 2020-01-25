@@ -5,16 +5,16 @@ import com.scalaplayground.dungeonexplore.Armor._
 import scala.util.Random
 import com.scalaplayground.dungeonexplore.constants.Constants._
 import com.scalaplayground.dungeonexplore.Position.Position
-import com.scalaplayground.dungeonexplore.Weapon._
 import com.scalaplayground.dungeonexplore.{DungeonHelper, Tile}
-import com.scalaplayground.dungeonexplore.PathFinding.{AStar, Dijkstra}
+import com.scalaplayground.dungeonexplore.PathFinding.{AStar}
+import com.scalaplayground.dungeonexplore.Weapons._
 
 abstract class Monster {
   val name: String
   var health: Int
   var armorClass: Int = 8
   var attackBonus: Int = 1
-  var weapon: Weapon = new RustyDagger
+  var weapon: Weapon = new RustyWeaponDecorator(new Dagger)
   var armor: Armor = new Natural
   var position: Position = new Position(Random.nextInt(NUM_ROWS), Random.nextInt(NUM_COLS))
   var displayChar: String = "m"
@@ -112,7 +112,10 @@ class Goblin(pos: Position) extends Monster {
   override var health = 1
   position = new Position(pos.y, pos.x)
   attackBonus = 2
-  weapon = List(new RustyDagger,new Dagger,new FineDagger)(Random.nextInt(3))
+  weapon = List(new RustyWeaponDecorator(new Dagger),
+    new Dagger,
+    new FineWeaponDecorator(new Dagger)
+  )(Random.nextInt(3))
   armor = List(new Natural, new Leather)(Random.nextInt(2))
   displayChar = "g"
 }
@@ -132,9 +135,9 @@ class Kobold(pos: Position) extends Monster {
   position = new Position(pos.y, pos.x)
   weapon = List(
     new Spear,
-    new RustyShortSword,
+    new RustyWeaponDecorator(new ShortSword),
     new ShortSword,
-    new RustyDagger,
+    new RustyWeaponDecorator(new Dagger),
     new Dagger
   )(Random.nextInt(5))
   armor = List(new Natural, new Leather)(Random.nextInt(2))
@@ -146,12 +149,12 @@ class Orc(pos: Position) extends Monster {
   override var health = 3
   position = new Position(pos.y, pos.x)
   weapon = List(
-    new RustyShortSword,
+    new RustyWeaponDecorator(new ShortSword),
     new ShortSword,
-    new FineShortSword,
-    new RustyGreatAxe,
+    new FineWeaponDecorator(new ShortSword),
+    new RustyWeaponDecorator(new GreatAxe),
     new GreatAxe,
-    new FineGreatAxe
+    new FineWeaponDecorator(new GreatAxe)
   )(Random.nextInt(6))
   armor = List(new Natural, new Leather, new Chain, new PlateMail)(Random.nextInt(4))
   displayChar = "o"

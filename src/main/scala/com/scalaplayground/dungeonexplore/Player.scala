@@ -2,8 +2,8 @@ package com.scalaplayground.dungeonexplore
 
 
 import com.scalaplayground.dungeonexplore.Armor._
-import com.scalaplayground.dungeonexplore.Weapon._
 import com.scalaplayground.dungeonexplore.Position.Position
+import com.scalaplayground.dungeonexplore.Weapons._
 import com.scalaplayground.dungeonexplore.constants.Constants._
 import net.team2xh.scurses.{Colors, Scurses}
 
@@ -13,7 +13,7 @@ class Player(val name:String, val charClass:String, val charRace:String) {
   var health = STARTING_PLAYER_HEALTH
   var maxHealth = STARTING_PLAYER_HEALTH
   var level = 1
-  var weapon: Weapon = new RustyDagger
+  var weapon: Weapon = new FlamingWeaponDecorator(new ShortSword)//new RustyDagger
   var numPotions = 1
   val armorClass = 10
   var attackBonus = 2
