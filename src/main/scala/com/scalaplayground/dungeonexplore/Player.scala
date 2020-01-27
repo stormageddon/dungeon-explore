@@ -2,6 +2,7 @@ package com.scalaplayground.dungeonexplore
 
 
 import com.scalaplayground.dungeonexplore.Armor._
+import com.scalaplayground.dungeonexplore.Item.Item
 import com.scalaplayground.dungeonexplore.Position.Position
 import com.scalaplayground.dungeonexplore.Weapons._
 import com.scalaplayground.dungeonexplore.constants.Constants._
@@ -14,7 +15,6 @@ class Player(val name:String, val charClass:String, val charRace:String) {
   var maxHealth = STARTING_PLAYER_HEALTH
   var level = 1
   var weapon: Weapon = new RustyWeaponDecorator(new Dagger)
-  var numPotions = 1
   val armorClass = 10
   var attackBonus = 2
   var sightDistance = 4
@@ -24,6 +24,8 @@ class Player(val name:String, val charClass:String, val charRace:String) {
   val displayChar = "@"
   var actionMessage: String = ""
   var canAvoidObstacles = false
+  val inventory = new Inventory
+  inventory.add(new Item(new Position(0,0)))
 
 
   def render(screen:Scurses) = {
@@ -45,10 +47,12 @@ class Player(val name:String, val charClass:String, val charRace:String) {
   }
 
   def quaffPotion: Boolean = {
-    if (numPotions > 0) {
+    //if (numPotions > 0) {
+    if (inventory.items.get("POTION").getOrElse(0) > 0) {
       val healthRegained = Random.nextInt(6) + 1
-      numPotions = numPotions - 1
-      appendActionMessage(s"You quickly quaff a potion, regaining ${healthRegained} health. You have ${numPotions} left")
+      //numPotions = numPotions - 1
+      inventory.items = inventory.items + ("POTION" -> dungeonHelper.clamp(inventory.items.get("POTION").getOrElse(0) - 1, 0, Int.MaxValue))
+      appendActionMessage(s"You quickly quaff a potion, regaining ${healthRegained} health. You have ${inventory.items.get("POTION").getOrElse(0)} left")
       health = dungeonHelper.clamp(health + healthRegained, 0, maxHealth)
     }
     else {

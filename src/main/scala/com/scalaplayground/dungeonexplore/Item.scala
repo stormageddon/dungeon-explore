@@ -5,19 +5,15 @@ import com.scalaplayground.dungeonexplore.{DungeonHelper, Player}
 import com.scalaplayground.dungeonexplore.Position.Position
 import net.team2xh.scurses.{Scurses}
 
-class Item(startingPos: Position = new Position(-1, -1),
-           dispChar: String = "!",
-           hoverDescription: String = "A swirling potion lies here.",
-           itemId: String = "POTION",
-           isIdentified: Boolean = true
+class Item(var position: Position = new Position(-1, -1),
+           val displayChar: String = "!",
+           val tileDescription: String = "A swirling potion lies here.",
+           var id: String = "POTION",
+           var identified: Boolean = true,
+           val weight: Double = 1.0
           ) {
 
-  var position: Position = startingPos
-  val displayChar: String = dispChar
-  val tileDescription: String = hoverDescription
-  var id: String = itemId
   val dungeonHelper = new DungeonHelper
-  val identified: Boolean = isIdentified
 
   def render(x: Int, y: Int, screen: Scurses): Unit = {
     screen.put(x, y, displayChar)
@@ -26,7 +22,8 @@ class Item(startingPos: Position = new Position(-1, -1),
   def interact(target: Player): Unit = {
     id match {
       case "POTION" => {
-        target.numPotions = target.numPotions + 1
+        //target.numPotions = target.numPotions + 1
+        target.inventory.add(this)
         target.appendActionMessage("You picked up a potion!")
       }
       case "RING_OF_HEALTH" => {
