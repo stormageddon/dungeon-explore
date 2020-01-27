@@ -3,24 +3,19 @@ package com.scalaplayground.dungeonexplore.Item
 import com.scalaplayground.dungeonexplore.Armor._
 import com.scalaplayground.dungeonexplore.{DungeonHelper, Player}
 import com.scalaplayground.dungeonexplore.Position.Position
-import com.scalaplayground.dungeonexplore.Weapons._
-import net.team2xh.scurses.{Colors, Scurses}
+import net.team2xh.scurses.{Scurses}
 
-trait Interactable {
-  def interact(target: Player)
-}
-
-class Item(startingPos: Position,
-           dispChar: String,
+class Item(startingPos: Position = new Position(-1, -1),
+           dispChar: String = "!",
            hoverDescription: String = "A swirling potion lies here.",
            itemId: String = "POTION",
            isIdentified: Boolean = true
-          ) extends Interactable {
+          ) {
 
-  val position: Position = startingPos
+  var position: Position = startingPos
   val displayChar: String = dispChar
   val tileDescription: String = hoverDescription
-  val id: String = itemId
+  var id: String = itemId
   val dungeonHelper = new DungeonHelper
   val identified: Boolean = isIdentified
 
@@ -33,6 +28,10 @@ class Item(startingPos: Position,
       case "POTION" => {
         target.numPotions = target.numPotions + 1
         target.appendActionMessage("You picked up a potion!")
+      }
+      case "RING_OF_HEALTH" => {
+        target.maxHealth = target.maxHealth + 10
+        target.health = target.health + 10
       }
       case "LEATHER_ARMOR" => {
         target.appendActionMessage("You don the Leather Armor. You look sexy.")
@@ -50,7 +49,6 @@ class Item(startingPos: Position,
         target.appendActionMessage("You don the Dragon Scale. You feel totally protected.")
         target.donArmor(new DragonScale)
       }
-
     }
   }
 }

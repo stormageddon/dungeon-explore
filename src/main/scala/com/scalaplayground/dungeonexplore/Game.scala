@@ -541,12 +541,12 @@ class GameState(player:Player, screen: Scurses) {
       new Position(20,20)
     }
 
-      Random.nextInt(100) match {
-        case it if 0 until 50 contains it => return new HealthShrine(randPos)
-        case it if 50 until 75 contains it => return new StrengthShrine(randPos)
-        case it if 75 until 90 contains it => return new HolyShrine(randPos)
-        case it if 90 until 100 contains it => return new CursedShrine(randPos)
-      }
+    Random.nextInt(100) match {
+      case it if 0 until 50 contains it => return new HealthShrine(randPos)
+      case it if 50 until 75 contains it => return new StrengthShrine(randPos)
+      case it if 75 until 90 contains it => return new HolyShrine(randPos)
+      case it if 90 until 100 contains it => return new CursedShrine(randPos)
+    }
   }
 
   def generateMonster(pos:Position): Option[Monster] = {
@@ -588,8 +588,9 @@ class GameState(player:Player, screen: Scurses) {
 //                case _ => true
 //              }
 
-              val newItem = new Item(new Position(m.position.x, m.position.y), dispChar = "!", itemId = loot._1, hoverDescription = loot._2)
-              droppedItems = droppedItems :+ newItem
+              //val newItem = new Item(new Position(m.position.x, m.position.y), dispChar = "!", itemId = loot._1, hoverDescription = loot._2)
+              droppedItems = droppedItems :+ loot
+              println(droppedItems)
               monsterActionMessage = monsterActionMessage + s"${m.name} dropped something with a loud clink.\n"
             }
             case None => None

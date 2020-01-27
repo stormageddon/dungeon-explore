@@ -3,6 +3,7 @@ package com.scalaplayground.dungeonexplore.Shrine
 import com.scalaplayground.dungeonexplore.constants.Constants.STARTING_PLAYER_HEALTH
 import com.scalaplayground.dungeonexplore.{DungeonHelper, Player}
 import com.scalaplayground.dungeonexplore.Position.Position
+import com.scalaplayground.dungeonexplore.Weapons.{BlessedWeaponDecorator, CursedWeaponDecorator}
 import net.team2xh.scurses.Scurses
 
 abstract class Shrine {
@@ -66,8 +67,7 @@ class HolyShrine(startingPosition: Position) extends Shrine {
     var message = ""
     if (isActive) {
       super.interact(player)
-      player.weapon.attackBonus = player.weapon.attackBonus + 2
-      player.weapon.name = s"Blessed ${player.weapon.name}"
+      player.weapon = new BlessedWeaponDecorator(player.weapon)
       message = "You dip your weapon in the crystal water of the shrine and it gleams brilliantly."
     }
     else {

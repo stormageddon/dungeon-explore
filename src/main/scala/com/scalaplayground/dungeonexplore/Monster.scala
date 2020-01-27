@@ -1,12 +1,13 @@
 package com.scalaplayground.dungeonexplore.Monster
 
 import com.scalaplayground.dungeonexplore.Armor._
+import com.scalaplayground.dungeonexplore.Item.Item
 
 import scala.util.Random
 import com.scalaplayground.dungeonexplore.constants.Constants._
 import com.scalaplayground.dungeonexplore.Position.Position
 import com.scalaplayground.dungeonexplore.{DungeonHelper, Tile}
-import com.scalaplayground.dungeonexplore.PathFinding.{AStar}
+import com.scalaplayground.dungeonexplore.PathFinding.AStar
 import com.scalaplayground.dungeonexplore.Weapons._
 
 abstract class Monster {
@@ -35,20 +36,33 @@ abstract class Monster {
     damage
   }
 
-  def dropLoot: Option[(String, String)] = {
+  def dropLoot: Option[Item] = {
     val roll = Random.nextInt(100)
-    if (roll <= weapon.dropChance && weapon.isDroppable) {
-      return Some((weapon.id, weapon.name))
+    if (roll <= MAGIC_ITEM_DROP_PERCENTAGE) {
+      return Some(generateMagicItem)
+    }
+    else if (roll <= weapon.dropChance && weapon.isDroppable) {
+      weapon.position = position
+      return Some(weapon)
     }
     else if (roll <= armor.dropChance && armor.isDroppable) {
-      return Some((armor.id, armor.name))
+      return Some(new Item(position, "!", armor.name, armor.id))
     }
     else if (roll <= POTION_DROP_PERCENTAGE) {
-      return Some("POTION", "A swirling potion lies here.")
+      return Some(new Item(position, "!", "A swirling potion lies here", "POTION"))
     }
     None
   }
 
+  def generateMagicItem: Item = {
+    Random.nextInt(100) match {
+      case it if 0 until 100 contains it => {
+        val sword: Weapon = new FlamingWeaponDecorator(new ShortSword)
+        sword.position = position
+        sword
+      }
+    }
+  }
 
   def move(target: Option[Tile], tiles: Seq[Seq[Tile]], currTile: Option[Tile]): Position = {
     val aStar = new AStar
@@ -212,7 +226,7 @@ class Dragon(pos: Position) extends Monster {
     class FireBreath extends Weapon {
       var name = "Fire breath"
       var damage = (5,10)
-      var id = "FIRE_BREATH"
+      id = "FIRE_BREATH"
       isDroppable = false
       attackBonus = 2
 

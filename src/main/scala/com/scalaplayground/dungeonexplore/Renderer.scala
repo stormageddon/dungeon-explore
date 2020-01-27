@@ -27,7 +27,7 @@ class Renderer(gs: GameState, screen: Scurses) {
     var descriptionTextColor = Colors.DIM_WHITE
 
     screen.put(0, NUM_ROWS + offset + 1, s"${p.name}, the ${p.charRace} ${p.charClass} (Level ${p.level})")
-    screen.put(0, NUM_ROWS + offset + 2, s"HP: ${p.health}    AC: ${p.armorClass + p.armor.armorBonus}     WIELDING: ${p.weapon.name} (${p.weapon.damage._1}-${p.weapon.damage._2} + ${p.weapon.attackBonus})     POTIONS: ${p.numPotions}")
+    screen.put(0, NUM_ROWS + offset + 2, s"HP: ${p.health}/${p.maxHealth}    AC: ${p.armorClass + p.armor.armorBonus}     WIELDING: ${p.weapon.name} (${p.weapon.damage._1}-${p.weapon.damage._2} + ${p.weapon.attackBonus})     POTIONS: ${p.numPotions}")
     screen.put(0, NUM_ROWS + offset + 3, s"Dungeon level: ${gameState.dungeonLevel}")
     gameState.currTileDescription = "There is nothing here."
     gameState.droppedItems.map(item => {
@@ -42,6 +42,7 @@ class Renderer(gs: GameState, screen: Scurses) {
     }
     screen.put(0, NUM_ROWS + offset + 4, s"${gameState.currTileDescription}", descriptionTextColor)
     screen.put(0, NUM_ROWS + offset + 5, s"${gameState.roundMessage}")
+    screen.put(0, NUM_ROWS + offset + 10, s"${gameState.droppedItems.map(i => i.id + i.position.toString)}")
     gameState.roundMessage = ""
   }
 
@@ -84,16 +85,9 @@ class Renderer(gs: GameState, screen: Scurses) {
           }
         }
         else {
-          // find the tile that matches this position
-          //val t = tiles.filter(tile => tile.position.x == x && tile.position.y == y).head
           val t = tiles(x)(y)
 
           if (t.hasBeenSeen && t.currentlyVisible) {
-//            if ((t.position.x > player.position.x && t.position.x <= player.position.x + player.sightDistance) // right
-//                || (t.position.x < player.position.x && t.position.x >= player.position.x - player.sightDistance) // left
-//                || (t.position.y > player.position.y && t.position.y <= player.position.y + player.sightDistance) // below
-//                || (t.position.y < player.position.y && t.position.y >= player.position.y - player.sightDistance) // above
-//            ) {
             screen.put(x, y, t.displayChar)
           }
           else if (t.hasBeenSeen && !t.currentlyVisible) {

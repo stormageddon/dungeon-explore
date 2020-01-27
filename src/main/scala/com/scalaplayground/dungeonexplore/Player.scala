@@ -13,7 +13,7 @@ class Player(val name:String, val charClass:String, val charRace:String) {
   var health = STARTING_PLAYER_HEALTH
   var maxHealth = STARTING_PLAYER_HEALTH
   var level = 1
-  var weapon: Weapon = new FlamingWeaponDecorator(new ShortSword)//new RustyDagger
+  var weapon: Weapon = new RustyWeaponDecorator(new Dagger)
   var numPotions = 1
   val armorClass = 10
   var attackBonus = 2
@@ -27,7 +27,7 @@ class Player(val name:String, val charClass:String, val charRace:String) {
 
 
   def render(screen:Scurses) = {
-    screen.put(position.x, position.y, displayChar, Colors.DIM_GREEN)//dungeonHelper.padGameObjectChar(displayChar))
+    screen.put(position.x, position.y, displayChar, Colors.DIM_GREEN)
   }
 
   def calculateDamage: Int = {
