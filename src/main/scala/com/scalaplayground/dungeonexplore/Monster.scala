@@ -19,7 +19,6 @@ abstract class Monster {
   var armor: Armor = new Natural
   var position: Position = new Position(Random.nextInt(NUM_ROWS), Random.nextInt(NUM_COLS))
   var displayChar: String = "m"
-  var dungeonHelper = new DungeonHelper
   val canAvoidObstacles = false
 
   def isAlive: Boolean = {
@@ -56,10 +55,20 @@ abstract class Monster {
 
   def generateMagicItem: Item = {
     Random.nextInt(100) match {
-      case it if 0 until 100 contains it => {
-        val sword: Weapon = new FlamingWeaponDecorator(new ShortSword)
-        sword.position = position
-        sword
+      case it if 0 until 15 contains it => {
+        val weapon: Weapon = new FlamingWeaponDecorator(Weapon.generateWeapon)
+        weapon.position = position
+        weapon
+      }
+      case it if 15 until 75 contains it => {
+        val weapon: Weapon = new BlessedWeaponDecorator(Weapon.generateWeapon)
+        weapon.position = position
+        weapon
+      }
+      case it if 75 until 100 contains it => {
+        val weapon: Weapon = new CursedWeaponDecorator(Weapon.generateWeapon)
+        weapon.position = position
+        weapon
       }
     }
   }
@@ -224,7 +233,7 @@ class Dragon(pos: Position) extends Monster {
   override def performAttack: Int = {
 
     class FireBreath extends Weapon {
-      var name = "Fire breath"
+      name = "Fire breath"
       var damage = (5,10)
       id = "FIRE_BREATH"
       isDroppable = false

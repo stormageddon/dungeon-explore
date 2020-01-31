@@ -11,7 +11,6 @@ import scala.collection.mutable
 
 class Renderer(gs: GameState, screen: Scurses) {
   val gameState = gs
-  val dungeonHelper = new DungeonHelper
 
   def renderMonsterActions(monsterMessage:String) = {
     screen.put(0, NUM_ROWS + 7, monsterMessage)
@@ -27,7 +26,7 @@ class Renderer(gs: GameState, screen: Scurses) {
     var descriptionTextColor = Colors.DIM_WHITE
 
     screen.put(0, NUM_ROWS + offset + 1, s"${p.name}, the ${p.charRace} ${p.charClass} (Level ${p.level})")
-    screen.put(0, NUM_ROWS + offset + 2, s"HP: ${p.health}/${p.maxHealth}    AC: ${p.armorClass + p.armor.armorBonus}     WIELDING: ${p.weapon.name} (${p.weapon.damage._1}-${p.weapon.damage._2} + ${p.weapon.attackBonus})     POTIONS: ${p.inventory.getItems.get("POTION").getOrElse(0)}")
+    screen.put(0, NUM_ROWS + offset + 2, s"HP: ${p.health}/${p.maxHealth}    AC: ${p.armorClass + p.armor.armorBonus}     WIELDING: ${p.weapon.name} (${p.weapon.damage._1}-${p.weapon.damage._2} + ${p.weapon.attackBonus})     POTIONS: ${p.inventory.getItems.get("POTION").getOrElse(Seq()).size}")
     screen.put(0, NUM_ROWS + offset + 3, s"Dungeon level: ${gameState.dungeonLevel}")
     gameState.currTileDescription = "There is nothing here."
     gameState.droppedItems.map(item => {
@@ -98,6 +97,21 @@ class Renderer(gs: GameState, screen: Scurses) {
         }
       }
 
+      renderRightPanel(renderInventoryScreen)
+//
+//      x match {
+//        case 0 => screen.put(NUM_COLS + 1, 0, "    w,a,s,d - Move")
+//        case 1 => screen.put(NUM_COLS + 1, 1, "    q,e,z,x - Move diagonally")
+//        case 2 => screen.put(NUM_COLS + 1, 2, "    r - Quaff a potion")
+//        case 3 => screen.put(NUM_COLS + 1, 3, "    u - Use item on ground")
+//        case 4 => screen.put(NUM_COLS + 1, 4, "    ESC - quit")
+//        case _ => Unit
+//      }
+    }
+  }
+
+  def renderHelpScreen(): Unit = {
+    for (x <- 0 to NUM_COLS - 1) {
       x match {
         case 0 => screen.put(NUM_COLS + 1, 0, "    w,a,s,d - Move")
         case 1 => screen.put(NUM_COLS + 1, 1, "    q,e,z,x - Move diagonally")
@@ -108,4 +122,17 @@ class Renderer(gs: GameState, screen: Scurses) {
       }
     }
   }
+
+  def renderInventoryScreen(): Unit = {
+    var index = 0
+    gs.getPlayer.inventory.getItems.foreach(item => {
+      screen.put(NUM_COLS + 1, index, s"${item._2.head.name}: ${item._2.size}")
+      index = index + 1
+    })
+  }
+
+  def renderRightPanel(callback: () => Unit) = {
+    callback()
+  }
 }
+

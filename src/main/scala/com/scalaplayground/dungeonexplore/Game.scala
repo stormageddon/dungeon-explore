@@ -155,7 +155,6 @@ object Game extends App {
 }
 
 class GameState(player:Player, screen: Scurses) {
-  val dungeonHelper = new DungeonHelper
   val renderer = new Renderer(this, screen)
   var defeatedMonsters = Map[String,Int]()
   var tiles = mutable.Seq[mutable.Seq[Tile]]()
@@ -675,6 +674,10 @@ class GameState(player:Player, screen: Scurses) {
             }
           }
         }
+        false
+      }
+      case TOGGLE_INVENTORY => {
+
         false
       }
       case RUN_COMMAND => {

@@ -10,6 +10,7 @@ object KeyboardCommands {
   val MOVE_UP_RIGHT = "e"
   val MOVE_DOWN_LEFT = "z"
   val MOVE_DOWN_RIGHT = "x"
+  val TOGGLE_INVENTORY = "i"
   val USE_ITEM = "u"
   val ESCAPE = "个"
   val RUN_COMMAND = "/"

@@ -10,7 +10,6 @@ abstract class Shrine {
   val displayChar = "s"
   var isActive = true
 
-  val dungeonHelper = new DungeonHelper
   val position: Position
   var tileDescription: String = "You stand at the foot of a strange shrine."
 
@@ -20,7 +19,6 @@ abstract class Shrine {
   }
 
   def render(x: Int, y: Int, screen:Scurses) = {
-    //print(dungeonHelper.padGameObjectChar(displayChar))
     screen.put(x, y, displayChar)
   }
 }
@@ -32,7 +30,7 @@ class HealthShrine(startingPosition: Position) extends Shrine {
     var message = ""
     if (isActive) {
       super.interact(player)
-      player.health = dungeonHelper.clamp(STARTING_PLAYER_HEALTH, 0, STARTING_PLAYER_HEALTH)
+      player.health = DungeonHelper.clamp(STARTING_PLAYER_HEALTH, 0, STARTING_PLAYER_HEALTH)
       message = "You feel healthier as you look at the shrine."
     }
     else {

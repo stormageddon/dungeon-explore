@@ -10,10 +10,9 @@ class Item(var position: Position = new Position(-1, -1),
            val tileDescription: String = "A swirling potion lies here.",
            var id: String = "POTION",
            var identified: Boolean = true,
-           val weight: Double = 1.0
+           val weight: Double = 1.0,
+           var name: String = "???"
           ) {
-
-  val dungeonHelper = new DungeonHelper
 
   def render(x: Int, y: Int, screen: Scurses): Unit = {
     screen.put(x, y, displayChar)

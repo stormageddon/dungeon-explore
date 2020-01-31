@@ -6,17 +6,18 @@ trait WeaponDecorator extends Weapon {
   val weapon: Weapon
 
   override def interact(target: Player): Unit = {
-    target.appendActionMessage(s"PICKING UP ${name}")
+    target.appendActionMessage(s"Picked up ${name}")
     target.weapon = this
+    target.inventory.add(this)
   }
 }
 
 class RustyWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
   override val weapon = baseWeapon
-  override var name = s"Rusty ${weapon.name}"
+  name = s"Rusty ${weapon.name}"
   override val tileDescription: String = name
   override var damage = weapon.damage
-  id = weapon.id
+  id = s"RUSTY_${weapon.id}"
   attackBonus = baseWeapon.attackBonus - 1
   isDroppable = baseWeapon.isDroppable
 
@@ -25,10 +26,10 @@ class RustyWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
 
 class FineWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
   override val weapon = baseWeapon
-  override var name = s"Fine ${weapon.name}"
+  name = s"Fine ${weapon.name}"
   override val tileDescription: String = name
   override var damage = weapon.damage
-  id = weapon.id
+  id = s"FINE_${weapon.id}"
   attackBonus = weapon.attackBonus + 1
   isDroppable = baseWeapon.isDroppable
 
@@ -39,12 +40,13 @@ class FineWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
 
 class FlamingWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
   override val weapon = baseWeapon
-  override var name = s"Flaming ${weapon.name}"
+  name = s"Flaming ${weapon.name}"
   override val tileDescription: String = name
   override var damage = (weapon.damage._1 + 1, weapon.damage._2 + 1)
-  id = weapon.id
+  id = s"FLAMING_${weapon.id}"
   attackBonus = weapon.attackBonus + 1
   isDroppable = baseWeapon.isDroppable
+  identified = false
 
   override def attack: Int = {
     return weapon.attack + 1
@@ -53,24 +55,26 @@ class FlamingWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
 
 class BlessedWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
   override val weapon = baseWeapon
-  override var name = s"Blessed ${weapon.name}"
+  name = s"Blessed ${weapon.name}"
   override val tileDescription: String = name
   override var damage = weapon.damage
-  id = weapon.id
+  id = s"BLESSED${weapon.id}"
   attackBonus = weapon.attackBonus + 2
   isDroppable = baseWeapon.isDroppable
+  identified = false
 
   override def attack: Int = weapon.attack
 }
 
 class CursedWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
   override val weapon = baseWeapon
-  override var name = s"Cursed ${weapon.name}"
+  name = s"Cursed ${weapon.name}"
   override val tileDescription: String = name
   override var damage = (weapon.damage._1 - 1, weapon.damage._2 - 1)
-  id = weapon.id
+  id = s"CURSED_${weapon.id}"
   attackBonus = weapon.attackBonus - 2
   isDroppable = baseWeapon.isDroppable
+  identified = false
 
   override def attack: Int = weapon.attack
 }

@@ -20,7 +20,6 @@ class Player(val name:String, val charClass:String, val charRace:String) {
   var sightDistance = 4
   var armor: Armor = new Natural
   var position = new Position(10, 14)
-  var dungeonHelper = new DungeonHelper
   val displayChar = "@"
   var actionMessage: String = ""
   var canAvoidObstacles = false
@@ -47,13 +46,11 @@ class Player(val name:String, val charClass:String, val charRace:String) {
   }
 
   def quaffPotion: Boolean = {
-    //if (numPotions > 0) {
-    if (inventory.items.get("POTION").getOrElse(0) > 0) {
+    if (inventory.items.get("POTION").getOrElse(Seq()).nonEmpty) {
       val healthRegained = Random.nextInt(6) + 1
-      //numPotions = numPotions - 1
-      inventory.items = inventory.items + ("POTION" -> dungeonHelper.clamp(inventory.items.get("POTION").getOrElse(0) - 1, 0, Int.MaxValue))
-      appendActionMessage(s"You quickly quaff a potion, regaining ${healthRegained} health. You have ${inventory.items.get("POTION").getOrElse(0)} left")
-      health = dungeonHelper.clamp(health + healthRegained, 0, maxHealth)
+      inventory.remove("POTION")
+      appendActionMessage(s"You quickly quaff a potion, regaining ${healthRegained} health. You have ${inventory.items.get("POTION").getOrElse(Seq()).size} left")
+      health = DungeonHelper.clamp(health + healthRegained, 0, maxHealth)
     }
     else {
       appendActionMessage("You are out of potions!")
@@ -62,7 +59,7 @@ class Player(val name:String, val charClass:String, val charRace:String) {
   }
 
   def move(xVel: Int, yVel: Int): Position = {
-    new Position(dungeonHelper.clamp(this.position.x + xVel, 0, NUM_COLS - 1), dungeonHelper.clamp(this.position.y + yVel, 0, NUM_ROWS - 1))
+    new Position(DungeonHelper.clamp(this.position.x + xVel, 0, NUM_COLS - 1), DungeonHelper.clamp(this.position.y + yVel, 0, NUM_ROWS - 1))
   }
 
   def endRound = {

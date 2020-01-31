@@ -9,7 +9,7 @@ import net.team2xh.scurses.Scurses
 import scala.util.Random
 
 abstract class Weapon extends Item {
-  var name: String
+ // override var name: String
   var damage: (Int, Int)
   var attackBonus: Int = 0
   var isDroppable: Boolean = false
@@ -30,13 +30,14 @@ abstract class Weapon extends Item {
   }
 
   override def interact(target: Player): Unit = {
-    target.appendActionMessage(s"PICKING UP ${name}")
+    target.appendActionMessage(s"Picked up ${name}")
     target.weapon = this
+    target.inventory.add(this)
   }
 }
 
 class Dagger extends Weapon {
-  var name = "Dagger"
+  name = "Dagger"
   override val tileDescription: String = name
   var damage = (1,2)
 
@@ -45,7 +46,7 @@ class Dagger extends Weapon {
 }
 
 class ShortSword extends Weapon {
-  var name = "Short sword"
+  name = "Short sword"
   override val tileDescription: String = name
   var damage = (1,4)
   id = "SHORT_SWORD"
@@ -53,7 +54,7 @@ class ShortSword extends Weapon {
 }
 
 class GreatAxe extends Weapon {
-  var name = "Great Axe"
+  name = "Great Axe"
   override val tileDescription: String = name
   var damage = (1,6)
   id = "GREAT_AXE"
@@ -61,14 +62,14 @@ class GreatAxe extends Weapon {
 }
 
 class Claws extends Weapon {
-  var name = "claws"
+  name = "claws"
   var damage = (1,4)
   id = "CLAWS"
   isDroppable = false
 }
 
 class NightBlade extends Weapon {
-  var name = "Night Blade"
+  name = "Night Blade"
   var damage = (4,10)
   override val tileDescription: String = name
   id = "NIGHT_BLADE"
@@ -77,9 +78,21 @@ class NightBlade extends Weapon {
 }
 
 class Spear extends Weapon {
-  var name = "Spear"
+  name = "Spear"
   override val tileDescription: String = name
   var damage = (1,3)
   id = "SPEAR"
   isDroppable = true
+}
+
+object Weapon {
+  def generateWeapon: Weapon = {
+    val possibleWeapons = List[Weapon](
+      new Dagger,
+      new ShortSword,
+      new GreatAxe,
+      new Spear
+    )
+    possibleWeapons(Random.nextInt(possibleWeapons.size))
+  }
 }
