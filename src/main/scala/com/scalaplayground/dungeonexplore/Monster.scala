@@ -6,7 +6,7 @@ import com.scalaplayground.dungeonexplore.Item.Item
 import scala.util.Random
 import com.scalaplayground.dungeonexplore.constants.Constants._
 import com.scalaplayground.dungeonexplore.Position.Position
-import com.scalaplayground.dungeonexplore.{DungeonHelper, Tile}
+import com.scalaplayground.dungeonexplore.{Tile}
 import com.scalaplayground.dungeonexplore.PathFinding.AStar
 import com.scalaplayground.dungeonexplore.Weapons._
 
@@ -22,6 +22,7 @@ abstract class Monster {
   val canAvoidObstacles = false
 
   def isAlive: Boolean = {
+    Armor.generateArmor
     health > 0
   }
 

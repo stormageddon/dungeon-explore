@@ -6,6 +6,7 @@ import scala.util.Random
 import scala.collection.mutable._
 import com.scalaplayground.dungeonexplore.Monster._
 import com.scalaplayground.dungeonexplore.Armor._
+import com.scalaplayground.dungeonexplore.Floor.Floor
 import com.scalaplayground.dungeonexplore.constants.Constants._
 import com.scalaplayground.dungeonexplore.constants.KeyboardCommands._
 import com.scalaplayground.dungeonexplore.Item.Item
@@ -155,10 +156,13 @@ object Game extends App {
 }
 
 class GameState(player:Player, screen: Scurses) {
+  def getFloorItems = floors(dungeonLevel - 1).droppedItems
+
   val renderer = new Renderer(this, screen)
   var defeatedMonsters = Map[String,Int]()
   var tiles = mutable.Seq[mutable.Seq[Tile]]()
   var rooms: mutable.Seq[Room] = mutable.Seq[Room]()
+  var floors: Seq[Floor] = Seq[Floor]()
   var shouldGenerateMonster = true
   var monsters: List[Monster] = List[Monster]()
   var monstersSlain = 0
@@ -188,8 +192,13 @@ class GameState(player:Player, screen: Scurses) {
     }
 
     // setup map
-    dungeonLevel = dungeonLevel + 1
+
+    val newFloor = Floor(dungeonLevel)
+    floors = floors :+ newFloor
     randomMap
+    newFloor.rooms = rooms
+    newFloor.populate
+    dungeonLevel = dungeonLevel + 1
   }
 
   createFloor
@@ -286,6 +295,10 @@ class GameState(player:Player, screen: Scurses) {
 
     // make rooms
     rooms = createRooms
+
+    // make the floor
+    //val floor = Floor(dungeonLevel)
+
 
     // build walls
     /*
@@ -518,7 +531,7 @@ class GameState(player:Player, screen: Scurses) {
     }
 
 
-    if (dungeonLevel == 5) {
+    if (dungeonLevel - 1 == 5) {
       // Final level only has Cem Hial
       val randPos = listOfRooms.head.getRandomValidPosition
       monsters = List[Monster](new CemHial(new Position(randPos.y, randPos.x)))
@@ -526,7 +539,7 @@ class GameState(player:Player, screen: Scurses) {
     }
     else {
       // create stairs
-      droppedItems = droppedItems :+ new Item(listOfRooms.last.getRandomValidPosition, "v", "The stairwell descends into darkness", "DOWN_STAIR")
+     floors(dungeonLevel).droppedItems = floors(dungeonLevel).droppedItems :+ new Item(listOfRooms.last.getRandomValidPosition, "v", "The stairwell descends into darkness", "DOWN_STAIR")
     }
     listOfRooms
   }
@@ -588,8 +601,7 @@ class GameState(player:Player, screen: Scurses) {
 //              }
 
               //val newItem = new Item(new Position(m.position.x, m.position.y), dispChar = "!", itemId = loot._1, hoverDescription = loot._2)
-              droppedItems = droppedItems :+ loot
-              println(droppedItems)
+              floors(dungeonLevel - 1).droppedItems = floors(dungeonLevel - 1).droppedItems :+ loot
               monsterActionMessage = monsterActionMessage + s"${m.name} dropped something with a loud clink.\n"
             }
             case None => None
@@ -651,7 +663,7 @@ class GameState(player:Player, screen: Scurses) {
       case MOVE_DOWN_RIGHT => performPlayerMove(1, 1)
       case USE_ITEM => {
         // check for items
-        droppedItems.filter(item => item.position.x == player.position.x && item.position.y == player.position.y).headOption match {
+        floors(dungeonLevel - 1).droppedItems.filter(item => item.position.x == player.position.x && item.position.y == player.position.y).headOption match {
           case Some(item) => {
             if (item.id == "DOWN_STAIR") {
               createFloor
@@ -663,7 +675,7 @@ class GameState(player:Player, screen: Scurses) {
             }
             else {
               item.interact(player)
-              droppedItems = droppedItems.filterNot( i => i == item)
+              floors(dungeonLevel - 1).droppedItems = floors(dungeonLevel - 1).droppedItems.filterNot( i => i == item)
             }
           }
           case _ => {

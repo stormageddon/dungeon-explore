@@ -29,7 +29,7 @@ class Renderer(gs: GameState, screen: Scurses) {
     screen.put(0, NUM_ROWS + offset + 2, s"HP: ${p.health}/${p.maxHealth}    AC: ${p.armorClass + p.armor.armorBonus}     WIELDING: ${p.weapon.name} (${p.weapon.damage._1}-${p.weapon.damage._2} + ${p.weapon.attackBonus})     POTIONS: ${p.inventory.getItems.get("POTION").getOrElse(Seq()).size}")
     screen.put(0, NUM_ROWS + offset + 3, s"Dungeon level: ${gameState.dungeonLevel}")
     gameState.currTileDescription = "There is nothing here."
-    gameState.droppedItems.map(item => {
+    gameState.getFloorItems.map(item => {
       if (item.position.x == p.position.x && item.position.y == p.position.y) {
         gameState.currTileDescription = item.tileDescription
         descriptionTextColor = if (!item.identified) Colors.BRIGHT_BLUE else Colors.DIM_WHITE
@@ -48,7 +48,7 @@ class Renderer(gs: GameState, screen: Scurses) {
     val monsters: List[Monster] = gameState.monsters
     val shrine: Shrine = gameState.shrine
     val player: Player = gameState.getPlayer()
-    val droppedItems: List[Item] = gameState.droppedItems
+    val droppedItems: Seq[Item] = gameState.getFloorItems
     val tiles: mutable.Seq[mutable.Seq[Tile]] = gameState.tiles
 
     for (x <- 0 to NUM_COLS - 1) {
