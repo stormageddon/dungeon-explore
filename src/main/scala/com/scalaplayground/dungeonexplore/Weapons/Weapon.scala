@@ -9,7 +9,6 @@ import net.team2xh.scurses.Scurses
 import scala.util.Random
 
 abstract class Weapon extends Item {
- // override var name: String
   var damage: (Int, Int)
   var attackBonus: Int = 0
   var isDroppable: Boolean = false

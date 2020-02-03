@@ -30,6 +30,7 @@ class Natural extends Armor {
 class Leather extends Armor {
   name = "leather armor"
   id = "LEATHER_ARMOR"
+  override val tileDescription: String = name
   armorBonus = 1
   isDroppable = true
 }
@@ -37,6 +38,7 @@ class Leather extends Armor {
 class Chain extends Armor {
   name = "chainmail"
   id = "CHAINMAIL"
+  override val tileDescription: String = name
   armorBonus = 3
   isDroppable = true
 }
@@ -51,6 +53,7 @@ class StoneArmor extends Armor {
 class PlateMail extends Armor {
   name = "Platemail"
   id = "PLATE_MAIL"
+  override val tileDescription: String = name
   armorBonus = 5
   isDroppable = false
 }
@@ -58,6 +61,7 @@ class PlateMail extends Armor {
 class DragonScale extends Armor {
   name = "DragonScale"
   id = "DRAGON_SCALE"
+  override val tileDescription: String = name
   override val dropChance = 100
   armorBonus = 20
   isDroppable = true

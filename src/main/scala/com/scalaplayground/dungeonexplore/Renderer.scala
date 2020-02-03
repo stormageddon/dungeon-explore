@@ -45,7 +45,7 @@ class Renderer(gs: GameState, screen: Scurses) {
   }
 
   def renderGameState: Unit = {
-    val monsters: List[Monster] = gameState.monsters
+    val monsters: Seq[Monster] = gameState.getMonsters
     val shrine: Shrine = gameState.shrine
     val player: Player = gameState.getPlayer()
     val droppedItems: Seq[Item] = gameState.getFloorItems

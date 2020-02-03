@@ -157,6 +157,7 @@ object Game extends App {
 
 class GameState(player:Player, screen: Scurses) {
   def getFloorItems = floors(dungeonLevel - 1).droppedItems
+  def getMonsters = floors(dungeonLevel - 1).monsters
 
   val renderer = new Renderer(this, screen)
   var defeatedMonsters = Map[String,Int]()
@@ -513,16 +514,6 @@ class GameState(player:Player, screen: Scurses) {
               }
             }
           }
-
-          // Fill the room
-          for (i <- 0 to Random.nextInt(3)) {
-            monsters = if (monsters == null) List[Monster]() else monsters
-            val randPos = newRoom.getRandomValidPosition
-            monsters = generateMonster(new Position(randPos.y, randPos.x)) match {
-              case Some(monster) => monsters :+ monster
-              case None => monsters
-            }
-          }
         }
 
         // Add room to the list
@@ -608,7 +599,7 @@ class GameState(player:Player, screen: Scurses) {
 
           }
           monstersSlain += 1
-          monsters = monsters.filter(monster => monster != m)
+          floors(dungeonLevel - 1).getMonsters.filter(monster => monster != m)
         }
       }
       case None => Unit
@@ -704,7 +695,7 @@ class GameState(player:Player, screen: Scurses) {
     }
 
     // Perform monster actions
-    monsters.map(monster => {
+    floors(dungeonLevel - 1).getMonsters.map(monster => {
       if (monster.isAlive) {
         if (monsterHasValidTarget(monster, player) && monster.isAlive) {
           val hitRoll = monster.performAttack
@@ -772,7 +763,7 @@ class GameState(player:Player, screen: Scurses) {
   }
 
   def getMonsterAtPosition(position:Position): Option[Monster] = {
-    monsters.filter(monster => monster.isAlive && monster.position.x == position.x && monster.position.y == position.y).headOption
+    floors(dungeonLevel - 1).getMonsters.filter(monster => monster.isAlive && monster.position.x == position.x && monster.position.y == position.y).headOption
   }
 
   def getTileAtPosition(x: Int, y: Int): Option[Tile] = {

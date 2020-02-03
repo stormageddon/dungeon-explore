@@ -49,7 +49,7 @@ abstract class Monster {
       return Some(new Item(position, "!", armor.name, armor.id))
     }
     else if (roll <= POTION_DROP_PERCENTAGE) {
-      return Some(new Item(position, "!", "A swirling potion lies here", "POTION"))
+      return Some(new Item(position, "!", "A swirling potion lies here", "POTION", name = "Red potion"))
     }
     None
   }
