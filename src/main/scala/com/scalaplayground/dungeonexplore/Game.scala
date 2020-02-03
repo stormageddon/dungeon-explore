@@ -193,7 +193,6 @@ class GameState(player:Player, screen: Scurses) {
     }
 
     // setup map
-
     val newFloor = Floor(dungeonLevel, bossLevel = dungeonLevel == 4)
     floors = floors :+ newFloor
     randomMap
@@ -575,23 +574,14 @@ class GameState(player:Player, screen: Scurses) {
       case Some(m) => {
         val attack = player.performAttack(m.armorClass)
         if (attack >= m.armorClass) {
-          val damage = player.weapon.attack
-          player.actionMessage = player.actionMessage + s"You stab with your ${player.weapon.name} dealing ${damage} damage!\n"
+          val damage = player.weapon.attack(Some(m), Some(player))
+          player.appendActionMessage(s"You stab with your ${player.weapon.name} dealing ${damage} damage!")
           m.health = m.health - damage
         }
         if (m.health <= 0) {
           monsterActionMessage = s"${monsterActionMessage}${m.name} was slain!\n"
           m.dropLoot match {
             case Some(loot) => {
-//              val identified = loot._1 match {
-//                case ("FINE_DAGGER" | "DAGGER"
-//                     | "FINE_SHORT_SWORD" | "SHORT_SWORD"
-//                     | "FINE_GREAT_AXE" | "GREAT_AXE"
-//                     | "NIGHT_BLADE") => false
-//                case _ => true
-//              }
-
-              //val newItem = new Item(new Position(m.position.x, m.position.y), dispChar = "!", itemId = loot._1, hoverDescription = loot._2)
               floors(dungeonLevel - 1).droppedItems = floors(dungeonLevel - 1).droppedItems :+ loot
               monsterActionMessage = monsterActionMessage + s"${m.name} dropped something with a loud clink.\n"
             }

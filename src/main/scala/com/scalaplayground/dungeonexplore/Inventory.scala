@@ -1,6 +1,6 @@
 package com.scalaplayground.dungeonexplore
 
-import com.scalaplayground.dungeonexplore.Item.Item
+import com.scalaplayground.dungeonexplore.Item._
 
 case class Inventory() {
   var items = Map[String, Seq[Item]]()

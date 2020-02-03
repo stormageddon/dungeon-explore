@@ -114,18 +114,23 @@ case class Floor(val level: Int, val bossLevel: Boolean = false) {
 
   def generateMagicItem(position: Position): Item = {
     Random.nextInt(100) match {
-      case it if 0 until 33 contains it => {
+      case it if 0 until 45 contains it => {
         val weapon: Weapon = new FlamingWeaponDecorator(Weapon.generateWeapon)
         weapon.position = position
         weapon
       }
-      case it if 33 until 66 contains it => {
+      case it if 45 until 70 contains it => {
         val weapon: Weapon = new BlessedWeaponDecorator(Weapon.generateWeapon)
         weapon.position = position
         weapon
       }
-      case it if 66 until 100 contains it => {
+      case it if 70 until 95 contains it => {
         val weapon: Weapon = new CursedWeaponDecorator(Weapon.generateWeapon)
+        weapon.position = position
+        weapon
+      }
+      case it if 95 until 100 contains it => {
+        val weapon: Weapon = new VampiricDecorator(Weapon.generateWeapon)
         weapon.position = position
         weapon
       }

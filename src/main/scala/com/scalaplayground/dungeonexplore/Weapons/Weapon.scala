@@ -2,6 +2,7 @@ package com.scalaplayground.dungeonexplore.Weapons
 
 
 import com.scalaplayground.dungeonexplore.Item.Item
+import com.scalaplayground.dungeonexplore.Monster.CharacterObject
 import com.scalaplayground.dungeonexplore.Player
 import com.scalaplayground.dungeonexplore.constants.Constants
 import net.team2xh.scurses.Scurses
@@ -16,7 +17,7 @@ abstract class Weapon extends Item {
   override val tileDescription: String = name
   override val displayChar = "!"
 
-  def attack: Int = {
+  def attack(target: Option[CharacterObject] = None, wielder: Option[CharacterObject] = None): Int = {
     Random.nextInt(damage._2) + damage._1
   }
 

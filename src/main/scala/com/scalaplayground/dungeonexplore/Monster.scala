@@ -10,9 +10,14 @@ import com.scalaplayground.dungeonexplore.{Tile}
 import com.scalaplayground.dungeonexplore.PathFinding.AStar
 import com.scalaplayground.dungeonexplore.Weapons._
 
-abstract class Monster {
-  val name: String
+trait CharacterObject {
   var health: Int
+  var maxHealth: Int
+}
+
+abstract class Monster extends CharacterObject {
+  val name: String
+  var maxHealth: Int = health
   var armorClass: Int = 8
   var attackBonus: Int = 1
   var weapon: Weapon = new RustyWeaponDecorator(new Dagger)
@@ -124,7 +129,7 @@ abstract class Monster {
 
 class GiantRat(pos: Position) extends Monster {
   override val name = "Giant Rat"
-  override var health = 1
+  var health = 1
   weapon = new Claws
   weapon.damage = (1,2)
   position = new Position(pos.y, pos.x)
@@ -133,7 +138,7 @@ class GiantRat(pos: Position) extends Monster {
 
 class Goblin(pos: Position) extends Monster {
   override val name = "Goblin"
-  override var health = 1
+  var health = 1
   position = new Position(pos.y, pos.x)
   attackBonus = 2
   weapon = List(new RustyWeaponDecorator(new Dagger),
@@ -146,7 +151,7 @@ class Goblin(pos: Position) extends Monster {
 
 class Wolf(pos: Position) extends Monster {
   override val name = "Wolf"
-  override var health = 3
+  var health = 3
   position = new Position(pos.y, pos.x)
   armorClass = 10
   weapon = new Claws
@@ -155,7 +160,7 @@ class Wolf(pos: Position) extends Monster {
 
 class Kobold(pos: Position) extends Monster {
   override val name = "Kobold"
-  override var health = 2
+  var health = 2
   position = new Position(pos.y, pos.x)
   weapon = List(
     new Spear,
@@ -170,7 +175,7 @@ class Kobold(pos: Position) extends Monster {
 
 class Orc(pos: Position) extends Monster {
   override val name = "Orc"
-  override var health = 3
+  var health = 3
   position = new Position(pos.y, pos.x)
   weapon = List(
     new RustyWeaponDecorator(new ShortSword),
@@ -186,7 +191,7 @@ class Orc(pos: Position) extends Monster {
 
 class CemHial(pos: Position) extends Monster {
   override val name = "Cem Hial, the Necromancer"
-  override var health = 20
+  var health = 20
   position = new Position(pos.y, pos.x)
   weapon = new NightBlade
   armorClass = 15
@@ -195,7 +200,7 @@ class CemHial(pos: Position) extends Monster {
 
 class DireWolf(pos: Position) extends Monster {
   override val name = "Dire Wolf"
-  override var health = 7
+  var health = 7
   weapon = new Claws()
   weapon.damage = (1,6)
   displayChar = "W"
@@ -213,7 +218,7 @@ class DireWolf(pos: Position) extends Monster {
 
 class RockGolem(pos: Position) extends Monster {
   override val name = "Rock Golem"
-  override var health = 8
+  var health = 8
   position = new Position(pos.y, pos.x)
   weapon = new Claws()
   weapon.damage = (1,8)
@@ -222,7 +227,7 @@ class RockGolem(pos: Position) extends Monster {
 
 class Dragon(pos: Position) extends Monster {
   override val name = "Young Black Dragon"
-  override var health = 15
+  var health = 15
   override val canAvoidObstacles = true
   position = new Position(pos.y, pos.x)
   weapon = new Claws()

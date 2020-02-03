@@ -17,7 +17,10 @@ class Renderer(gs: GameState, screen: Scurses) {
   }
 
   def renderPlayerActions() = {
-    screen.put(0, NUM_ROWS + 6, gameState.getPlayer.actionMessage)
+    gameState.getPlayer.actionMessages.foreach(message => {
+      screen.put(0, NUM_ROWS + 6, s"$message ")
+    })
+    //screen.put(0, NUM_ROWS + 6, gameState.getPlayer.actionMessage)
   }
 
   def renderStatsBar = {

@@ -1,6 +1,9 @@
 package com.scalaplayground.dungeonexplore.Weapons
 
-import com.scalaplayground.dungeonexplore.Player
+import com.scalaplayground.dungeonexplore.Monster.{CharacterObject, Monster}
+import com.scalaplayground.dungeonexplore.{DungeonHelper, Player}
+
+import scala.util.Random
 
 trait WeaponDecorator extends Weapon {
   val weapon: Weapon
@@ -21,7 +24,7 @@ class RustyWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
   attackBonus = baseWeapon.attackBonus - 1
   isDroppable = baseWeapon.isDroppable
 
-  override def attack: Int = weapon.attack
+  override def attack(target: Option[CharacterObject] = None, wielder: Option[CharacterObject] = None): Int = weapon.attack(target, wielder)
 }
 
 class FineWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
@@ -33,8 +36,8 @@ class FineWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
   attackBonus = weapon.attackBonus + 1
   isDroppable = baseWeapon.isDroppable
 
-  override def attack: Int = {
-    return weapon.attack + 1
+  override def attack(target: Option[CharacterObject] = None, wielder: Option[CharacterObject] = None): Int = {
+    return weapon.attack() + 1
   }
 }
 
@@ -48,8 +51,8 @@ class FlamingWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
   isDroppable = baseWeapon.isDroppable
   identified = false
 
-  override def attack: Int = {
-    return weapon.attack + 1
+  override def attack(target: Option[CharacterObject] = None, wielder: Option[CharacterObject] = None): Int = {
+    return weapon.attack() + 1
   }
 }
 
@@ -58,12 +61,15 @@ class BlessedWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
   name = s"Blessed ${weapon.name}"
   override val tileDescription: String = name
   override var damage = weapon.damage
-  id = s"BLESSED${weapon.id}"
+  id = s"BLESSED_${weapon.id}"
   attackBonus = weapon.attackBonus + 2
   isDroppable = baseWeapon.isDroppable
   identified = false
 
-  override def attack: Int = weapon.attack
+  override def attack(target: Option[CharacterObject] = None,
+                      wielder: Option[CharacterObject] = None): Int = {
+    return weapon.attack()
+  }
 }
 
 class CursedWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
@@ -76,7 +82,36 @@ class CursedWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
   isDroppable = baseWeapon.isDroppable
   identified = false
 
-  override def attack: Int = weapon.attack
+  override def attack(target: Option[CharacterObject] = None,
+                      wielder: Option[CharacterObject] = None): Int = {
+    weapon.attack()
+  }
+}
+
+class VampiricDecorator(baseWeapon: Weapon) extends WeaponDecorator {
+  override val weapon = baseWeapon
+  name = s"Vampiric ${weapon.name}"
+  override val tileDescription: String = name
+  override var damage = weapon.damage
+  id = s"VAMPIRIC_${weapon.id}"
+  attackBonus = weapon.attackBonus + 2
+  isDroppable = baseWeapon.isDroppable
+  identified = false
+
+  override def attack(target: Option[CharacterObject] = None,
+                      wielder: Option[CharacterObject] = None): Int = {
+    val damage = weapon.attack()
+    val t = target.orNull
+    val w = wielder.orNull
+
+    if (t != null && w != null && Random.nextInt(100) < 20) {
+      w.asInstanceOf[Player].appendActionMessage(s"${w.asInstanceOf[Player].name} saps $damage points of health from ${t.asInstanceOf[Monster].name}! ")
+      w.health = DungeonHelper.clamp(w.health + damage, 0, w.maxHealth)
+    }
+
+    damage
+  }
+
 }
 
 

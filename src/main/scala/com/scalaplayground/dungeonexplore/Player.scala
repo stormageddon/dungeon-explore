@@ -2,7 +2,8 @@ package com.scalaplayground.dungeonexplore
 
 
 import com.scalaplayground.dungeonexplore.Armor._
-import com.scalaplayground.dungeonexplore.Item.Item
+import com.scalaplayground.dungeonexplore.Item._
+import com.scalaplayground.dungeonexplore.Monster.CharacterObject
 import com.scalaplayground.dungeonexplore.Position.Position
 import com.scalaplayground.dungeonexplore.Weapons._
 import com.scalaplayground.dungeonexplore.constants.Constants._
@@ -10,7 +11,7 @@ import net.team2xh.scurses.{Colors, Scurses}
 
 import scala.util.Random
 
-class Player(val name:String, val charClass:String, val charRace:String) {
+class Player(val name:String, val charClass:String, val charRace:String) extends CharacterObject {
   var health = STARTING_PLAYER_HEALTH
   var maxHealth = STARTING_PLAYER_HEALTH
   var level = 1
@@ -21,7 +22,7 @@ class Player(val name:String, val charClass:String, val charRace:String) {
   var armor: Armor = new Natural
   var position = new Position(10, 14)
   val displayChar = "@"
-  var actionMessage: String = ""
+  var actionMessages = Seq[String]()
   var canAvoidObstacles = false
   val inventory = new Inventory
   inventory.add(new Item(new Position(-1,-1), id = "POTION", name = "Health Potion"))
@@ -34,12 +35,11 @@ class Player(val name:String, val charClass:String, val charRace:String) {
   }
 
   def calculateDamage: Int = {
-    weapon.attack
+    weapon.attack()
   }
 
   def performAttack(targetAC: Int): Int = {
     val attackRoll = Random.nextInt(20) + weapon.attackBonus + attackBonus + 1
-    appendActionMessage(s"You swing with a roll of ${attackRoll} vs the monster's ac of ${targetAC}")
     attackRoll
   }
 
@@ -65,11 +65,11 @@ class Player(val name:String, val charClass:String, val charRace:String) {
   }
 
   def endRound = {
-    actionMessage = ""
+    actionMessages = Seq[String]()
   }
 
   def appendActionMessage(message:String): Unit = {
-    actionMessage = actionMessage + message
+    actionMessages = actionMessages :+ message
   }
 }
 
