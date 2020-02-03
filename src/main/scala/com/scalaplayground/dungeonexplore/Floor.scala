@@ -10,27 +10,38 @@ import com.scalaplayground.dungeonexplore.Weapons._
 
 import scala.util.Random
 
-case class Floor(val level: Int) {
+case class Floor(val level: Int, val bossLevel: Boolean = false) {
   var rooms = Seq[Room]()
   var droppedItems = Seq[Item]()
   var monsters = Seq[Monster]()
 
-  def populate = {
+  def populate: Unit = {
+    if (bossLevel) {
+      generateBossMonster
+      return ()
+    }
     rooms.foreach(room => {
       // populate items
-      val numberOfItemsInRoom = Random.nextInt(3)
-      for (i <- 0 to numberOfItemsInRoom) {
-        val pos = room.getRandomValidPosition
-        val item: Item = generateRandomItem(pos)
-        droppedItems = droppedItems :+ item
+
+      if (Random.nextInt(100) < 25) {
+        val numberOfItemsInRoom = Random.nextInt(3) + 1
+        for (i <- 0 to numberOfItemsInRoom) {
+          val pos = room.getRandomValidPosition
+          val item: Item = generateRandomItem(pos)
+          droppedItems = droppedItems :+ item
+        }
       }
+
 
       // populate mobs
       // Fill the room
       for (i <- 0 to Random.nextInt(3)) {
         monsters = if (monsters == null) List[Monster]() else monsters
         val randPos = room.getRandomValidPosition
-        monsters = monsters :+ generateMonster(new Position(randPos.y, randPos.x))
+        generateMonster(new Position(randPos.y, randPos.x)) match {
+          case Some(monster) => monsters = monsters :+ monster
+          case None => ()
+        }
       }
     })
   }
@@ -121,11 +132,21 @@ case class Floor(val level: Int) {
     }
   }
 
-  def generateMonster(pos:Position): Monster = {
+  def generateBossMonster = {
+    if (level == 4) {
+
+      val startPos = rooms.head.getRandomValidPosition
+      val cemHial = new CemHial(startPos)
+
+      monsters = Seq[Monster](cemHial)
+    }
+  }
+
+  def generateMonster(pos:Position): Option[Monster] = {
 
     level match {
       case 0 | 1 | 2 => {
-        Random.nextInt(100) match {
+        val monster = Random.nextInt(100) match {
           case roll if 0 until 25 contains roll => {
             new GiantRat(pos)
           }
@@ -139,9 +160,10 @@ case class Floor(val level: Int) {
             new Wolf(pos)
           }
         }
+        Some(monster)
       }
       case 3 => {
-        Random.nextInt(100) match {
+        val monster = Random.nextInt(100) match {
           case roll if 0 until 10 contains roll => {
             new GiantRat(pos)
           }
@@ -161,19 +183,9 @@ case class Floor(val level: Int) {
             new RockGolem(pos)
           }
         }
+        Some(monster)
       }
+      case _ => None
     }
-
-//    return Random.nextInt(100) match {
-//      case it if 0 until 25 contains it => Some(new Goblin(pos))
-//      case it if 25 until 50 contains it => Some(new Kobold(pos))
-//      case it if 50 until 60 contains it => Some(new GiantRat(pos))
-//      case it if 60 until 75 contains it => Some(new Orc(pos))
-//      case it if 75 until 85 contains it => Some(new Wolf(pos))
-//      case it if 85 until 95 contains it => Some(new DireWolf(pos))
-//      case it if 95 until 100 contains it => Some(new RockGolem(pos))
-//      //case it if 98 until 100 contains it => Some(new Dragon(pos))
-//    }
   }
-
 }

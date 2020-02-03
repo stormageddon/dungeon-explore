@@ -24,7 +24,9 @@ class Player(val name:String, val charClass:String, val charRace:String) {
   var actionMessage: String = ""
   var canAvoidObstacles = false
   val inventory = new Inventory
-  inventory.add(new Item(new Position(0,0), id = "POTION", name = "Health Potion"))
+  inventory.add(new Item(new Position(-1,-1), id = "POTION", name = "Health Potion"))
+  weapon.position = new Position(-1, -1)
+  inventory.add(weapon)
 
 
   def render(screen:Scurses) = {

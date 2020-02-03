@@ -194,7 +194,7 @@ class GameState(player:Player, screen: Scurses) {
 
     // setup map
 
-    val newFloor = Floor(dungeonLevel)
+    val newFloor = Floor(dungeonLevel, bossLevel = dungeonLevel == 4)
     floors = floors :+ newFloor
     randomMap
     newFloor.rooms = rooms
