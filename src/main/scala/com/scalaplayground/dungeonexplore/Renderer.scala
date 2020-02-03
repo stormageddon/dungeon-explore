@@ -12,15 +12,16 @@ import scala.collection.mutable
 class Renderer(gs: GameState, screen: Scurses) {
   val gameState = gs
 
-  def renderMonsterActions(monsterMessage:String) = {
-    screen.put(0, NUM_ROWS + 7, monsterMessage)
+  def renderMonsterActions(monsterMessages:scala.collection.mutable.Map[String, Int]) = {
+    monsterMessages.zipWithIndex.foreach( elem => {
+      screen.put(0, NUM_ROWS + 7 + elem._2, elem._1._1, elem._1._2)
+    })
   }
 
   def renderPlayerActions() = {
     gameState.getPlayer.actionMessages.foreach(message => {
       screen.put(0, NUM_ROWS + 6, s"$message ")
     })
-    //screen.put(0, NUM_ROWS + 6, gameState.getPlayer.actionMessage)
   }
 
   def renderStatsBar = {

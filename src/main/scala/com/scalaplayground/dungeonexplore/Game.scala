@@ -171,7 +171,7 @@ class GameState(player:Player, screen: Scurses) {
   var droppedItems = List[Item]()
   var currTileDescription: String = "Nothing is here."
   var roundMessage: String = ""
-  var monsterActionMessage: String = ""
+  var monsterActionMessages = Map[String, Int]()
   var shrine: Shrine = new HealthShrine(new Position(-1, -1)) // creat a fake shrine for now
   var dungeonLevel = 0
 
@@ -579,11 +579,10 @@ class GameState(player:Player, screen: Scurses) {
           m.health = m.health - damage
         }
         if (m.health <= 0) {
-          monsterActionMessage = s"${monsterActionMessage}${m.name} was slain!\n"
+          monsterActionMessages = monsterActionMessages + (s"${m.name} was slain!\n" -> Colors.DIM_WHITE)
           m.dropLoot match {
             case Some(loot) => {
               floors(dungeonLevel - 1).droppedItems = floors(dungeonLevel - 1).droppedItems :+ loot
-              monsterActionMessage = monsterActionMessage + s"${m.name} dropped something with a loud clink.\n"
             }
             case None => None
 
@@ -651,7 +650,7 @@ class GameState(player:Player, screen: Scurses) {
             }
             else if(item.id == "NIGHT_BLADE") {
               renderer.renderPlayerActions
-              renderer.renderMonsterActions(monsterActionMessage)
+              renderer.renderMonsterActions(monsterActionMessages)
               return false
             }
             else {
@@ -689,14 +688,13 @@ class GameState(player:Player, screen: Scurses) {
       if (monster.isAlive) {
         if (monsterHasValidTarget(monster, player) && monster.isAlive) {
           val hitRoll = monster.performAttack
-          monsterActionMessage = monsterActionMessage + s"attack roll of ${hitRoll} vs AC ${player.armorClass + player.armor.armorBonus}\n"
           if (hitRoll >= player.armorClass + player.armor.armorBonus) {
             val damage = monster.calculateDamage
-            monsterActionMessage = monsterActionMessage + s"${monster.name} ${monster.weapon.getAttackText} dealing ${damage} damage\n"
+            monsterActionMessages = monsterActionMessages + (s"${monster.name} ${monster.weapon.getAttackText} dealing ${damage} damage." -> Colors.DIM_RED)
             player.health = player.health - damage
           }
           else {
-            monsterActionMessage = monsterActionMessage + s"The ${monster.name} missed you.\n"
+            monsterActionMessages = monsterActionMessages + (s"The ${monster.name} missed you." -> Colors.DIM_WHITE)
           }
         }
 
@@ -723,10 +721,10 @@ class GameState(player:Player, screen: Scurses) {
     renderer.renderGameState
     renderer.renderStatsBar
     renderer.renderPlayerActions
-    renderer.renderMonsterActions(monsterActionMessage)
+    renderer.renderMonsterActions(monsterActionMessages)
     screen.refresh()
     player.endRound
-    monsterActionMessage = ""
+    monsterActionMessages = Map[String, Int]()
 
     return playerIsAlive
   }
