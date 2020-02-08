@@ -132,11 +132,18 @@ object Game extends App {
     else {
 
       print(">> ")
+      val setToRaw = Array[String]("/bin/sh", "-c", "stty raw </dev/tty")
+      val setToCooked = Array[String]("/bin/sh", "-c", "stty cooked </dev/tty")
+      Runtime.getRuntime.exec(setToRaw).waitFor()
+      val input = Console.in.read
+      println(s"input: $input")
 
-      val input = scala.io.StdIn.readLine.slice(0,1)
-      val key = input.toString
+      Runtime.getRuntime.exec(setToCooked).waitFor()
 
-      if (key == "ESC") {
+      val key = input.toChar.toString
+
+      // 27 == escape
+      if (input == 27) {
         isPlaying = false
       }
       else {
