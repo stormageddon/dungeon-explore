@@ -583,8 +583,6 @@ class GameState(player:Player, screen: Scurses) {
     var playerPerformedAction = false
     val playerIsAlive = true
 
-    // reset renderer sidebar
-    renderer.sideContent = "EMPTY"
     playerPerformedAction = action match {
       case QUAFF_POTION => player.quaffPotion
       case MOVE_UP => performPlayerMove(0, -1)
@@ -655,11 +653,11 @@ class GameState(player:Player, screen: Scurses) {
         false
       }
       case DISPLAY_HELP => {
-        renderer.sideContent = "HELP_MENU"
+        renderer.sideContent = if (renderer.sideContent == "HELP_MENU") "EMPTY" else "HELP_MENU"
         false
       }
       case TOGGLE_INVENTORY => {
-        renderer.sideContent = "INVENTORY"
+        renderer.sideContent = if (renderer.sideContent == "INVENTORY") "EMPTY" else "INVENTORY"
         false
       }
       case RUN_COMMAND => {
