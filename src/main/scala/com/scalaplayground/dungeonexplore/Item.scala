@@ -10,6 +10,7 @@ class Item(var position: Position = new Position(-1, -1),
            val tileDescription: String = "A swirling potion lies here.",
            var id: String = "POTION",
            var identified: Boolean = true,
+           var enchanted: Boolean = false,
            val weight: Double = 1.0,
            var name: String = "???"
           ) {

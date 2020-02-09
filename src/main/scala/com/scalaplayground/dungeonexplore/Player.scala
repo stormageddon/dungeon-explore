@@ -15,7 +15,7 @@ class Player(val name:String, val charClass:String, val charRace:String) extends
   var health = STARTING_PLAYER_HEALTH
   var maxHealth = STARTING_PLAYER_HEALTH
   var level = 1
-  var weapon: Weapon = new RustyWeaponDecorator(new Dagger)
+  var weapon: Weapon = new Dagger
   val armorClass = 10
   var attackBonus = 2
   var sightDistance = 4

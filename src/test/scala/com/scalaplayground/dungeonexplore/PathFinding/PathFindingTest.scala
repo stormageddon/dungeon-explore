@@ -45,6 +45,11 @@ class PathFindingTest extends FlatSpec with Matchers {
   it should "return a longer shortest path with diagonals" in {
     val testObject = new Dijkstra
 
+    //
+    // s | . .
+    // . . . .
+    // . . . t
+    //
     var tile_0_0 = new EmptyTile(new Position(0, 0))
     var tile_0_1 = new EmptyTile(new Position(0, 1))
     var tile_0_2 = new EmptyTile(new Position(0, 2))

@@ -15,7 +15,6 @@ abstract class Armor extends Item {
 
   override def interact(target: Player): Unit = {
     target.appendActionMessage(s"Picked up $name")
-    target.armor = this
     target.inventory.add(this)
   }
 }

@@ -35,4 +35,8 @@ case class Inventory() {
   def getItems: Map[String, Seq[Item]] = {
     return items
   }
+
+  def getItem(index: Int): Item = {
+    items.toList(index)._2.head
+  }
 }

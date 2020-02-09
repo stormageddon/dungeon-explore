@@ -31,7 +31,6 @@ abstract class Weapon extends Item {
 
   override def interact(target: Player): Unit = {
     target.appendActionMessage(s"Picked up ${name}")
-    target.weapon = this
     target.inventory.add(this)
   }
 }

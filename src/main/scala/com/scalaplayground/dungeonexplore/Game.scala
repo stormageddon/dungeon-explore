@@ -301,58 +301,6 @@ class GameState(player:Player, screen: Scurses) {
     // make rooms
     rooms = createRooms
 
-    // make the floor
-    //val floor = Floor(dungeonLevel)
-
-
-    // build walls
-    /*
-    for (x <- 0 to NUM_COLS - 1) {
-      for (y <- 0 to NUM_ROWS - 1) {
-        if (getTileAtPosition(x, y).get.passable) {
-          // North
-          getTileAtPosition(x, y - 1) match {
-            case Some(tile) => {
-              if (!tile.passable) {
-                tiles(x)(y - 1) = new HorizontalWall(new Position(x, y - 1))
-              }
-            }
-            case None => ()
-          }
-
-          // South
-          getTileAtPosition(x, y + 1) match {
-            case Some(tile) => {
-              if (!tile.passable) {
-                tiles(x)(y + 1) = new HorizontalWall(new Position(x, y + 1))
-              }
-            }
-            case None => ()
-          }
-
-          // East
-          getTileAtPosition(x - 1, y) match {
-            case Some(tile) => {
-              if (!tile.passable) {
-                tiles(x - 1)(y) = new VerticalWall(new Position(x - 1, y))
-              }
-            }
-            case None => ()
-          }
-
-          // West
-          getTileAtPosition(x + 1, y) match {
-            case Some(tile) => {
-              if (!tile.passable) {
-                tiles(x + 1)(y) = new VerticalWall(new Position(x + 1, y))
-              }
-            }
-            case None => ()
-          }
-        }
-      }
-    }
-    */
 
     shrine = new HealthShrine(new Position(-1, -1)) // create a fake shrine for now
     val shouldCreateShrine = Random.nextInt(100) + 1
@@ -673,6 +621,38 @@ class GameState(player:Player, screen: Scurses) {
           }
         }
         true
+      }
+      case EQUIP => {
+        renderer.renderInventoryScreen()
+        screen.put(0, 0, ("(E)quip what? "))
+        screen.refresh()
+
+
+        val input = try {
+          scala.io.StdIn.readInt
+        }
+        catch {
+          case _: Throwable => 0
+        }
+        if (input > 0 && input <= player.inventory.items.size) {
+          val itemToEquip = player.inventory.getItem(input - 1) // display is one-based
+          if (itemToEquip.isInstanceOf[Weapon]) {
+            player.weapon = itemToEquip.asInstanceOf[Weapon]
+            player.appendActionMessage(s"You are now wielding a ${itemToEquip.name}")
+          }
+          else if (itemToEquip.isInstanceOf[Armor]) {
+            player.armor = itemToEquip.asInstanceOf[Armor]
+            player.appendActionMessage(s"You are now wearing a ${itemToEquip.name}")
+          }
+          else {
+            player.appendActionMessage("That item can't be equipped!")
+          }
+        }
+        false
+      }
+      case UNEQUIP => {
+
+        false
       }
       case DISPLAY_HELP => {
         renderer.sideContent = "HELP_MENU"

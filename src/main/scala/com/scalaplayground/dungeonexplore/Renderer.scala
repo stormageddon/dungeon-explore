@@ -108,15 +108,6 @@ class Renderer(gs: GameState, screen: Scurses) {
       }
 
       renderRightPanel(sideContentMap(sideContent))
-//
-//      x match {
-//        case 0 => screen.put(NUM_COLS + 1, 0, "    w,a,s,d - Move")
-//        case 1 => screen.put(NUM_COLS + 1, 1, "    q,e,z,x - Move diagonally")
-//        case 2 => screen.put(NUM_COLS + 1, 2, "    r - Quaff a potion")
-//        case 3 => screen.put(NUM_COLS + 1, 3, "    u - Use item on ground")
-//        case 4 => screen.put(NUM_COLS + 1, 4, "    ESC - quit")
-//        case _ => Unit
-//      }
     }
   }
 
@@ -125,9 +116,12 @@ class Renderer(gs: GameState, screen: Scurses) {
       x match {
         case 0 => screen.put(NUM_COLS + 1, 0, "    w,a,s,d - Move")
         case 1 => screen.put(NUM_COLS + 1, 1, "    q,e,z,x - Move diagonally")
-        case 2 => screen.put(NUM_COLS + 1, 2, "    r - Quaff a potion")
-        case 3 => screen.put(NUM_COLS + 1, 3, "    u - Use item on ground")
-        case 4 => screen.put(NUM_COLS + 1, 4, "    ESC - quit")
+        case 2 => screen.put(NUM_COLS + 1, 2, "    c - (c)onsume a potion")
+        case 3 => screen.put(NUM_COLS + 1, 3, "    u - (u)se item on ground")
+        case 4 => screen.put(NUM_COLS + 1, 4, "    E - (E)quip item")
+        case 5 => screen.put(NUM_COLS + 1, 5, "    i - display (i)nventory")
+        case 6 => screen.put(NUM_COLS + 1, 6, "    h - display (h)elp menu")
+        case 7 => screen.put(NUM_COLS + 1, 7, "    ESC - quit")
         case _ => Unit
       }
     }
@@ -135,8 +129,10 @@ class Renderer(gs: GameState, screen: Scurses) {
 
   def renderInventoryScreen(): Unit = {
     var index = 0
-    gs.getPlayer.inventory.getItems.foreach(item => {
-      screen.put(NUM_COLS + 1, index, s"${item._2.head.name}: ${item._2.size}")
+    gs.getPlayer.inventory.getItems.foreach(itemMapElement => {
+      val item = itemMapElement._2.head
+      val color = if (item.identified)  (if (!item.enchanted) Colors.DIM_WHITE else Colors.DIM_GREEN) else Colors.BRIGHT_BLUE
+      screen.put(NUM_COLS + 1, index, s"${index + 1}: ${item.name} x${itemMapElement._2.size}", color)
       index = index + 1
     })
   }

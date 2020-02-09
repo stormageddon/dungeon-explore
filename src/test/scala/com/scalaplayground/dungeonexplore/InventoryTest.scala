@@ -71,4 +71,25 @@ class InventoryTest extends FlatSpec with Matchers {
 
     inventory.totalCapacity shouldBe 50
   }
+
+  it should "Get item from inventory by index" in {
+    val inventory = Inventory()
+
+    val item1 = new Item(new Position(1, 1), id = "POTION")
+    val item2 = new Item(new Position(1, 1), id = "POTION")
+    val item3 = new Item(new Position(1, 1), id = "POTION")
+    val item4 = new Item(new Position(1, 1), id = "OTHER ITEM")
+
+    inventory.add(item1)
+    inventory.add(item2)
+    inventory.add(item3)
+    inventory.add(item4)
+
+    var result = inventory.getItem(0)
+    result.id shouldBe item1.id
+
+    result = inventory.getItem(1)
+    result.id shouldBe item4.id
+  }
 }
+

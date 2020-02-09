@@ -10,7 +10,6 @@ trait WeaponDecorator extends Weapon {
 
   override def interact(target: Player): Unit = {
     target.appendActionMessage(s"Picked up ${name}")
-    target.weapon = this
     target.inventory.add(this)
   }
 }
@@ -24,7 +23,7 @@ class RustyWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
   attackBonus = baseWeapon.attackBonus - 1
   isDroppable = baseWeapon.isDroppable
 
-  override def attack(target: Option[CharacterObject] = None, wielder: Option[CharacterObject] = None): Int = weapon.attack(target, wielder)
+  override def attack(target: Option[CharacterObject] = None, wielder: Option[CharacterObject] = None): Int = weapon.attack(target, wielder) - 1
 }
 
 class FineWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
@@ -50,6 +49,7 @@ class FlamingWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
   attackBonus = weapon.attackBonus + 1
   isDroppable = baseWeapon.isDroppable
   identified = false
+  enchanted = true
 
   override def attack(target: Option[CharacterObject] = None, wielder: Option[CharacterObject] = None): Int = {
     return weapon.attack() + 1
@@ -65,6 +65,7 @@ class BlessedWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
   attackBonus = weapon.attackBonus + 2
   isDroppable = baseWeapon.isDroppable
   identified = false
+  enchanted = true
 
   override def attack(target: Option[CharacterObject] = None,
                       wielder: Option[CharacterObject] = None): Int = {
@@ -81,6 +82,7 @@ class CursedWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
   attackBonus = weapon.attackBonus - 2
   isDroppable = baseWeapon.isDroppable
   identified = false
+  enchanted = true
 
   override def attack(target: Option[CharacterObject] = None,
                       wielder: Option[CharacterObject] = None): Int = {
@@ -97,6 +99,7 @@ class VampiricDecorator(baseWeapon: Weapon) extends WeaponDecorator {
   attackBonus = weapon.attackBonus + 2
   isDroppable = baseWeapon.isDroppable
   identified = false
+  enchanted = true
 
   override def attack(target: Option[CharacterObject] = None,
                       wielder: Option[CharacterObject] = None): Int = {
