@@ -74,6 +74,7 @@ class Renderer(gs: GameState, screen: Scurses) {
     val shrine: Shrine = gameState.shrine
     val player: Player = gameState.getPlayer()
     val droppedItems: Seq[Item] = gameState.getFloorItems
+    val traps = gameState.getTraps
     val tiles: mutable.Seq[mutable.Seq[Tile]] = gameState.tiles
 
     for (x <- 0 to NUM_COLS - 1) {
@@ -106,6 +107,10 @@ class Renderer(gs: GameState, screen: Scurses) {
             }
             case None => Unit
           }
+        }
+        else if (traps.find(t => t.pos.x == x && t.pos.y == y && t.identified).isDefined) {
+          val trap = traps.find(t => t.pos.x == x && t.pos.y == y).get
+          screen.put(x, y, trap.displayChar, Colors.DIM_RED)
         }
         else {
           val t = tiles(x)(y)

@@ -163,6 +163,7 @@ object Game extends App {
 class GameState(player:Player, screen: Scurses) {
   def getFloorItems = floors(dungeonLevel - 1).droppedItems
   def getMonsters = floors(dungeonLevel - 1).monsters
+  def getTraps = traps
 
   val renderer = new Renderer(this, screen)
   var defeatedMonsters = Map[String,Int]()
@@ -171,14 +172,15 @@ class GameState(player:Player, screen: Scurses) {
   var floors: Seq[Floor] = Seq[Floor]()
   var shouldGenerateMonster = true
   var monsters: List[Monster] = List[Monster]()
-  var monstersSlain = 0
-
   var droppedItems = List[Item]()
+  var traps = Seq[Trap]()
+
   var currTileDescription: String = "Nothing is here."
   var roundMessage: String = ""
   var monsterActionMessages = Map[String, Int]()
   var shrine: Shrine = new HealthShrine(new Position(-1, -1)) // creat a fake shrine for now
   var dungeonLevel = 0
+  var monstersSlain = 0
 
   def resetState = {
     tiles = mutable.Seq[mutable.Seq[Tile]]()
@@ -420,6 +422,7 @@ class GameState(player:Player, screen: Scurses) {
 
         if (listOfRooms.length == 0) {
           player.position = newRoom.getCenter
+          traps = traps :+ DartTrap(new Position(player.position.x + 1, player.position.y + 1))
         }
         else {
           // Tunnel out a hallway to the previous room
@@ -672,6 +675,12 @@ class GameState(player:Player, screen: Scurses) {
     }
 
     if (playerPerformedAction) {
+      // check for trap activation
+      val trap = traps.find(trap => trap.pos.x == player.position.x && trap.pos.y == player.position.y)
+      if (trap.isDefined) {
+        trap.get.identified = true
+        trap.get.trigger(player)
+      }
       // Perform monster actions
       floors(dungeonLevel - 1).getMonsters.map(monster => {
         if (monster.isAlive) {

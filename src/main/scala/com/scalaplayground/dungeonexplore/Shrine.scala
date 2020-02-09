@@ -23,7 +23,7 @@ abstract class Shrine {
   }
 }
 
-class HealthShrine(startingPosition: Position) extends Shrine {
+case class HealthShrine(startingPosition: Position) extends Shrine {
   override val position = startingPosition
 
   override def interact(player: Player): String = {
@@ -40,7 +40,7 @@ class HealthShrine(startingPosition: Position) extends Shrine {
   }
 }
 
-class StrengthShrine(startingPosition: Position) extends Shrine {
+case class StrengthShrine(startingPosition: Position) extends Shrine {
   override val position = startingPosition
 
   override def interact(player: Player): String = {
@@ -58,7 +58,7 @@ class StrengthShrine(startingPosition: Position) extends Shrine {
   }
 }
 
-class HolyShrine(startingPosition: Position) extends Shrine {
+case class HolyShrine(startingPosition: Position) extends Shrine {
   override val position = startingPosition
 
   override def interact(player: Player): String = {
@@ -75,7 +75,7 @@ class HolyShrine(startingPosition: Position) extends Shrine {
   }
 }
 
-class CursedShrine(startingPosition: Position) extends Shrine {
+case class CursedShrine(startingPosition: Position) extends Shrine {
   override val position = startingPosition
 
   override def interact(player: Player): String = {
