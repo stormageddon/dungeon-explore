@@ -5,7 +5,7 @@ import com.scalaplayground.dungeonexplore.Armor.{Armor, Chain, Leather, PlateMai
 import com.scalaplayground.dungeonexplore.Item.Item
 import com.scalaplayground.dungeonexplore.Monster._
 import com.scalaplayground.dungeonexplore.Position.Position
-import com.scalaplayground.dungeonexplore.Room
+import com.scalaplayground.dungeonexplore.{DartTrap, Room, Trap}
 import com.scalaplayground.dungeonexplore.Weapons._
 
 import scala.util.Random
@@ -14,6 +14,7 @@ case class Floor(val level: Int, val bossLevel: Boolean = false) {
   var rooms = Seq[Room]()
   var droppedItems = Seq[Item]()
   var monsters = Seq[Monster]()
+  var traps = Seq[Trap]()
 
   def populate: Unit = {
     if (bossLevel) {
@@ -22,7 +23,6 @@ case class Floor(val level: Int, val bossLevel: Boolean = false) {
     }
     rooms.foreach(room => {
       // populate items
-
       if (Random.nextInt(100) < 25) {
         val numberOfItemsInRoom = Random.nextInt(3) + 1
         for (i <- 0 to numberOfItemsInRoom) {
@@ -34,7 +34,6 @@ case class Floor(val level: Int, val bossLevel: Boolean = false) {
 
 
       // populate mobs
-      // Fill the room
       for (i <- 0 to Random.nextInt(3)) {
         monsters = if (monsters == null) List[Monster]() else monsters
         val randPos = room.getRandomValidPosition
@@ -42,6 +41,12 @@ case class Floor(val level: Int, val bossLevel: Boolean = false) {
           case Some(monster) => monsters = monsters :+ monster
           case None => ()
         }
+      }
+
+      // populate traps
+      if (Random.nextInt(100) < 10) {
+        val randPos = room.getRandomValidPosition
+        traps = traps :+ new DartTrap(randPos)
       }
     })
   }
