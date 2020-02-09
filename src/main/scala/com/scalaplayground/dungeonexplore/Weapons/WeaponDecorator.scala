@@ -5,7 +5,7 @@ import com.scalaplayground.dungeonexplore.{DungeonHelper, Player}
 
 import scala.util.Random
 
-trait WeaponDecorator extends Weapon {
+abstract class WeaponDecorator extends Weapon {
   val weapon: Weapon
 
   override def interact(target: Player): Unit = {
@@ -14,7 +14,7 @@ trait WeaponDecorator extends Weapon {
   }
 }
 
-class RustyWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
+case class RustyWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
   override val weapon = baseWeapon
   name = s"Rusty ${weapon.name}"
   override val tileDescription: String = name
@@ -26,7 +26,7 @@ class RustyWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
   override def attack(target: Option[CharacterObject] = None, wielder: Option[CharacterObject] = None): Int = weapon.attack(target, wielder) - 1
 }
 
-class FineWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
+case class FineWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
   override val weapon = baseWeapon
   name = s"Fine ${weapon.name}"
   override val tileDescription: String = name
@@ -40,7 +40,7 @@ class FineWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
   }
 }
 
-class FlamingWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
+case class FlamingWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
   override val weapon = baseWeapon
   name = s"Flaming ${weapon.name}"
   override val tileDescription: String = name
@@ -56,7 +56,7 @@ class FlamingWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
   }
 }
 
-class BlessedWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
+case class BlessedWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
   override val weapon = baseWeapon
   name = s"Blessed ${weapon.name}"
   override val tileDescription: String = name
@@ -73,7 +73,7 @@ class BlessedWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
   }
 }
 
-class CursedWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
+case class CursedWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
   override val weapon = baseWeapon
   name = s"Cursed ${weapon.name}"
   override val tileDescription: String = name
@@ -90,7 +90,7 @@ class CursedWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
   }
 }
 
-class VampiricDecorator(baseWeapon: Weapon) extends WeaponDecorator {
+case class VampiricDecorator(baseWeapon: Weapon) extends WeaponDecorator {
   override val weapon = baseWeapon
   name = s"Vampiric ${weapon.name}"
   override val tileDescription: String = name
@@ -114,7 +114,6 @@ class VampiricDecorator(baseWeapon: Weapon) extends WeaponDecorator {
 
     damage
   }
-
 }
 
 

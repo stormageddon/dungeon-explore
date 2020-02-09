@@ -23,7 +23,7 @@ class WeaponTest
     val daggerSpy = mock[Dagger]
     when(daggerSpy.attack(None, None)).thenReturn(100)
 
-    val weapon: Weapon = new RustyWeaponDecorator(daggerSpy)
+    val weapon: Weapon = RustyWeaponDecorator(daggerSpy)
 
     val result = weapon.attack()
 
@@ -31,7 +31,7 @@ class WeaponTest
   }
 
   it should "create a RUSTY weapon" in {
-    val weapon: Weapon = new RustyWeaponDecorator(new Dagger)
+    val weapon: Weapon = RustyWeaponDecorator(new Dagger)
 
     weapon.name should be ("Rusty Dagger")
     weapon.id should be ("RUSTY_DAGGER")
@@ -39,7 +39,7 @@ class WeaponTest
   }
 
   it should "create a FINE weapon" in {
-    val weapon: Weapon = new FineWeaponDecorator(new GreatAxe)
+    val weapon: Weapon = FineWeaponDecorator(new GreatAxe)
 
     weapon.name should be ("Fine Great Axe")
     weapon.id should be ("FINE_GREAT_AXE")
@@ -48,7 +48,7 @@ class WeaponTest
   }
 
   it should "allow multiple decorations on a single weapon" in {
-    val weapon: Weapon = new FlamingWeaponDecorator(new FineWeaponDecorator(new Spear))
+    val weapon: Weapon = FlamingWeaponDecorator(new FineWeaponDecorator(new Spear))
 
     weapon.name should be ("Flaming Fine Spear")
     weapon.id should be ("FLAMING_FINE_SPEAR")
@@ -57,7 +57,7 @@ class WeaponTest
   }
 
   it should "pick up a weapon" in {
-    val fineWeapon: Weapon = new FineWeaponDecorator(new ShortSword)
+    val fineWeapon: Weapon = FineWeaponDecorator(new ShortSword)
     val daggerWeapon = new Dagger
     val player: Player = new Player("Test Player", "Klass", "Race")
 
@@ -72,7 +72,7 @@ class WeaponTest
   }
 
   it should "use the base weapons droppable status" in {
-    val weapon = new FineWeaponDecorator(new ShortSword)
+    val weapon = FineWeaponDecorator(new ShortSword)
     weapon.isDroppable shouldBe true
   }
 
@@ -81,7 +81,7 @@ class WeaponTest
     weapon.enchanted shouldBe false
     weapon.identified shouldBe true
 
-    weapon = new FlamingWeaponDecorator(weapon)
+    weapon = FlamingWeaponDecorator(weapon)
     weapon.enchanted shouldBe true
     weapon.identified shouldBe false
   }

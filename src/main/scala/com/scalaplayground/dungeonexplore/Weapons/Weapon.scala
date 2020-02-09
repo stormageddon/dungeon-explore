@@ -35,7 +35,7 @@ abstract class Weapon extends Item {
   }
 }
 
-class Dagger extends Weapon {
+case class Dagger() extends Weapon {
   name = "Dagger"
   override val tileDescription: String = name
   var damage = (1,2)
@@ -44,7 +44,7 @@ class Dagger extends Weapon {
   isDroppable = true
 }
 
-class ShortSword extends Weapon {
+case class ShortSword() extends Weapon {
   name = "Short sword"
   override val tileDescription: String = name
   var damage = (1,4)
@@ -52,7 +52,7 @@ class ShortSword extends Weapon {
   isDroppable = true
 }
 
-class GreatAxe extends Weapon {
+case class GreatAxe() extends Weapon {
   name = "Great Axe"
   override val tileDescription: String = name
   var damage = (1,6)
@@ -60,14 +60,14 @@ class GreatAxe extends Weapon {
   isDroppable = true
 }
 
-class Claws extends Weapon {
+case class Claws() extends Weapon {
   name = "claws"
   var damage = (1,4)
   id = "CLAWS"
   isDroppable = false
 }
 
-class NightBlade extends Weapon {
+case class NightBlade() extends Weapon {
   name = "Night Blade"
   var damage = (4,10)
   override val tileDescription: String = name
@@ -76,7 +76,7 @@ class NightBlade extends Weapon {
   isDroppable = true
 }
 
-class Spear extends Weapon {
+case class Spear() extends Weapon {
   name = "Spear"
   override val tileDescription: String = name
   var damage = (1,3)
