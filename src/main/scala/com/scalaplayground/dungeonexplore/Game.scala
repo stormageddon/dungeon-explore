@@ -120,7 +120,7 @@ object Game extends App {
   val colNum = NUM_COLS
   val rowNum = NUM_ROWS
 
-  isPlaying = gameState.tick("")
+  isPlaying = gameState.tick(0)
   while(isPlaying) {
 
     if (player.health <= 0) {
@@ -140,14 +140,12 @@ object Game extends App {
 
       Runtime.getRuntime.exec(setToCooked).waitFor()
 
-      val key = input.toChar.toString
-
       // 27 == escape
       if (input == 27) {
         isPlaying = false
       }
       else {
-        isPlaying = gameState.tick(key)
+        isPlaying = gameState.tick(input)
       }
     }
   }
@@ -607,7 +605,6 @@ class GameState(player:Player, screen: Scurses) {
     getMonsterAtPosition(newPos) match {
       case Some(monster) => {
         performPlayerAttack(monster)
-        return false
       }
       case None => {
         val currPlayerPosition = player.position
@@ -627,18 +624,20 @@ class GameState(player:Player, screen: Scurses) {
           }
           case None => newPos
         }
-        return true
       }
     }
+    return true
   }
 
-  def tick(action: String): Boolean = {
+  def tick(action: Int): Boolean = {
     print("\033c")
 
-    var playerDidMove = false
+    var playerPerformedAction = false
     val playerIsAlive = true
 
-    playerDidMove = action match {
+    // reset renderer sidebar
+    renderer.sideContent = "EMPTY"
+    playerPerformedAction = action match {
       case QUAFF_POTION => player.quaffPotion
       case MOVE_UP => performPlayerMove(0, -1)
       case MOVE_LEFT => performPlayerMove(-1, 0)
@@ -673,57 +672,64 @@ class GameState(player:Player, screen: Scurses) {
             }
           }
         }
+        true
+      }
+      case DISPLAY_HELP => {
+        renderer.sideContent = "HELP_MENU"
         false
       }
       case TOGGLE_INVENTORY => {
-
+        renderer.sideContent = "INVENTORY"
         false
       }
       case RUN_COMMAND => {
         runCommand
         false
       }
-      case ESCAPE => {
+      case ESCAPE | EXIT => {
         // quit the game
-        false
+        return false
       }
       case _ => false
     }
 
-    // Perform monster actions
-    floors(dungeonLevel - 1).getMonsters.map(monster => {
-      if (monster.isAlive) {
-        if (monsterHasValidTarget(monster, player) && monster.isAlive) {
-          val hitRoll = monster.performAttack
-          if (hitRoll >= player.armorClass + player.armor.armorBonus) {
-            val damage = monster.calculateDamage
-            monsterActionMessages = monsterActionMessages + (s"${monster.name} ${monster.weapon.getAttackText} dealing ${damage} damage." -> Colors.DIM_RED)
-            player.health = player.health - damage
-          }
-          else {
-            monsterActionMessages = monsterActionMessages + (s"The ${monster.name} missed you." -> Colors.DIM_WHITE)
-          }
-        }
-
+    if (playerPerformedAction) {
+      // Perform monster actions
+      floors(dungeonLevel - 1).getMonsters.map(monster => {
         if (monster.isAlive) {
-          val playerTile = getTileAtPosition(player.position.x, player.position.y)
-          val newPos = monster.move(playerTile, tiles, getTileAtPosition(monster.position.x, monster.position.y))
-          getTileAtPosition(newPos.x, newPos.y) match {
-            case Some(tile) => {
-              if ((tile.passable || monster.canAvoidObstacles) && !tile.occupied) {
-                getTileAtPosition(monster.position.x, monster.position.y).get.occupied = false
-                monster.position = newPos
-                getTileAtPosition(monster.position.x, monster.position.y).get.occupied = true
-              } else {
-                // get random (legal) position
-                monster.position = monster.position
-              }
+          if (monsterHasValidTarget(monster, player) && monster.isAlive) {
+            val hitRoll = monster.performAttack
+            if (hitRoll >= player.armorClass + player.armor.armorBonus) {
+              val damage = monster.calculateDamage
+              monsterActionMessages = monsterActionMessages + (s"${monster.name} ${monster.weapon.getAttackText} dealing ${damage} damage." -> Colors.DIM_RED)
+              player.health = player.health - damage
             }
-            case None => newPos
+            else {
+              monsterActionMessages = monsterActionMessages + (s"The ${monster.name} missed you." -> Colors.DIM_WHITE)
+            }
+          }
+
+          if (monster.isAlive) {
+            val playerTile = getTileAtPosition(player.position.x, player.position.y)
+            val newPos = monster.move(playerTile, tiles, getTileAtPosition(monster.position.x, monster.position.y))
+            getTileAtPosition(newPos.x, newPos.y) match {
+              case Some(tile) => {
+                if ((tile.passable || monster.canAvoidObstacles) && !tile.occupied) {
+                  getTileAtPosition(monster.position.x, monster.position.y).get.occupied = false
+                  monster.position = newPos
+                  getTileAtPosition(monster.position.x, monster.position.y).get.occupied = true
+                } else {
+                  // get random (legal) position
+                  monster.position = monster.position
+                }
+              }
+              case None => newPos
+            }
           }
         }
-      }
-    })
+      })
+    }
+
 
     renderer.renderGameState
     renderer.renderStatsBar

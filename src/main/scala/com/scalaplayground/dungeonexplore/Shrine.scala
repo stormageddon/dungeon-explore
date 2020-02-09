@@ -30,7 +30,7 @@ class HealthShrine(startingPosition: Position) extends Shrine {
     var message = ""
     if (isActive) {
       super.interact(player)
-      player.health = DungeonHelper.clamp(STARTING_PLAYER_HEALTH, 0, STARTING_PLAYER_HEALTH)
+      player.health = DungeonHelper.clamp(player.maxHealth, 0, player.maxHealth)
       message = "You feel healthier as you look at the shrine."
     }
     else {

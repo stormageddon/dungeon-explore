@@ -11,6 +11,12 @@ import scala.collection.mutable
 
 class Renderer(gs: GameState, screen: Scurses) {
   val gameState = gs
+  var sideContent = "EMPTY"
+  val sideContentMap = Map[String, () => Unit](
+    "EMPTY" -> (() => ()),
+    "INVENTORY" -> renderInventoryScreen,
+    "HELP_MENU" -> renderHelpScreen
+  )
 
   def renderMonsterActions(monsterMessages:scala.collection.mutable.Map[String, Int]) = {
     monsterMessages.zipWithIndex.foreach( elem => {
@@ -101,7 +107,7 @@ class Renderer(gs: GameState, screen: Scurses) {
         }
       }
 
-      renderRightPanel(renderInventoryScreen)
+      renderRightPanel(sideContentMap(sideContent))
 //
 //      x match {
 //        case 0 => screen.put(NUM_COLS + 1, 0, "    w,a,s,d - Move")

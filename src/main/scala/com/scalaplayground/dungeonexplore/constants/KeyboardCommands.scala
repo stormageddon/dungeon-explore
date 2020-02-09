@@ -1,17 +1,22 @@
 package com.scalaplayground.dungeonexplore.constants
 
 object KeyboardCommands {
-  val QUAFF_POTION = "r"
-  val MOVE_LEFT = "a"
-  val MOVE_UP = "w"
-  val MOVE_DOWN = "s"
-  val MOVE_RIGHT = "d"
-  val MOVE_UP_LEFT = "q"
-  val MOVE_UP_RIGHT = "e"
-  val MOVE_DOWN_LEFT = "z"
-  val MOVE_DOWN_RIGHT = "x"
-  val TOGGLE_INVENTORY = "i"
-  val USE_ITEM = "u"
-  val ESCAPE = "个"
-  val RUN_COMMAND = "/"
+  val QUAFF_POTION = 114 // r
+  val MOVE_LEFT = 97 // a
+  val MOVE_UP = 119 // w
+  val MOVE_DOWN = 115 // s
+  val MOVE_RIGHT = 100 // d
+  val MOVE_UP_LEFT = 113 // q
+  val MOVE_UP_RIGHT = 101 // e
+  val MOVE_DOWN_LEFT = 122 // z
+  val MOVE_DOWN_RIGHT = 120 // x
+  val TOGGLE_INVENTORY = 105 // i
+  val USE_ITEM = 117 // u
+  val DISPLAY_HELP = 104 // h
+  val ESCAPE = 27 // ESC
+  val EXIT = 3 // Ctrl + C
+  val RUN_COMMAND = 47 // /
 }
+
+
+// ASCII TABLE - https://www.cs.cmu.edu/~pattis/15-1XX/common/handouts/ascii.html
