@@ -709,11 +709,8 @@ class GameState(player:Player, screen: Scurses) {
     }
 
 
-    renderer.renderGameState
-    renderer.renderStatsBar
-    renderer.renderPlayerActions
-    renderer.renderMonsterActions(monsterActionMessages)
-    screen.refresh()
+    renderer.render
+
     player.endRound
     monsterActionMessages = Map[String, Int]()
 

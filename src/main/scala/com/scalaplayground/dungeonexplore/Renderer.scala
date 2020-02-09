@@ -10,6 +10,8 @@ import net.team2xh.scurses.{Colors, Scurses}
 import scala.collection.mutable
 
 class Renderer(gs: GameState, screen: Scurses) {
+  val BUILD_NUMBER = "0.4.20200208"
+
   val gameState = gs
   var sideContent = "EMPTY"
   val sideContentMap = Map[String, () => Unit](
@@ -17,6 +19,19 @@ class Renderer(gs: GameState, screen: Scurses) {
     "INVENTORY" -> renderInventoryScreen,
     "HELP_MENU" -> renderHelpScreen
   )
+
+  def render = {
+    renderGameState
+    renderDebugBar
+    renderStatsBar
+    renderPlayerActions
+    renderMonsterActions(gs.monsterActionMessages)
+    screen.refresh
+  }
+
+  def renderDebugBar = {
+    screen.put(NUM_COLS + 2, 0, s"Build: $BUILD_NUMBER", Colors.BRIGHT_BLACK)
+  }
 
   def renderMonsterActions(monsterMessages:scala.collection.mutable.Map[String, Int]) = {
     monsterMessages.zipWithIndex.foreach( elem => {
@@ -36,7 +51,7 @@ class Renderer(gs: GameState, screen: Scurses) {
     var descriptionTextColor = Colors.DIM_WHITE
 
     screen.put(0, NUM_ROWS + offset + 1, s"${p.name}, the ${p.charRace} ${p.charClass} (Level ${p.level})")
-    screen.put(0, NUM_ROWS + offset + 2, s"HP: ${p.health}/${p.maxHealth}    AC: ${p.armorClass + p.armor.armorBonus}     WIELDING: ${p.weapon.name} (${p.weapon.damage._1}-${p.weapon.damage._2} + ${p.weapon.attackBonus})     POTIONS: ${p.inventory.getItems.get("POTION").getOrElse(Seq()).size}")
+    screen.put(0, NUM_ROWS + offset + 2, s"HP: ${p.health}/${p.maxHealth}    AC: ${p.armorClass + p.armor.armorBonus}     WIELDING: ${p.weapon.name} (${p.weapon.damage._1}-${p.weapon.damage._2} + ${p.weapon.attackBonus})")
     screen.put(0, NUM_ROWS + offset + 3, s"Dungeon level: ${gameState.dungeonLevel}")
     gameState.currTileDescription = "There is nothing here."
     gameState.getFloorItems.map(item => {
@@ -114,14 +129,14 @@ class Renderer(gs: GameState, screen: Scurses) {
   def renderHelpScreen(): Unit = {
     for (x <- 0 to NUM_COLS - 1) {
       x match {
-        case 0 => screen.put(NUM_COLS + 1, 0, "    w,a,s,d - Move")
-        case 1 => screen.put(NUM_COLS + 1, 1, "    q,e,z,x - Move diagonally")
-        case 2 => screen.put(NUM_COLS + 1, 2, "    c - (c)onsume a potion")
-        case 3 => screen.put(NUM_COLS + 1, 3, "    u - (u)se item on ground")
-        case 4 => screen.put(NUM_COLS + 1, 4, "    E - (E)quip item")
-        case 5 => screen.put(NUM_COLS + 1, 5, "    i - display (i)nventory")
-        case 6 => screen.put(NUM_COLS + 1, 6, "    h - display (h)elp menu")
-        case 7 => screen.put(NUM_COLS + 1, 7, "    ESC - quit")
+        case 0 => screen.put(NUM_COLS + 1, 1, "w,a,s,d - Move")
+        case 1 => screen.put(NUM_COLS + 1, 2, "q,e,z,x - Move diagonally")
+        case 2 => screen.put(NUM_COLS + 1, 3, "c - (c)onsume a potion")
+        case 3 => screen.put(NUM_COLS + 1, 4, "u - (u)se item on ground")
+        case 4 => screen.put(NUM_COLS + 1, 5, "E - (E)quip item")
+        case 5 => screen.put(NUM_COLS + 1, 6, "i - display (i)nventory")
+        case 6 => screen.put(NUM_COLS + 1, 7, "h - display (h)elp menu")
+        case 7 => screen.put(NUM_COLS + 1, 8, "ESC - quit")
         case _ => Unit
       }
     }
@@ -132,7 +147,7 @@ class Renderer(gs: GameState, screen: Scurses) {
     gs.getPlayer.inventory.getItems.foreach(itemMapElement => {
       val item = itemMapElement._2.head
       val color = if (item.identified)  (if (!item.enchanted) Colors.DIM_WHITE else Colors.DIM_GREEN) else Colors.BRIGHT_BLUE
-      screen.put(NUM_COLS + 1, index, s"${index + 1}: ${item.name} x${itemMapElement._2.size}", color)
+      screen.put(NUM_COLS + 1, index + 1, s"${index + 1}: ${item.name} x${itemMapElement._2.size}", color)
       index = index + 1
     })
   }
