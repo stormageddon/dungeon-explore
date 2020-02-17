@@ -1,7 +1,7 @@
 package com.scalaplayground.dungeonexplore.Weapons
 
 import com.scalaplayground.dungeonexplore.Monster.{CharacterObject, Monster}
-import com.scalaplayground.dungeonexplore.{DungeonHelper, Player}
+import com.scalaplayground.dungeonexplore.{DungeonHelper, Player, Poisoned}
 
 import scala.util.Random
 
@@ -36,6 +36,30 @@ case class FineWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
   isDroppable = baseWeapon.isDroppable
 
   override def attack(target: Option[CharacterObject] = None, wielder: Option[CharacterObject] = None): Int = {
+    return weapon.attack() + 1
+  }
+}
+
+case class PoisonedWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
+  override val weapon = baseWeapon
+  name = s"Poisoned ${weapon.name}"
+  override val tileDescription: String = name
+  override var damage = weapon.damage
+  id = s"POISONED_${weapon.id}"
+  isDroppable = baseWeapon.isDroppable
+  identified = false
+  enchanted = true
+
+  override def attack(target: Option[CharacterObject] = None, wielder: Option[CharacterObject] = None): Int = {
+    if (target.isDefined) {
+      val roll = Random.nextInt(100)
+      if (roll < 25) {
+        target.get.conditions = target.get.conditions :+ Poisoned(target.get)
+        if (wielder.get.isInstanceOf[Player]) {
+          wielder.get.asInstanceOf[Player].appendActionMessage(s"${target.get.asInstanceOf[Monster].name} became poisoned!")
+        }
+      }
+    }
     return weapon.attack() + 1
   }
 }

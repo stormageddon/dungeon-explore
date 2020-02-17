@@ -35,13 +35,15 @@ class Renderer(gs: GameState, screen: Scurses) {
 
   def renderMonsterActions(monsterMessages:scala.collection.mutable.Map[String, Int]) = {
     monsterMessages.zipWithIndex.foreach( elem => {
-      screen.put(0, NUM_ROWS + 7 + elem._2, elem._1._1, elem._1._2)
+      screen.put(0, NUM_ROWS + 7 + gameState.getPlayer.actionMessages.length + elem._2, elem._1._1, elem._1._2)
     })
   }
 
   def renderPlayerActions() = {
+    var offset = 0
     gameState.getPlayer.actionMessages.foreach(message => {
-      screen.put(0, NUM_ROWS + 6, s"$message ")
+      screen.put(0, NUM_ROWS + 6 + offset, s"$message ")
+      offset = offset + 1
     })
   }
 
@@ -50,7 +52,11 @@ class Renderer(gs: GameState, screen: Scurses) {
     var offset = 2
     var descriptionTextColor = Colors.DIM_WHITE
 
-    screen.put(0, NUM_ROWS + offset + 1, s"${p.name}, the ${p.charRace} ${p.charClass} (Level ${p.level})")
+    val characterString: String = s"${p.name}, the ${p.charRace} ${p.charClass} (Level ${p.level})"
+    screen.put(0, NUM_ROWS + offset + 1, characterString)
+    if (p.conditions.length > 0) {
+      screen.put(characterString.length, NUM_ROWS + offset + 1, s" : ${p.conditions.head.name}", Colors.DIM_GREEN)
+    }
     screen.put(0, NUM_ROWS + offset + 2, s"HP: ${p.health}/${p.maxHealth}    AC: ${p.armorClass + p.armor.armorBonus}     WIELDING: ${p.weapon.name} (${p.weapon.damage._1}-${p.weapon.damage._2} + ${p.weapon.attackBonus})")
     screen.put(0, NUM_ROWS + offset + 3, s"Dungeon level: ${gameState.dungeonLevel}")
     gameState.currTileDescription = "There is nothing here."
@@ -86,7 +92,8 @@ class Renderer(gs: GameState, screen: Scurses) {
           monsters.filter(m => m.position.x == x && m.position.y == y && m.isAlive).headOption match {
             case Some(monster) => {
               if (gameState.getTileAtPosition(x, y).get.currentlyVisible) {
-                screen.put(x, y, monster.displayChar)
+                val color = if (monster.conditions.nonEmpty) Colors.DIM_GREEN else Colors.DIM_WHITE
+                screen.put(x, y, monster.displayChar, color)
               }
               else {
                 screen.put(x, y, " ") // hide monster if it's not visible

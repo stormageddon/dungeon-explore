@@ -21,7 +21,8 @@ case class Floor(val level: Int, val bossLevel: Boolean = false) {
       generateBossMonster
       return ()
     }
-    rooms.foreach(room => {
+    rooms.zipWithIndex.foreach(elem => {
+      val room = elem._1
       // populate items
       if (Random.nextInt(100) < 25) {
         val numberOfItemsInRoom = Random.nextInt(3) + 1
@@ -33,18 +34,20 @@ case class Floor(val level: Int, val bossLevel: Boolean = false) {
       }
 
 
-      // populate mobs
-      for (i <- 0 to Random.nextInt(3)) {
-        monsters = if (monsters == null) List[Monster]() else monsters
-        val randPos = room.getRandomValidPosition
-        generateMonster(new Position(randPos.y, randPos.x)) match {
-          case Some(monster) => monsters = monsters :+ monster
-          case None => ()
+      // populate mobs, unless it is start room
+      if (elem._2 != 0) {
+        for (i <- 0 to Random.nextInt(3)) {
+          monsters = if (monsters == null) List[Monster]() else monsters
+          val randPos = room.getRandomValidPosition
+          generateMonster(new Position(randPos.y, randPos.x)) match {
+            case Some(monster) => monsters = monsters :+ monster
+            case None => ()
+          }
         }
       }
 
       // populate traps
-      if (Random.nextInt(100) < 10) {
+      if (Random.nextInt(100) < 15) {
         val randPos = room.getRandomValidPosition
         traps = traps :+ new DartTrap(randPos)
       }
@@ -87,7 +90,6 @@ case class Floor(val level: Int, val bossLevel: Boolean = false) {
                 }
               }
             }
-
           }
           case roll if 66 until 98 contains roll => {
             Random.nextInt(100) match {
@@ -119,7 +121,12 @@ case class Floor(val level: Int, val bossLevel: Boolean = false) {
 
   def generateMagicItem(position: Position): Item = {
     Random.nextInt(100) match {
-      case it if 0 until 45 contains it => {
+      case it if 0 until 30 contains it => {
+        val weapon: Weapon = new PoisonedWeaponDecorator(Weapon.generateWeapon)
+        weapon.position = position
+        weapon
+      }
+      case it if 30 until 45 contains it => {
         val weapon: Weapon = new FlamingWeaponDecorator(Weapon.generateWeapon)
         weapon.position = position
         weapon

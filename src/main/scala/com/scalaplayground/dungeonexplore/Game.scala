@@ -674,6 +674,11 @@ class GameState(player:Player, screen: Scurses) {
     }
 
     if (playerPerformedAction) {
+      // Apply conditions
+      player.conditions.foreach(condition => {
+        condition.apply
+      })
+
       // check for trap activation
       val trap = getTraps.find(trap => trap.pos.x == player.position.x && trap.pos.y == player.position.y)
       if (trap.isDefined) {
@@ -683,19 +688,27 @@ class GameState(player:Player, screen: Scurses) {
       // Perform monster actions
       floors(dungeonLevel - 1).getMonsters.map(monster => {
         if (monster.isAlive) {
-          if (monsterHasValidTarget(monster, player) && monster.isAlive) {
-            val hitRoll = monster.performAttack
-            if (hitRoll >= player.armorClass + player.armor.armorBonus) {
-              val damage = monster.calculateDamage
-              monsterActionMessages = monsterActionMessages + (s"${monster.name} ${monster.weapon.getAttackText} dealing ${damage} damage." -> Colors.DIM_RED)
-              player.health = player.health - damage
-            }
-            else {
-              monsterActionMessages = monsterActionMessages + (s"The ${monster.name} missed you." -> Colors.DIM_WHITE)
-            }
+          if (monster.conditions.length > 0) {
+            monster.conditions.foreach(condition => {
+              condition.name match {
+                case "Poisoned" => monsterActionMessages = monsterActionMessages + (s"${monster.name} was hurt by poison!" -> Colors.DIM_WHITE)
+              }
+              condition.apply
+            })
           }
 
           if (monster.isAlive) {
+            if (monsterHasValidTarget(monster, player) && monster.isAlive) {
+              val hitRoll = monster.performAttack
+              if (hitRoll >= player.armorClass + player.armor.armorBonus) {
+                val damage = monster.calculateDamage
+                monsterActionMessages = monsterActionMessages + (s"${monster.name} ${monster.weapon.getAttackText} dealing ${damage} damage." -> Colors.DIM_RED)
+                player.health = player.health - damage
+              }
+              else {
+                monsterActionMessages = monsterActionMessages + (s"The ${monster.name} missed you." -> Colors.DIM_WHITE)
+              }
+            }
             val playerTile = getTileAtPosition(player.position.x, player.position.y)
             val newPos = monster.move(playerTile, tiles, getTileAtPosition(monster.position.x, monster.position.y))
             getTileAtPosition(newPos.x, newPos.y) match {

@@ -6,13 +6,14 @@ import com.scalaplayground.dungeonexplore.Item.Item
 import scala.util.Random
 import com.scalaplayground.dungeonexplore.constants.Constants._
 import com.scalaplayground.dungeonexplore.Position.Position
-import com.scalaplayground.dungeonexplore.{Tile}
+import com.scalaplayground.dungeonexplore.{Condition, Tile}
 import com.scalaplayground.dungeonexplore.PathFinding.AStar
 import com.scalaplayground.dungeonexplore.Weapons._
 
 trait CharacterObject {
   var health: Int
   var maxHealth: Int
+  var conditions: Seq[Condition] = Seq[Condition]()
 }
 
 abstract class Monster extends CharacterObject {
