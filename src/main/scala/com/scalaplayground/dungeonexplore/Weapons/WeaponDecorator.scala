@@ -1,7 +1,7 @@
 package com.scalaplayground.dungeonexplore.Weapons
 
 import com.scalaplayground.dungeonexplore.Monster.{CharacterObject, Monster}
-import com.scalaplayground.dungeonexplore.{DungeonHelper, Player, Poisoned}
+import com.scalaplayground.dungeonexplore.{Burning, DungeonHelper, Player, Poisoned}
 
 import scala.util.Random
 
@@ -76,6 +76,15 @@ case class FlamingWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
   enchanted = true
 
   override def attack(target: Option[CharacterObject] = None, wielder: Option[CharacterObject] = None): Int = {
+    if (target.isDefined) {
+      val roll = Random.nextInt(100)
+      if (roll < 25) {
+        target.get.conditions = target.get.conditions :+ Burning(target.get)
+        if (wielder.get.isInstanceOf[Player]) {
+          wielder.get.asInstanceOf[Player].appendActionMessage(s"${target.get.asInstanceOf[Monster].name} caught on fire!")
+        }
+      }
+    }
     return weapon.attack() + 1
   }
 }

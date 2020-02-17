@@ -9,6 +9,7 @@ import com.scalaplayground.dungeonexplore.Position.Position
 import com.scalaplayground.dungeonexplore.{Condition, Tile}
 import com.scalaplayground.dungeonexplore.PathFinding.AStar
 import com.scalaplayground.dungeonexplore.Weapons._
+import net.team2xh.scurses.Colors
 
 trait CharacterObject {
   var health: Int
@@ -26,6 +27,19 @@ abstract class Monster extends CharacterObject {
   var position: Position = new Position(Random.nextInt(NUM_ROWS), Random.nextInt(NUM_COLS))
   var displayChar: String = "m"
   val canAvoidObstacles = false
+
+  def getDispColor: Int = {
+    return if (conditions.length > 0) {
+      conditions.head.name match {
+        case "Poisoned" => Colors.DIM_GREEN
+        case "Burning" => Colors.fromRGB(255,140,0)
+        case _ => Colors.DIM_WHITE
+      }
+    }
+    else {
+      Colors.DIM_WHITE
+    }
+  }
 
   def isAlive: Boolean = {
     Armor.generateArmor

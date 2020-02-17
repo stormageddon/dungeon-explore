@@ -92,8 +92,7 @@ class Renderer(gs: GameState, screen: Scurses) {
           monsters.filter(m => m.position.x == x && m.position.y == y && m.isAlive).headOption match {
             case Some(monster) => {
               if (gameState.getTileAtPosition(x, y).get.currentlyVisible) {
-                val color = if (monster.conditions.nonEmpty) Colors.DIM_GREEN else Colors.DIM_WHITE
-                screen.put(x, y, monster.displayChar, color)
+                screen.put(x, y, monster.displayChar, monster.getDispColor)
               }
               else {
                 screen.put(x, y, " ") // hide monster if it's not visible

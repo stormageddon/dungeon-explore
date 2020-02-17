@@ -692,6 +692,7 @@ class GameState(player:Player, screen: Scurses) {
             monster.conditions.foreach(condition => {
               condition.name match {
                 case "Poisoned" => monsterActionMessages = monsterActionMessages + (s"${monster.name} was hurt by poison!" -> Colors.DIM_WHITE)
+                case "Burning" => monsterActionMessages = monsterActionMessages + (s"${monster.name} was hurt by the flames!" -> Colors.DIM_WHITE)
               }
               condition.apply
             })
