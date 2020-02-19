@@ -52,7 +52,7 @@ abstract class Monster extends CharacterObject {
   }
 
   def calculateDamage: Int = {
-    val damage = Random.nextInt(weapon.damage._2) + weapon.damage._1
+    val damage = Random.nextInt(weapon.damage._2 - weapon.damage._1) + weapon.damage._1
     damage
   }
 

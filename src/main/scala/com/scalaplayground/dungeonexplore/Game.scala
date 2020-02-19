@@ -110,6 +110,7 @@ object Game extends App {
     screen.keypress()
   }
 
+  s.hideCursor
   s.refresh()
   val player = createPlayer
 
@@ -666,6 +667,66 @@ class GameState(player:Player, screen: Scurses) {
         runCommand
         false
       }
+      case OBSERVE_COMMAND => {
+        screen.hideCursor()
+        val cursor = Cursor(new Position(player.position.x, player.position.y))
+        cursor.enabled = true
+        renderer.render(false)
+        renderer.renderStatsBar(Some(cursor.position))
+        cursor.render(screen)
+        screen.refresh
+
+        val setToRaw = Array[String]("/bin/sh", "-c", "stty raw </dev/tty")
+        val setToCooked = Array[String]("/bin/sh", "-c", "stty cooked </dev/tty")
+
+
+
+        Runtime.getRuntime.exec(setToRaw).waitFor()
+
+        var input = Console.in.read
+
+        Runtime.getRuntime.exec(setToCooked).waitFor()
+        while (input != OBSERVE_COMMAND && input != EXIT) {
+          input match {
+            case MOVE_LEFT => cursor.pos.x = cursor.pos.x - 1
+            case MOVE_RIGHT => cursor.pos.x = cursor.pos.x + 1
+            case MOVE_UP => cursor.pos.y = cursor.pos.y - 1
+            case MOVE_DOWN => cursor.pos.y = cursor.pos.y + 1
+            case MOVE_UP_LEFT => {
+              cursor.pos.x = cursor.pos.x - 1
+              cursor.pos.y = cursor.pos.y - 1
+            }
+            case MOVE_UP_RIGHT => {
+              cursor.pos.x = cursor.pos.x + 1
+              cursor.pos.y = cursor.pos.y - 1
+            }
+            case MOVE_DOWN_LEFT => {
+              cursor.pos.x = cursor.pos.x - 1
+              cursor.pos.y = cursor.pos.y + 1
+            }
+            case MOVE_DOWN_RIGHT => {
+              cursor.pos.x = cursor.pos.x + 1
+              cursor.pos.y = cursor.pos.y + 1
+            }
+            case _ =>
+          }
+          renderer.render(false)
+          renderer.renderStatsBar(Some(cursor.position))
+          cursor.render(screen)
+          //screen.put(0, NUM_ROWS + 2 + 4, s"${get}", descriptionTextColor)
+
+          screen.refresh
+          Runtime.getRuntime.exec(setToRaw).waitFor()
+
+          input = Console.in.read
+          Runtime.getRuntime.exec(setToCooked).waitFor()
+
+        }
+
+        //screen.hideCursor()
+        cursor.enabled = false
+        false
+      }
       case ESCAPE | EXIT => {
         // quit the game
         return false
@@ -731,7 +792,7 @@ class GameState(player:Player, screen: Scurses) {
     }
 
 
-    renderer.render
+    renderer.render()
 
     player.endRound
     monsterActionMessages = Map[String, Int]()
@@ -830,6 +891,16 @@ class GameState(player:Player, screen: Scurses) {
         screen.put(0, NUM_ROWS + 1, dijkstra.findShortestPath(tiles.flatten, source, getTileAtPosition(player.position.x, player.position.y).get).toString)
       }
       case _ => println("Unknown command")
+    }
+  }
+}
+
+case class Cursor(pos: Position) {
+  var enabled: Boolean = false
+  val position = pos
+  def render(s: Scurses) = {
+    if (enabled) {
+      s.put(position.x, position.y, "X", Colors.BRIGHT_WHITE)
     }
   }
 }

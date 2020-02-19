@@ -18,6 +18,7 @@ object KeyboardCommands {
   val ESCAPE = 27 // ESC
   val EXIT = 3 // Ctrl + C
   val RUN_COMMAND = 47 // /
+  val OBSERVE_COMMAND = 13 // ENTER
 }
 
 

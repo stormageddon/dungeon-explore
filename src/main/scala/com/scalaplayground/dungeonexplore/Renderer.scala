@@ -5,6 +5,7 @@ import com.scalaplayground.dungeonexplore.constants.Constants._
 import com.scalaplayground.dungeonexplore.Monster._
 import com.scalaplayground.dungeonexplore.Shrine._
 import com.scalaplayground.dungeonexplore.Item._
+import com.scalaplayground.dungeonexplore.Position.Position
 import net.team2xh.scurses.{Colors, Scurses}
 
 import scala.collection.mutable
@@ -20,10 +21,10 @@ class Renderer(gs: GameState, screen: Scurses) {
     "HELP_MENU" -> renderHelpScreen
   )
 
-  def render = {
+  def render(shouldRenderStatsBar: Boolean = true) = {
     renderGameState
     renderDebugBar
-    renderStatsBar
+    if (shouldRenderStatsBar) renderStatsBar()
     renderPlayerActions
     renderMonsterActions(gs.monsterActionMessages)
     screen.refresh
@@ -47,8 +48,26 @@ class Renderer(gs: GameState, screen: Scurses) {
     })
   }
 
-  def renderStatsBar = {
+  def renderStatsBar(posOfTile: Option[Position] = None) = {
+    gameState.currTileDescription = ""
     val p = gameState.getPlayer()
+    val tileDescPos = if (posOfTile.isDefined){
+      if (posOfTile.get.x == p.position.x && posOfTile.get.y == p.position.y) {
+        gameState.currTileDescription = s"You are standing here."
+      }
+      posOfTile.get
+    }
+    else {
+      p.position
+    }
+
+    gameState.currTileDescription = gameState.getTileAtPosition(tileDescPos.x, tileDescPos.y) match {
+      case Some(tile) => if (tile.hasBeenSeen && gameState.currTileDescription.length <= 0) tile.description else gameState.currTileDescription
+      case None => gameState.currTileDescription
+    }
+
+
+
     var offset = 2
     var descriptionTextColor = Colors.DIM_WHITE
 
@@ -59,17 +78,28 @@ class Renderer(gs: GameState, screen: Scurses) {
     }
     screen.put(0, NUM_ROWS + offset + 2, s"HP: ${p.health}/${p.maxHealth}    AC: ${p.armorClass + p.armor.armorBonus}     WIELDING: ${p.weapon.name} (${p.weapon.damage._1}-${p.weapon.damage._2} + ${p.weapon.attackBonus})")
     screen.put(0, NUM_ROWS + offset + 3, s"Dungeon level: ${gameState.dungeonLevel}")
-    gameState.currTileDescription = "There is nothing here."
+
+
+
     gameState.getFloorItems.map(item => {
-      if (item.position.x == p.position.x && item.position.y == p.position.y) {
+      if (item.position.x == tileDescPos.x && item.position.y == tileDescPos.y) {
         gameState.currTileDescription = item.tileDescription
         descriptionTextColor = if (!item.identified) Colors.BRIGHT_BLUE else Colors.DIM_WHITE
       }
     })
     val shrine = gameState.shrine
-    if (shrine != null && shrine.position.x == p.position.x && shrine.position.y == p.position.y) {
+    if (shrine != null && shrine.position.x == tileDescPos.x && shrine.position.y == tileDescPos.y) {
       gameState.currTileDescription = shrine.tileDescription
     }
+
+    gameState.getMonsterAtPosition(tileDescPos) match {
+      case Some(monster) => gameState.currTileDescription = s"${monster.name}"
+      case None =>
+    }
+
+    val t = gameState.getTraps.find(trap => trap.pos.x == tileDescPos.x && trap.pos.y == tileDescPos.y)
+    if (t.isDefined && t.get.identified) gameState.currTileDescription = t.get.description
+
     screen.put(0, NUM_ROWS + offset + 4, s"${gameState.currTileDescription}", descriptionTextColor)
     screen.put(0, NUM_ROWS + offset + 5, s"${gameState.roundMessage}")
     gameState.roundMessage = ""
