@@ -4,7 +4,7 @@ import com.scalaplayground.dungeonexplore.Position.Position
 
 import scala.util.Random
 
-class Room(val startPosition: Position, val width: Int, val height: Int) {
+case class Room(val startPosition: Position, val width: Int, val height: Int) {
   private val center = new Position(Math.ceil((startPosition.x + width + startPosition.x).toDouble / 2.toDouble).toInt,
                             Math.ceil((startPosition.y + height + startPosition.y).toDouble / 2.toDouble).toInt)
 
@@ -24,5 +24,13 @@ class Room(val startPosition: Position, val width: Int, val height: Int) {
     val y = startPosition.y + Random.nextInt( height - 3) + 1
 
     return new Position(x,y)
+  }
+
+  def containsCoords(pos: Position): Boolean = {
+    (pos.x > startPosition.x
+      && pos.x < startPosition.x + width
+      && pos.y > startPosition.y
+      && pos.y < startPosition.y + height)
+
   }
 }

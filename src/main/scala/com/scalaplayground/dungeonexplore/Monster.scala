@@ -204,7 +204,7 @@ class Orc(pos: Position) extends Monster {
   displayChar = "o"
 }
 
-class CemHial(pos: Position) extends Monster {
+case class CemHial(pos: Position) extends Monster {
   override val name = "Cem Hial, the Necromancer"
   var health = 20
   position = new Position(pos.y, pos.x)

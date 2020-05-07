@@ -10,7 +10,6 @@ import com.scalaplayground.dungeonexplore.Floor.Floor
 import com.scalaplayground.dungeonexplore.constants.Constants._
 import com.scalaplayground.dungeonexplore.constants.KeyboardCommands._
 import com.scalaplayground.dungeonexplore.Item.Item
-import com.scalaplayground.dungeonexplore.PathFinding.Dijkstra
 import com.scalaplayground.dungeonexplore.Position.Position
 import com.scalaplayground.dungeonexplore.Shrine._
 import com.scalaplayground.dungeonexplore.Weapons._
@@ -479,7 +478,7 @@ class GameState(player:Player, screen: Scurses) {
 
     if (dungeonLevel - 1 == 5) {
       // Final level only has Cem Hial
-      val randPos = listOfRooms.head.getRandomValidPosition
+      val randPos = listOfRooms(1).getCenter
       monsters = List[Monster](new CemHial(new Position(randPos.y, randPos.x)))
       return Seq[Room](listOfRooms.head)
     }
@@ -883,12 +882,6 @@ class GameState(player:Player, screen: Scurses) {
       }
       case "heal" => {
         player.health = player.maxHealth
-      }
-      case "n" => {
-        val dijkstra = new Dijkstra
-        val source = getTileAtPosition(command(1).toInt, command(2).toInt).get
-        screen.put(0, NUM_ROWS, source.neighbors.toString)
-        screen.put(0, NUM_ROWS + 1, dijkstra.findShortestPath(tiles.flatten, source, getTileAtPosition(player.position.x, player.position.y).get).toString)
       }
       case _ => println("Unknown command")
     }
