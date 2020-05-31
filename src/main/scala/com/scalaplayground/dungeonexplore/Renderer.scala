@@ -11,10 +11,14 @@ import net.team2xh.scurses.{Colors, Scurses}
 import scala.collection.mutable
 
 class Renderer(gs: GameState, screen: Scurses) {
-  val BUILD_NUMBER = "0.4.20200208"
+  private var BUILD_NUMBER = "0.4.20200208"
+
+  def setBuildNumber(buildNumber: String) = {
+    BUILD_NUMBER = buildNumber
+  }
 
   val gameState = gs
-  var sideContent = "EMPTY"
+  var sideContent = "HELP_MENU"
   val sideContentMap = Map[String, () => Unit](
     "EMPTY" -> (() => ()),
     "INVENTORY" -> renderInventoryScreen,
@@ -177,7 +181,9 @@ class Renderer(gs: GameState, screen: Scurses) {
         case 4 => screen.put(NUM_COLS + 1, 5, "E - (E)quip item")
         case 5 => screen.put(NUM_COLS + 1, 6, "i - display (i)nventory")
         case 6 => screen.put(NUM_COLS + 1, 7, "h - display (h)elp menu")
-        case 7 => screen.put(NUM_COLS + 1, 8, "ESC - quit")
+        case 7 => screen.put(NUM_COLS + 1, 8, "ENTER - enter/leave observation mode")
+        case 8 => screen.put(NUM_COLS + 1, 9, "ESC - quit")
+
         case _ => Unit
       }
     }

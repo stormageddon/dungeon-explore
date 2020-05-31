@@ -3,7 +3,7 @@ package com.scalaplayground.dungeonexplore.Item
 import com.scalaplayground.dungeonexplore.Armor._
 import com.scalaplayground.dungeonexplore.{DungeonHelper, Player}
 import com.scalaplayground.dungeonexplore.Position.Position
-import net.team2xh.scurses.{Scurses}
+import net.team2xh.scurses.{Colors, Scurses}
 
 class Item(var position: Position = new Position(-1, -1),
            val displayChar: String = "!",
@@ -12,11 +12,12 @@ class Item(var position: Position = new Position(-1, -1),
            var identified: Boolean = true,
            var enchanted: Boolean = false,
            val weight: Double = 1.0,
-           var name: String = "???"
+           var name: String = "???",
+           displayColor: Int = Colors.DIM_WHITE
           ) {
 
   def render(x: Int, y: Int, screen: Scurses): Unit = {
-    screen.put(x, y, displayChar)
+    screen.put(x, y, displayChar, displayColor)
   }
 
   def interact(target: Player): Unit = {

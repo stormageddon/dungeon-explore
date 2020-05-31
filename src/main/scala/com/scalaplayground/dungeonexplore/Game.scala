@@ -181,6 +181,7 @@ class GameState(player:Player, screen: Scurses) {
   var shrine: Shrine = new HealthShrine(new Position(-1, -1)) // creat a fake shrine for now
   var dungeonLevel = 0
   var monstersSlain = 0
+  var debugMode = false
 
   def resetState = {
     tiles = mutable.Seq[mutable.Seq[Tile]]()
@@ -200,7 +201,7 @@ class GameState(player:Player, screen: Scurses) {
     }
 
     // setup map
-    val newFloor = Floor(dungeonLevel, bossLevel = dungeonLevel == 4)
+    val newFloor = Floor(dungeonLevel, bossLevel = dungeonLevel == 5)
     floors = floors :+ newFloor
     randomMap
     newFloor.rooms = rooms
@@ -477,14 +478,33 @@ class GameState(player:Player, screen: Scurses) {
 
 
     if (dungeonLevel - 1 == 5) {
+      Scurses { screen =>
+        // The screen will only be in Scurses mode inside this block
+        // Scurses will reset the terminal buffer and everything when outside
+
+        // Get the current terminal size
+        val (w, h) = screen.size
+
+        val prompt =
+          """
+            |You descend into the depths of the Tomb. The stench of the Necromancer assaults
+            |your nostrils. In the distance, you hear a sinister laugh...
+            |(press any key to continue)
+            |""".stripMargin
+        // Put some strings in the middle of the screen
+        screen.put(w/2 - prompt.length/2, h/2 + 1, prompt, Colors.BRIGHT_BLACK)
+        // Flush the buffer
+        screen.refresh()
+        // Wait for an input without storing it
+        screen.keypress()
+      }
       // Final level only has Cem Hial
-      val randPos = listOfRooms(1).getCenter
-      monsters = List[Monster](new CemHial(new Position(randPos.y, randPos.x)))
-      return Seq[Room](listOfRooms.head)
+      monsters = List[Monster](new CemHial(listOfRooms.last.getRandomValidPosition))
+      floors(dungeonLevel).monsters = monsters
     }
     else {
       // create stairs
-     floors(dungeonLevel).droppedItems = floors(dungeonLevel).droppedItems :+ new Item(listOfRooms.last.getRandomValidPosition, "v", "The stairwell descends into darkness", "DOWN_STAIR")
+     floors(dungeonLevel).droppedItems = floors(dungeonLevel).droppedItems :+ new Item(listOfRooms.last.getRandomValidPosition, "v", "The stairwell descends into darkness", "DOWN_STAIR", displayColor = Colors.DIM_MAGENTA)
     }
     listOfRooms
   }
@@ -505,24 +525,24 @@ class GameState(player:Player, screen: Scurses) {
       case it if 90 until 100 contains it => return new CursedShrine(randPos)
     }
   }
-
-  def generateMonster(pos:Position): Option[Monster] = {
-    if (!shouldGenerateMonster || (monsters != null && monsters.filter(m => m.isAlive).length >= MAX_MONSTERS_ALIVE)) {
-      return None
-    }
-    else {
-      return Random.nextInt(100) match {
-        case it if 0 until 25 contains it => Some(new Goblin(pos))
-        case it if 25 until 50 contains it => Some(new Kobold(pos))
-        case it if 50 until 60 contains it => Some(new GiantRat(pos))
-        case it if 60 until 75 contains it => Some(new Orc(pos))
-        case it if 75 until 85 contains it => Some(new Wolf(pos))
-        case it if 85 until 95 contains it => Some(new DireWolf(pos))
-        case it if 95 until 100 contains it => Some(new RockGolem(pos))
-        //case it if 98 until 100 contains it => Some(new Dragon(pos))
-      }
-    }
-  }
+//
+//  def generateMonster(pos:Position): Option[Monster] = {
+//    if (!shouldGenerateMonster || (monsters != null && monsters.filter(m => m.isAlive).length >= MAX_MONSTERS_ALIVE)) {
+//      return None
+//    }
+//    else {
+//      return Random.nextInt(100) match {
+//        case it if 0 until 25 contains it => Some(new Goblin(pos))
+//        case it if 25 until 50 contains it => Some(new Kobold(pos))
+//        case it if 50 until 60 contains it => Some(new GiantRat(pos))
+//        case it if 60 until 75 contains it => Some(new Orc(pos))
+//        case it if 75 until 85 contains it => Some(new Wolf(pos))
+//        case it if 85 until 95 contains it => Some(new DireWolf(pos))
+//        case it if 95 until 100 contains it => Some(new RockGolem(pos))
+//        //case it if 98 until 100 contains it => Some(new Dragon(pos))
+//      }
+//    }
+//  }
 
   def performPlayerAttack(monster:Monster) = {
     playerHasValidTarget(player, monster) match {
@@ -560,7 +580,7 @@ class GameState(player:Player, screen: Scurses) {
         val currPlayerPosition = player.position
         player.position = getTileAtPosition(newPos.x, newPos.y) match {
           case Some(tile) => {
-            if (tile.passable) {
+            if (tile.passable || player.canAvoidObstacles) {
               getTileAtPosition(currPlayerPosition.x, currPlayerPosition.y).get.occupied = false
               getTileAtPosition(newPos.x, newPos.y).get.occupied = true
 
@@ -584,6 +604,11 @@ class GameState(player:Player, screen: Scurses) {
 
     var playerPerformedAction = false
     val playerIsAlive = true
+
+    if (debugMode) {
+      monsterActionMessages = monsterActionMessages + (s"${dungeonLevel}: ${player.position}" -> Colors.DIM_YELLOW)
+      monsterActionMessages = monsterActionMessages + (s"${floors(dungeonLevel - 1).monsters.map(m => m.name.concat(m.position.toString))}" -> Colors.DIM_RED)
+    }
 
     playerPerformedAction = action match {
       case QUAFF_POTION => player.quaffPotion
@@ -687,25 +712,41 @@ class GameState(player:Player, screen: Scurses) {
         Runtime.getRuntime.exec(setToCooked).waitFor()
         while (input != OBSERVE_COMMAND && input != EXIT) {
           input match {
-            case MOVE_LEFT => cursor.pos.x = cursor.pos.x - 1
-            case MOVE_RIGHT => cursor.pos.x = cursor.pos.x + 1
-            case MOVE_UP => cursor.pos.y = cursor.pos.y - 1
-            case MOVE_DOWN => cursor.pos.y = cursor.pos.y + 1
+            case MOVE_LEFT => cursor.pos.x = if (moveIfVisible(cursor.pos.x - 1, cursor.pos.y)) DungeonHelper.clamp(cursor.pos.x - 1, 0, NUM_COLS) else cursor.pos.x
+            case MOVE_RIGHT => cursor.pos.x = if (moveIfVisible(cursor.pos.x + 1, cursor.pos.y)) DungeonHelper.clamp(cursor.pos.x + 1, 0, NUM_COLS) else cursor.pos.x
+            case MOVE_UP => cursor.pos.y = if (moveIfVisible(cursor.pos.x, cursor.pos.y - 1)) DungeonHelper.clamp(cursor.pos.y - 1, 0, NUM_ROWS) else cursor.pos.y
+            case MOVE_DOWN => cursor.pos.y = if (moveIfVisible(cursor.pos.x, cursor.pos.y + 1)) DungeonHelper.clamp(cursor.pos.y + 1, 0, NUM_ROWS) else cursor.pos.y
             case MOVE_UP_LEFT => {
-              cursor.pos.x = cursor.pos.x - 1
-              cursor.pos.y = cursor.pos.y - 1
+              val x = cursor.pos.x - 1
+              val y = cursor.pos.y - 1
+              if (moveIfVisible(x, y)) {
+                cursor.pos.x = x
+                cursor.pos.y = y
+              }
             }
             case MOVE_UP_RIGHT => {
-              cursor.pos.x = cursor.pos.x + 1
-              cursor.pos.y = cursor.pos.y - 1
+              val x = cursor.pos.x + 1
+              val y = cursor.pos.y - 1
+              if (moveIfVisible(x, y)) {
+                cursor.pos.x = x
+                cursor.pos.y = y
+              }
             }
             case MOVE_DOWN_LEFT => {
-              cursor.pos.x = cursor.pos.x - 1
-              cursor.pos.y = cursor.pos.y + 1
+              val x = cursor.pos.x - 1
+              val y = cursor.pos.y + 1
+              if (moveIfVisible(x, y)) {
+                cursor.pos.x = x
+                cursor.pos.y = y
+              }
             }
             case MOVE_DOWN_RIGHT => {
-              cursor.pos.x = cursor.pos.x + 1
-              cursor.pos.y = cursor.pos.y + 1
+              val x = cursor.pos.x + 1
+              val y = cursor.pos.y + 1
+              if (moveIfVisible(x, y)) {
+                cursor.pos.x = x
+                cursor.pos.y = y
+              }
             }
             case _ =>
           }
@@ -850,6 +891,11 @@ class GameState(player:Player, screen: Scurses) {
     })
   }
 
+  private def moveIfVisible(x: Int, y: Int): Boolean = {
+    val tile = getTileAtPosition(x, y)
+    tile.isDefined && (tile.get.currentlyVisible || tile.get.hasBeenSeen)
+  }
+
   /*
    * Commands are for debugging purposes
    */
@@ -882,6 +928,19 @@ class GameState(player:Player, screen: Scurses) {
       }
       case "heal" => {
         player.health = player.maxHealth
+      }
+      case "reveal" => {
+        player.sightDistance = 1000
+        setSurroundingTilesVisible(player.position)
+      }
+      case "godmode" => {
+        player.health = 99999
+        player.attackBonus = 999
+        player.canAvoidObstacles = true
+        player.sightDistance = 1000
+      }
+      case "debug" => {
+        debugMode = !debugMode
       }
       case _ => println("Unknown command")
     }
