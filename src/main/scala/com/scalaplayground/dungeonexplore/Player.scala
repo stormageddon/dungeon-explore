@@ -70,11 +70,17 @@ class Player(val name:String, val charClass:String, val charRace:String) extends
         inventory.remove(potion.id)
         TelepathyPotion.isIdentified = true
       }
+      case potion:FirePotion => {
+        appendActionMessage(potion.consume(this))
+        inventory.remove(potion.id)
+        FirePotion.isIdentified = true
+      }
       case scroll:IdentifyScroll => {
         appendActionMessage(scroll.consume(this))
         inventory.remove(scroll.id)
         IdentifyScroll.isIdentified = true
       }
+
     }
 
     return false

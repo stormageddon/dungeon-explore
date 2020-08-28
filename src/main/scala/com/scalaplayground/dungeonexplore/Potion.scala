@@ -17,6 +17,18 @@ sealed trait Potion extends Item {
   }
 }
 
+object Potion {
+  def generatePotion(pos:Position): Potion = {
+    Random.nextInt(100) match {
+      case roll if 0 until 20 contains roll => new FirePotion(pos)
+      case roll if 20 until 35 contains roll => new PoisonPotion(pos)
+      case roll if 35 until 45 contains roll => new TelepathyPotion(pos)
+      case roll if 45 until 50 contains roll => new HardenedArmorPotion(pos)
+      case _ => new HealthPotion(pos)
+    }
+  }
+}
+
 class HealthPotion(pos:Position) extends Potion {
   name = "Healing Potion"
   id = "POTION_HEALTH"
@@ -83,5 +95,22 @@ class TelepathyPotion(pos:Position) extends Potion {
 }
 
 object TelepathyPotion {
+  var isIdentified = false
+}
+
+class FirePotion(pos:Position) extends Potion {
+  name = "Fire Potion"
+  id = "POTION_FIRE"
+  position = pos
+  override val color = "orange"
+  override def description: String = if (FirePotion.isIdentified) name else s"swirling ${color} potion"
+
+  def consume(target: Player): String = {
+    target.conditions = target.conditions :+ Burning(target)
+    "You catch on fire!"
+  }
+}
+
+object FirePotion {
   var isIdentified = false
 }

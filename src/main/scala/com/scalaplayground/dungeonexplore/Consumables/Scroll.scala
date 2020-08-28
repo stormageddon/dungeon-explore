@@ -1,7 +1,7 @@
 package com.scalaplayground.dungeonexplore.Consumables
 
 import com.scalaplayground.dungeonexplore.Monster.CharacterObject
-import com.scalaplayground.dungeonexplore.{HardenedArmorPotion, HealthPotion, Player, PoisonPotion, TelepathyPotion}
+import com.scalaplayground.dungeonexplore.{FirePotion, HardenedArmorPotion, HealthPotion, Player, PoisonPotion, TelepathyPotion}
 import com.scalaplayground.dungeonexplore.Position.Position
 
 sealed trait Scroll extends Consumable {
@@ -28,6 +28,7 @@ class IdentifyScroll(pos:Position) extends Scroll {
             case _:HardenedArmorPotion => HardenedArmorPotion.isIdentified = true
             case _:TelepathyPotion => TelepathyPotion.isIdentified = true
             case _:PoisonPotion => PoisonPotion.isIdentified = true
+            case _:FirePotion => FirePotion.isIdentified = true
             case _=>
           }
         })

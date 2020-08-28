@@ -1,15 +1,20 @@
 package com.scalaplayground.dungeonexplore
 
 import com.scalaplayground.dungeonexplore.Position.Position
-import org.scalatest.{BeforeAndAfterEach, FlatSpec, Matchers}
+import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FlatSpec, Matchers}
 
 class PotionTest extends FlatSpec
   with Matchers
-  with BeforeAndAfterEach {
+  with BeforeAndAfterEach
+  with BeforeAndAfterAll {
 
   behavior of "Potion test"
 
   var testPlayer:Player = new Player("testName", "testClass", "testRace")
+
+  override def beforeAll: Unit = {
+    HealthPotion.isIdentified = false
+  }
 
   override def beforeEach: Unit = {
     testPlayer.inventory.clear

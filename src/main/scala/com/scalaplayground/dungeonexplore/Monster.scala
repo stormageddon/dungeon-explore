@@ -6,7 +6,7 @@ import com.scalaplayground.dungeonexplore.Item.Item
 import scala.util.Random
 import com.scalaplayground.dungeonexplore.constants.Constants._
 import com.scalaplayground.dungeonexplore.Position.Position
-import com.scalaplayground.dungeonexplore.{Condition, HardenedArmorPotion, HealthPotion, PoisonPotion, TelepathyPotion, Tile}
+import com.scalaplayground.dungeonexplore.{Condition, HardenedArmorPotion, HealthPotion, PoisonPotion, Potion, TelepathyPotion, Tile}
 import com.scalaplayground.dungeonexplore.PathFinding.AStar
 import com.scalaplayground.dungeonexplore.Weapons._
 import net.team2xh.scurses.Colors
@@ -75,12 +75,7 @@ abstract class Monster extends CharacterObject {
       return Some(new Item(position, "!", armor.name, armor.id))
     }
     else if (roll <= POTION_DROP_PERCENTAGE) {
-      Random.nextInt(100) match {
-        case potionRoll if 0 until 35 contains roll => return Some(new HealthPotion(position))
-        case potionRoll if 35 until 50 contains roll => return Some(new PoisonPotion(position))
-        case potionRoll if 50 until 100 contains roll => return Some(new TelepathyPotion(position))
-        case _ => return Some(new HardenedArmorPotion(position))
-      }
+      return Some(Potion.generatePotion(position))
     }
     None
   }

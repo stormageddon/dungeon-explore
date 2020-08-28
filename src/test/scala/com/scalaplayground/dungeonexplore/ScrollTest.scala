@@ -24,6 +24,7 @@ class ScrollTest extends FlatSpec
     testPlayer.inventory.add(new HardenedArmorPotion(new Position(1,1)))
     testPlayer.inventory.add(new PoisonPotion(new Position(1,1)))
     testPlayer.inventory.add(new TelepathyPotion(new Position(1,1)))
+    testPlayer.inventory.add(new FirePotion(new Position(1,1)))
 
     val testScroll = new IdentifyScroll(new Position(1,1))
 
@@ -36,5 +37,6 @@ class ScrollTest extends FlatSpec
     testPlayer.inventory.getItem("POTION_STONE_SKIN").asInstanceOf[Potion].description shouldBe "Stone Skin Potion"
     testPlayer.inventory.getItem("POTION_POISON").asInstanceOf[Potion].description shouldBe "Poison"
     testPlayer.inventory.getItem("POTION_TELEPATHY").asInstanceOf[Potion].description shouldBe "Telepathy Potion"
+    testPlayer.inventory.getItem("POTION_FIRE").asInstanceOf[Potion].description shouldBe "Fire Potion"
   }
 }
