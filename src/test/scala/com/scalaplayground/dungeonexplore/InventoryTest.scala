@@ -2,6 +2,7 @@ package com.scalaplayground.dungeonexplore
 
 import com.scalaplayground.dungeonexplore.Item.Item
 import com.scalaplayground.dungeonexplore.Position.Position
+import com.scalaplayground.dungeonexplore.Weapons.Dagger
 import org.scalatest.{FlatSpec, Matchers}
 
 class InventoryTest extends FlatSpec with Matchers {
@@ -90,6 +91,27 @@ class InventoryTest extends FlatSpec with Matchers {
 
     result = inventory.getItem(1)
     result.id shouldBe item4.id
+  }
+
+  it should "Get item from inventory by id" in {
+    val inventory = Inventory()
+
+    val item1 = new HealthPotion(new Position(1,1))
+    val item2 = new Dagger
+    val item3 = new TelepathyPotion(new Position(1,1))
+
+    inventory.add(item1)
+    inventory.add(item2)
+    inventory.add(item3)
+
+    var result = inventory.getItem("POTION_HEALTH")
+    result shouldBe item1
+
+    result = inventory.getItem("POTION_TELEPATHY")
+    result shouldBe item3
+
+    result = inventory.getItem("DAGGER")
+    result shouldBe item2
   }
 }
 

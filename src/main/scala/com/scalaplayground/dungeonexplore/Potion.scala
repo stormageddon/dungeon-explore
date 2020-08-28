@@ -37,7 +37,7 @@ object HealthPotion {
 
 class HardenedArmorPotion(pos:Position) extends Potion {
   name = "Stone Skin Potion"
-  id = "POTION_ARMOR"
+  id = "POTION_STONE_SKIN"
   position = pos
   override val color = "grey"
   override def description: String = if (HardenedArmorPotion.isIdentified) name else s"swirling ${color} potion"

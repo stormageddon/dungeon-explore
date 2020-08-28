@@ -2,6 +2,7 @@ package com.scalaplayground.dungeonexplore
 
 
 import com.scalaplayground.dungeonexplore.Armor._
+import com.scalaplayground.dungeonexplore.Consumables.IdentifyScroll
 import com.scalaplayground.dungeonexplore.Item._
 import com.scalaplayground.dungeonexplore.Monster.CharacterObject
 import com.scalaplayground.dungeonexplore.Position.Position
@@ -46,7 +47,7 @@ class Player(val name:String, val charClass:String, val charRace:String) extends
     armor = newArmor
   }
 
-  def quaffPotion(consumable:Any): Boolean = {
+  def consumeConsumable(consumable:Any): Boolean = {
     consumable match {
       case potion:HealthPotion => {
         appendActionMessage(potion.consume(this))
@@ -69,6 +70,11 @@ class Player(val name:String, val charClass:String, val charRace:String) extends
         inventory.remove(potion.id)
         TelepathyPotion.isIdentified = true
       }
+      case scroll:IdentifyScroll => {
+        appendActionMessage(scroll.consume(this))
+        inventory.remove(scroll.id)
+        IdentifyScroll.isIdentified = true
+      }
     }
 
     return false
@@ -90,10 +96,17 @@ class Player(val name:String, val charClass:String, val charRace:String) extends
     var weapon: Weapon = this.weapon
     weapon.position = new Position(-1, -1)
 
-    if (charClass == Constants.Classes.ALCHEMIST) {
-     inventory.add(new HealthPotion(new Position(-1, -1)))
+    charClass match {
+      case Classes.ALCHEMIST => {
+        HealthPotion.isIdentified = true
+        inventory.add(new HealthPotion(new Position(-1, -1)))
+      }
+      case Classes.WIZARD => {
+        IdentifyScroll.isIdentified = true
+        inventory.add(new IdentifyScroll(new Position(-2, -2)))
+      }
+      case _ =>
     }
-
     inventory.add(weapon)
   }
 }

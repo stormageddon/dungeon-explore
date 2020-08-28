@@ -18,5 +18,6 @@ object Constants {
 
   object Classes {
     val ALCHEMIST = "Alchemist"
+    val WIZARD = "Wizard"
   }
 }

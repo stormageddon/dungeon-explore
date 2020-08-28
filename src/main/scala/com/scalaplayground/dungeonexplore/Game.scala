@@ -6,6 +6,7 @@ import scala.util.Random
 import scala.collection.mutable._
 import com.scalaplayground.dungeonexplore.Monster._
 import com.scalaplayground.dungeonexplore.Armor._
+import com.scalaplayground.dungeonexplore.Consumables.{Consumable, IdentifyScroll, Scroll}
 import com.scalaplayground.dungeonexplore.Floor.Floor
 import com.scalaplayground.dungeonexplore.constants.Constants._
 import com.scalaplayground.dungeonexplore.constants.KeyboardCommands._
@@ -617,8 +618,16 @@ class GameState(player:Player, screen: Scurses) {
           val itemToConsume = player.inventory.getItem(input - 1) // display is one-based
 
           if (itemToConsume.isInstanceOf[Potion]) {
-            player.quaffPotion(itemToConsume.asInstanceOf[Potion])
+            player.consumeConsumable(itemToConsume.asInstanceOf[Potion])
             tookAction = true
+          }
+          else if (itemToConsume.isInstanceOf[Consumable]) {
+            itemToConsume match {
+              case scroll:IdentifyScroll => {
+                player.consumeConsumable(scroll)
+                tookAction = true
+              }
+            }
           }
           else {
             player.appendActionMessage("That item can't be consumed!")

@@ -43,4 +43,8 @@ case class Inventory() {
   def getItem(index: Int): Item = {
     items.toList(index)._2.head
   }
+
+  def getItem(id:String): Item = {
+    items.filter(_._1 == id).head._2.head
+  }
 }
