@@ -5,7 +5,7 @@ import com.scalaplayground.dungeonexplore.Armor.{Armor, Chain, Leather, PlateMai
 import com.scalaplayground.dungeonexplore.Item.Item
 import com.scalaplayground.dungeonexplore.Monster._
 import com.scalaplayground.dungeonexplore.Position.Position
-import com.scalaplayground.dungeonexplore.{DartTrap, Room, Trap}
+import com.scalaplayground.dungeonexplore.{DartTrap, HardenedArmorPotion, HealthPotion, Room, Trap}
 import com.scalaplayground.dungeonexplore.Weapons._
 
 import scala.util.Random
@@ -63,7 +63,10 @@ case class Floor(val level: Int, val bossLevel: Boolean = false) {
       case 0 | 1 | 2 | 3 => {
         Random.nextInt(100) match {
           case roll if 0 until 33 contains roll => {
-            new Item(pos, "!", "A swirling potion lies here", "POTION", name = "Red potion")
+            Random.nextInt(100) match {
+              case potionRoll if 0 until 98 contains roll => new HealthPotion(pos)
+              case _ => new HardenedArmorPotion(pos)
+            }
           }
           case roll if 33 until 66 contains roll => {
             Random.nextInt(100) match {

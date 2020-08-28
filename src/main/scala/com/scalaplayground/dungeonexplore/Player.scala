@@ -6,6 +6,7 @@ import com.scalaplayground.dungeonexplore.Item._
 import com.scalaplayground.dungeonexplore.Monster.CharacterObject
 import com.scalaplayground.dungeonexplore.Position.Position
 import com.scalaplayground.dungeonexplore.Weapons._
+import com.scalaplayground.dungeonexplore.constants.Constants
 import com.scalaplayground.dungeonexplore.constants.Constants._
 import net.team2xh.scurses.{Colors, Scurses}
 
@@ -15,20 +16,18 @@ class Player(val name:String, val charClass:String, val charRace:String) extends
   var health = STARTING_PLAYER_HEALTH
   var maxHealth = STARTING_PLAYER_HEALTH
   var level = 1
-  var weapon: Weapon = new Dagger
-  val armorClass = 10
+  var armorClass = 10
   var attackBonus = 2
-  var sightDistance = 4
+  var sightDistance = DEFAULT_SIGHT_DISTANCE
   var armor: Armor = new Natural
   var position = new Position(10, 14)
   val displayChar = "@"
   var actionMessages = Seq[String]()
   var canAvoidObstacles = false
   val inventory = new Inventory
-  inventory.add(new Item(new Position(-1,-1), id = "POTION", name = "Health Potion"))
-  weapon.position = new Position(-1, -1)
-  inventory.add(weapon)
+  var weapon: Weapon = new Dagger
 
+  initializeInventory
 
   def render(screen:Scurses) = {
     screen.put(position.x, position.y, displayChar, Colors.DIM_GREEN)
@@ -47,16 +46,31 @@ class Player(val name:String, val charClass:String, val charRace:String) extends
     armor = newArmor
   }
 
-  def quaffPotion: Boolean = {
-    if (inventory.items.get("POTION").getOrElse(Seq()).nonEmpty) {
-      val healthRegained = Random.nextInt(6) + 1
-      inventory.remove("POTION")
-      appendActionMessage(s"You quickly quaff a potion, regaining ${healthRegained} health. You have ${inventory.items.get("POTION").getOrElse(Seq()).size} left")
-      health = DungeonHelper.clamp(health + healthRegained, 0, maxHealth)
+  def quaffPotion(consumable:Any): Boolean = {
+    consumable match {
+      case potion:HealthPotion => {
+        appendActionMessage(potion.consume(this))
+        inventory.remove(potion.id)
+        HealthPotion.isIdentified = true
+        return true
+      }
+      case potion:HardenedArmorPotion => {
+        appendActionMessage(potion.consume(this))
+        inventory.remove(potion.id)
+        HardenedArmorPotion.isIdentified = true
+      }
+      case potion:PoisonPotion => {
+        appendActionMessage(potion.consume(this))
+        inventory.remove(potion.id)
+        PoisonPotion.isIdentified = true
+      }
+      case potion:TelepathyPotion => {
+        appendActionMessage(potion.consume(this))
+        inventory.remove(potion.id)
+        TelepathyPotion.isIdentified = true
+      }
     }
-    else {
-      appendActionMessage("You are out of potions!")
-    }
+
     return false
   }
 
@@ -70,6 +84,17 @@ class Player(val name:String, val charClass:String, val charRace:String) extends
 
   def appendActionMessage(message:String): Unit = {
     actionMessages = actionMessages :+ message
+  }
+
+  private def initializeInventory: Unit = {
+    var weapon: Weapon = this.weapon
+    weapon.position = new Position(-1, -1)
+
+    if (charClass == Constants.Classes.ALCHEMIST) {
+     inventory.add(new HealthPotion(new Position(-1, -1)))
+    }
+
+    inventory.add(weapon)
   }
 }
 

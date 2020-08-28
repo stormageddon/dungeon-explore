@@ -14,4 +14,9 @@ object Constants {
   val MIN_ROOM_HEIGHT = 5
   val MAX_ROOM_HEIGHT = 8
   val MAX_NUM_ROOMS = 15
+  val DEFAULT_SIGHT_DISTANCE = 4
+
+  object Classes {
+    val ALCHEMIST = "Alchemist"
+  }
 }

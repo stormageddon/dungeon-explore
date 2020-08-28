@@ -32,6 +32,10 @@ case class Inventory() {
     }
   }
 
+  def clear: Unit = {
+    items.empty
+  }
+
   def getItems: Map[String, Seq[Item]] = {
     return items
   }

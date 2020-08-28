@@ -194,7 +194,13 @@ class Renderer(gs: GameState, screen: Scurses) {
     gs.getPlayer.inventory.getItems.foreach(itemMapElement => {
       val item = itemMapElement._2.head
       val color = if (item.identified)  (if (!item.enchanted) Colors.DIM_WHITE else Colors.DIM_GREEN) else Colors.BRIGHT_BLUE
-      screen.put(NUM_COLS + 1, index + 1, s"${index + 1}: ${item.name} x${itemMapElement._2.size}", color)
+      val text = if (item.isInstanceOf[Potion]) {
+        s"${index + 1}: ${item.asInstanceOf[Potion].description} x${itemMapElement._2.size}"
+      }
+      else {
+        s"${index + 1}: ${item.name} x${itemMapElement._2.size}"
+      }
+      screen.put(NUM_COLS + 1, index + 1, text, color)
       index = index + 1
     })
   }

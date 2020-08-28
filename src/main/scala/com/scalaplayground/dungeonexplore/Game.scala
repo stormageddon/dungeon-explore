@@ -157,6 +157,13 @@ object Game extends App {
   println("======== Ending gear ========")
   println(s"Weapon: ${player.weapon.name} (${player.weapon.damage._1}-${player.weapon.damage._2}, ${player.weapon.attackBonus})")
   println(s"Armor: ${player.armor.name} (${player.armor.armorBonus})")
+  player.inventory.items.foreach(item => {
+    print(s"${item._2.head.name}")
+    if (item._2.length > 1) {
+      print(s" x${item._2.length}")
+    }
+    println("")
+  })
   println("**********************************")
 }
 
@@ -525,24 +532,6 @@ class GameState(player:Player, screen: Scurses) {
       case it if 90 until 100 contains it => return new CursedShrine(randPos)
     }
   }
-//
-//  def generateMonster(pos:Position): Option[Monster] = {
-//    if (!shouldGenerateMonster || (monsters != null && monsters.filter(m => m.isAlive).length >= MAX_MONSTERS_ALIVE)) {
-//      return None
-//    }
-//    else {
-//      return Random.nextInt(100) match {
-//        case it if 0 until 25 contains it => Some(new Goblin(pos))
-//        case it if 25 until 50 contains it => Some(new Kobold(pos))
-//        case it if 50 until 60 contains it => Some(new GiantRat(pos))
-//        case it if 60 until 75 contains it => Some(new Orc(pos))
-//        case it if 75 until 85 contains it => Some(new Wolf(pos))
-//        case it if 85 until 95 contains it => Some(new DireWolf(pos))
-//        case it if 95 until 100 contains it => Some(new RockGolem(pos))
-//        //case it if 98 until 100 contains it => Some(new Dragon(pos))
-//      }
-//    }
-//  }
 
   def performPlayerAttack(monster:Monster) = {
     playerHasValidTarget(player, monster) match {
@@ -611,7 +600,33 @@ class GameState(player:Player, screen: Scurses) {
     }
 
     playerPerformedAction = action match {
-      case QUAFF_POTION => player.quaffPotion
+      case QUAFF_POTION => {
+        renderer.renderInventoryScreen()
+        screen.put(0, 0, ("(C)onsume what? "))
+        screen.refresh()
+
+
+        val input = try {
+          scala.io.StdIn.readInt
+        }
+        catch {
+          case _: Throwable => 0
+        }
+        var tookAction = false
+        if (input > 0 && input <= player.inventory.items.size) {
+          val itemToConsume = player.inventory.getItem(input - 1) // display is one-based
+
+          if (itemToConsume.isInstanceOf[Potion]) {
+            player.quaffPotion(itemToConsume.asInstanceOf[Potion])
+            tookAction = true
+          }
+          else {
+            player.appendActionMessage("That item can't be consumed!")
+          }
+        }
+
+        tookAction
+      }
       case MOVE_UP => performPlayerMove(0, -1)
       case MOVE_LEFT => performPlayerMove(-1, 0)
       case MOVE_DOWN => performPlayerMove(0, 1)

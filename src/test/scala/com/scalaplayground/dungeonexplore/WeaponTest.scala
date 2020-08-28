@@ -61,14 +61,12 @@ class WeaponTest
     val daggerWeapon = new Dagger
     val player: Player = new Player("Test Player", "Klass", "Race")
 
-    player.weapon = daggerWeapon
-
-    player.inventory.getItems.size shouldBe 2 // Dagger and potion
+    player.inventory.getItems.size shouldBe 1 // Dagger
 
     fineWeapon.interact(player)
 
     player.weapon shouldEqual(daggerWeapon)
-    player.inventory.getItems.size shouldBe 3 // fineWeapon is picked up
+    player.inventory.getItems.size shouldBe 2 // fineWeapon is picked up
   }
 
   it should "use the base weapons droppable status" in {
