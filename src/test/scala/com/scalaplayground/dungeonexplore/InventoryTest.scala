@@ -1,5 +1,6 @@
 package com.scalaplayground.dungeonexplore
 
+import com.scalaplayground.dungeonexplore.Consumables.{HealthPotion, TelepathyPotion}
 import com.scalaplayground.dungeonexplore.Item.Item
 import com.scalaplayground.dungeonexplore.Position.Position
 import com.scalaplayground.dungeonexplore.Weapons.Dagger

@@ -1,14 +1,15 @@
-package com.scalaplayground.dungeonexplore
+package com.scalaplayground.dungeonexplore.Consumables
 
 import com.scalaplayground.dungeonexplore.Item.Item
+import com.scalaplayground.dungeonexplore.Monster.CharacterObject
 import com.scalaplayground.dungeonexplore.Position.Position
+import com.scalaplayground.dungeonexplore._
 
 import scala.util.Random
 
-sealed trait Potion extends Item {
+sealed trait Potion extends Consumable {
   override val displayChar: String = "!"
   def description: String = if (identified) name else s"swirling ${color} potion"
-  def consume(target: Player): String
   val color: String
 
   override def interact(target: Player): Unit = {
@@ -56,7 +57,7 @@ class HealthPotion(pos:Position) extends Potion {
   override def description: String = if (HealthPotion.isIdentified) name else s"swirling ${HealthPotion.assignedColor} potion"
   position = pos
 
-  def consume(target: Player): String = {
+  override def consume(target: CharacterObject): String = {
     val healthRegained = Random.nextInt(6) + 1
     target.health = DungeonHelper.clamp(target.health + healthRegained, 0, target.maxHealth)
     s"You quickly quaff the potion, regaining ${healthRegained} health."
@@ -75,7 +76,7 @@ class HardenedArmorPotion(pos:Position) extends Potion {
   override val color = "grey"
   override def description: String = if (HardenedArmorPotion.isIdentified) name else s"swirling ${HardenedArmorPotion.assignedColor} potion"
 
-  def consume(target: Player): String = {
+  override def consume(target: CharacterObject): String = {
     target.armorClass = target.armorClass + 1
     "Your skin hardens like rock"
   }
@@ -93,7 +94,7 @@ class PoisonPotion(pos:Position) extends Potion {
   override val color = "green"
   override def description: String = if (PoisonPotion.isIdentified) name else s"swirling ${PoisonPotion.assignedColor} potion"
 
-  def consume(target: Player): String = {
+  override def consume(target: CharacterObject): String = {
     target.conditions = target.conditions :+ Poisoned(target)
     "You feel sick"
   }
@@ -111,7 +112,7 @@ class TelepathyPotion(pos:Position) extends Potion {
   override val color = "blue"
   override def description: String = if (TelepathyPotion.isIdentified) name else s"swirling ${TelepathyPotion.assignedColor} potion"
 
-  def consume(target: Player): String = {
+  override def consume(target: CharacterObject): String = {
     target.conditions = target.conditions :+ Telepathic(target)
     "You can suddenly hear the thoughts of everything on the floor!"
   }
@@ -129,7 +130,7 @@ class FirePotion(pos:Position) extends Potion {
   override val color = "orange"
   override def description: String = if (FirePotion.isIdentified) name else s"swirling ${FirePotion.assignedColor} potion"
 
-  def consume(target: Player): String = {
+  override def consume(target: CharacterObject): String = {
     target.conditions = target.conditions :+ Burning(target)
     "You catch on fire!"
   }

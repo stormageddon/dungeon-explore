@@ -1,12 +1,13 @@
 package com.scalaplayground.dungeonexplore.Monster
 
 import com.scalaplayground.dungeonexplore.Armor._
+import com.scalaplayground.dungeonexplore.Consumables.{Potion, Scroll}
 import com.scalaplayground.dungeonexplore.Item.Item
 
 import scala.util.Random
 import com.scalaplayground.dungeonexplore.constants.Constants._
 import com.scalaplayground.dungeonexplore.Position.Position
-import com.scalaplayground.dungeonexplore.{Condition, HardenedArmorPotion, HealthPotion, PoisonPotion, Potion, TelepathyPotion, Tile}
+import com.scalaplayground.dungeonexplore.{Condition, Tile}
 import com.scalaplayground.dungeonexplore.PathFinding.AStar
 import com.scalaplayground.dungeonexplore.Weapons._
 import net.team2xh.scurses.Colors
@@ -60,6 +61,7 @@ abstract class Monster extends CharacterObject {
   def dropLoot: Option[Item] = {
     // always short circuit for Night Blade
     if (weapon.id == "NIGHT_BLADE") {
+      weapon.position = position
       return Some(weapon)
     }
 
@@ -74,9 +76,14 @@ abstract class Monster extends CharacterObject {
     else if (roll <= armor.dropChance && armor.isDroppable) {
       return Some(new Item(position, "!", armor.name, armor.id))
     }
-    else if (roll <= POTION_DROP_PERCENTAGE) {
-      return Some(Potion.generatePotion(position))
+    else if (roll <= 75) {
+      val randomPotionOrScrollRoll = Random.nextInt(100)
+      if (randomPotionOrScrollRoll <= POTION_DROP_PERCENTAGE) {
+        return Some(Potion.generatePotion(position))
+      }
+      else return Some(Scroll.generateScroll(position))
     }
+
     None
   }
 

@@ -1,5 +1,6 @@
 package com.scalaplayground.dungeonexplore
 
+import com.scalaplayground.dungeonexplore.Consumables.HealthPotion
 import com.scalaplayground.dungeonexplore.Position.Position
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FlatSpec, Matchers}
 

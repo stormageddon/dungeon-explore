@@ -1,6 +1,6 @@
 package com.scalaplayground.dungeonexplore
 
-import com.scalaplayground.dungeonexplore.Consumables.{IdentifyScroll, Scroll}
+import com.scalaplayground.dungeonexplore.Consumables.{FirePotion, HardenedArmorPotion, HealthPotion, IdentifyScroll, PoisonPotion, Potion, Scroll, TelepathyPotion}
 import com.scalaplayground.dungeonexplore.Position.Position
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FlatSpec, Matchers}
 

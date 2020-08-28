@@ -3,6 +3,7 @@ package com.scalaplayground.dungeonexplore.constants
 object Constants {
   val MAGIC_ITEM_DROP_PERCENTAGE = 5
   val POTION_DROP_PERCENTAGE = 55
+  val SCROLL_DROP_PERCENTAGE = 75
   val WEAPON_DROP_PERCENTAGE = 25
   val ARMOR_DROP_PERCENTAGE = 45
   val STARTING_PLAYER_HEALTH = 20

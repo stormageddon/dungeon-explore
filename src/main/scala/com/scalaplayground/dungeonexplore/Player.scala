@@ -2,7 +2,7 @@ package com.scalaplayground.dungeonexplore
 
 
 import com.scalaplayground.dungeonexplore.Armor._
-import com.scalaplayground.dungeonexplore.Consumables.IdentifyScroll
+import com.scalaplayground.dungeonexplore.Consumables.{FirePotion, HardenedArmorPotion, HealthPotion, IdentifyScroll, PoisonPotion, TelepathyPotion, TeleportScroll}
 import com.scalaplayground.dungeonexplore.Item._
 import com.scalaplayground.dungeonexplore.Monster.CharacterObject
 import com.scalaplayground.dungeonexplore.Position.Position
@@ -79,6 +79,11 @@ class Player(val name:String, val charClass:String, val charRace:String) extends
         appendActionMessage(scroll.consume(this))
         inventory.remove(scroll.id)
         IdentifyScroll.isIdentified = true
+      }
+      case scroll:TeleportScroll => {
+        appendActionMessage(scroll.consume(this))
+        inventory.remove(scroll.id)
+        TeleportScroll.isIdentified = true
       }
 
     }

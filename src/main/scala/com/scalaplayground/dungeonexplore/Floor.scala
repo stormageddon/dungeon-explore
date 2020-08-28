@@ -2,10 +2,11 @@ package com.scalaplayground.dungeonexplore.Floor
 
 
 import com.scalaplayground.dungeonexplore.Armor.{Armor, Chain, Leather, PlateMail}
+import com.scalaplayground.dungeonexplore.Consumables.{HealthPotion, Potion, Scroll}
 import com.scalaplayground.dungeonexplore.Item.Item
 import com.scalaplayground.dungeonexplore.Monster._
 import com.scalaplayground.dungeonexplore.Position.Position
-import com.scalaplayground.dungeonexplore.{DartTrap, HardenedArmorPotion, HealthPotion, Potion, Room, Trap}
+import com.scalaplayground.dungeonexplore.{DartTrap, Room, Trap}
 import com.scalaplayground.dungeonexplore.Weapons._
 
 import scala.util.Random
@@ -58,14 +59,24 @@ case class Floor(val level: Int, val bossLevel: Boolean = false) {
     return monsters
   }
 
+  def getRandomRoom: Room = {
+    rooms(Random.nextInt(rooms.length))
+  }
+
   def generateRandomItem(pos: Position): Item = {
+//    return Scroll.generateScroll(pos)
+//    return Potion.generatePotion(pos)
+
     level match {
       case 0 | 1 | 2 | 3 => {
         Random.nextInt(100) match {
           case roll if 0 until 33 contains roll => {
             Potion.generatePotion(pos)
           }
-          case roll if 33 until 66 contains roll => {
+          case roll if 33 until 53 contains roll => {
+            Scroll.generateScroll(pos)
+          }
+          case roll if 53 until 66 contains roll => {
             Random.nextInt(100) match {
               case r if 0 until 10 contains r => {
                 generateMagicItem(pos)
@@ -115,7 +126,7 @@ case class Floor(val level: Int, val bossLevel: Boolean = false) {
           }
         }
       }
-      case _ => new Item(pos, "!", "A swirling potion lies here", "POTION", name = "Red potion")
+      case _ => new HealthPotion(pos)
     }
   }
 

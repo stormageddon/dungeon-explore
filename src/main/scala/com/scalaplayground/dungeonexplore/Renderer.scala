@@ -1,6 +1,6 @@
 package com.scalaplayground.dungeonexplore
 
-import com.scalaplayground.dungeonexplore.Consumables.Consumable
+import com.scalaplayground.dungeonexplore.Consumables.{Consumable, Potion}
 import com.scalaplayground.dungeonexplore.Game.GameState
 import com.scalaplayground.dungeonexplore.constants.Constants._
 import com.scalaplayground.dungeonexplore.Monster._
@@ -46,7 +46,7 @@ class Renderer(gs: GameState, screen: Scurses) {
   }
 
   def renderPlayerActions() = {
-    var offset = 0
+    var offset = 1
     gameState.getPlayer.actionMessages.foreach(message => {
       screen.put(0, NUM_ROWS + 6 + offset, s"$message ")
       offset = offset + 1
@@ -146,7 +146,7 @@ class Renderer(gs: GameState, screen: Scurses) {
                 item.render(x, y, screen)
               }
             }
-            case None => Unit
+            case None =>
           }
         }
         else if (traps.find(t => t.pos.x == x && t.pos.y == y && t.identified).isDefined) {

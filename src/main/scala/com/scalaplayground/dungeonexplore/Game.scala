@@ -6,7 +6,7 @@ import scala.util.Random
 import scala.collection.mutable._
 import com.scalaplayground.dungeonexplore.Monster._
 import com.scalaplayground.dungeonexplore.Armor._
-import com.scalaplayground.dungeonexplore.Consumables.{Consumable, IdentifyScroll, Scroll}
+import com.scalaplayground.dungeonexplore.Consumables.{Consumable, IdentifyScroll, Potion, Scroll}
 import com.scalaplayground.dungeonexplore.Floor.Floor
 import com.scalaplayground.dungeonexplore.constants.Constants._
 import com.scalaplayground.dungeonexplore.constants.KeyboardCommands._
@@ -113,11 +113,12 @@ object Game extends App {
   s.hideCursor
   s.refresh()
   val player = createPlayer
-  Potion.initializePotions
-  Scroll.initializeScrolls
 
   val gameState = new GameState(player, s)
   var isPlaying = true
+
+  Potion.initializePotions
+  Scroll.initializeScrolls(gameState)
 
   print("\033c")
   val colNum = NUM_COLS
@@ -174,6 +175,7 @@ class GameState(player:Player, screen: Scurses) {
   def getFloorItems = floors(dungeonLevel - 1).droppedItems
   def getMonsters = floors(dungeonLevel - 1).monsters
   def getTraps = floors(dungeonLevel - 1).traps
+  def getCurrentFloor = floors(dungeonLevel - 1)
 
   val renderer = new Renderer(this, screen)
   var defeatedMonsters = Map[String,Int]()
@@ -623,13 +625,15 @@ class GameState(player:Player, screen: Scurses) {
             player.consumeConsumable(itemToConsume.asInstanceOf[Potion])
             tookAction = true
           }
-          else if (itemToConsume.isInstanceOf[Consumable]) {
-            itemToConsume match {
-              case scroll:IdentifyScroll => {
-                player.consumeConsumable(scroll)
-                tookAction = true
-              }
-            }
+          else if (itemToConsume.isInstanceOf[Scroll]) {
+            player.consumeConsumable(itemToConsume.asInstanceOf[Scroll])
+            tookAction = true
+//            itemToConsume match {
+//              case scroll:IdentifyScroll => {
+//                player.consumeConsumable(scroll)
+//                tookAction = true
+//              }
+//            }
           }
           else {
             player.appendActionMessage("That item can't be consumed!")
