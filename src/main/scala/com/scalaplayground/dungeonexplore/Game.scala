@@ -113,6 +113,8 @@ object Game extends App {
   s.hideCursor
   s.refresh()
   val player = createPlayer
+  Potion.initializePotions
+  Scroll.initializeScrolls
 
   val gameState = new GameState(player, s)
   var isPlaying = true

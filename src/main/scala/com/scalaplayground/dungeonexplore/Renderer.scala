@@ -1,5 +1,6 @@
 package com.scalaplayground.dungeonexplore
 
+import com.scalaplayground.dungeonexplore.Consumables.Consumable
 import com.scalaplayground.dungeonexplore.Game.GameState
 import com.scalaplayground.dungeonexplore.constants.Constants._
 import com.scalaplayground.dungeonexplore.Monster._
@@ -11,7 +12,7 @@ import net.team2xh.scurses.{Colors, Scurses}
 import scala.collection.mutable
 
 class Renderer(gs: GameState, screen: Scurses) {
-  private var BUILD_NUMBER = "0.4.20200208"
+  private var BUILD_NUMBER = "0.5.20200828"
 
   def setBuildNumber(buildNumber: String) = {
     BUILD_NUMBER = buildNumber
@@ -194,12 +195,12 @@ class Renderer(gs: GameState, screen: Scurses) {
     gs.getPlayer.inventory.getItems.foreach(itemMapElement => {
       val item = itemMapElement._2.head
       val color = if (item.identified)  (if (!item.enchanted) Colors.DIM_WHITE else Colors.DIM_GREEN) else Colors.BRIGHT_BLUE
-      val text = if (item.isInstanceOf[Potion]) {
-        s"${index + 1}: ${item.asInstanceOf[Potion].description} x${itemMapElement._2.size}"
+      val text = item match {
+        case item:Potion => s"${index + 1}: ${item.asInstanceOf[Potion].description} x${itemMapElement._2.size}"
+        case item:Consumable => s"${index + 1}: ${item.asInstanceOf[Consumable].description} x${itemMapElement._2.size}"
+        case _ => s"${index + 1}: ${item.name} x${itemMapElement._2.size}"
       }
-      else {
-        s"${index + 1}: ${item.name} x${itemMapElement._2.size}"
-      }
+
       screen.put(NUM_COLS + 1, index + 1, text, color)
       index = index + 1
     })

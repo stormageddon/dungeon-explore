@@ -18,6 +18,26 @@ sealed trait Potion extends Item {
 }
 
 object Potion {
+  def initializePotions = {
+
+    var assignedColors = Seq[String]()
+
+    def getRandomColor: String = {
+      val possibleColors = Seq[String]("red","green","blue","grey","orange","magenta","teal","silver","umber","cerulean")
+          .filterNot(assignedColors.contains(_))
+      var randIndex = Random.nextInt(possibleColors.length)
+      assignedColors = assignedColors :+ possibleColors(randIndex)
+
+      possibleColors(randIndex)
+    }
+
+    HealthPotion.assignedColor = getRandomColor
+    PoisonPotion.assignedColor = getRandomColor
+    HardenedArmorPotion.assignedColor = getRandomColor
+    TelepathyPotion.assignedColor = getRandomColor
+    FirePotion.assignedColor = getRandomColor
+  }
+
   def generatePotion(pos:Position): Potion = {
     Random.nextInt(100) match {
       case roll if 0 until 20 contains roll => new FirePotion(pos)
@@ -33,7 +53,7 @@ class HealthPotion(pos:Position) extends Potion {
   name = "Healing Potion"
   id = "POTION_HEALTH"
   override val color = "red"
-  override def description: String = if (HealthPotion.isIdentified) name else s"swirling ${color} potion"
+  override def description: String = if (HealthPotion.isIdentified) name else s"swirling ${HealthPotion.assignedColor} potion"
   position = pos
 
   def consume(target: Player): String = {
@@ -45,6 +65,7 @@ class HealthPotion(pos:Position) extends Potion {
 
 object HealthPotion {
   var isIdentified = false
+  var assignedColor: String = ""
 }
 
 class HardenedArmorPotion(pos:Position) extends Potion {
@@ -52,7 +73,7 @@ class HardenedArmorPotion(pos:Position) extends Potion {
   id = "POTION_STONE_SKIN"
   position = pos
   override val color = "grey"
-  override def description: String = if (HardenedArmorPotion.isIdentified) name else s"swirling ${color} potion"
+  override def description: String = if (HardenedArmorPotion.isIdentified) name else s"swirling ${HardenedArmorPotion.assignedColor} potion"
 
   def consume(target: Player): String = {
     target.armorClass = target.armorClass + 1
@@ -62,6 +83,7 @@ class HardenedArmorPotion(pos:Position) extends Potion {
 
 object HardenedArmorPotion {
   var isIdentified = false
+  var assignedColor = ""
 }
 
 class PoisonPotion(pos:Position) extends Potion {
@@ -69,7 +91,7 @@ class PoisonPotion(pos:Position) extends Potion {
   id = "POTION_POISON"
   position = pos
   override val color = "green"
-  override def description: String = if (PoisonPotion.isIdentified) name else s"swirling ${color} potion"
+  override def description: String = if (PoisonPotion.isIdentified) name else s"swirling ${PoisonPotion.assignedColor} potion"
 
   def consume(target: Player): String = {
     target.conditions = target.conditions :+ Poisoned(target)
@@ -79,6 +101,7 @@ class PoisonPotion(pos:Position) extends Potion {
 
 object PoisonPotion {
   var isIdentified = false
+  var assignedColor = ""
 }
 
 class TelepathyPotion(pos:Position) extends Potion {
@@ -86,7 +109,7 @@ class TelepathyPotion(pos:Position) extends Potion {
   id = "POTION_TELEPATHY"
   position = pos
   override val color = "blue"
-  override def description: String = if (TelepathyPotion.isIdentified) name else s"swirling ${color} potion"
+  override def description: String = if (TelepathyPotion.isIdentified) name else s"swirling ${TelepathyPotion.assignedColor} potion"
 
   def consume(target: Player): String = {
     target.conditions = target.conditions :+ Telepathic(target)
@@ -96,6 +119,7 @@ class TelepathyPotion(pos:Position) extends Potion {
 
 object TelepathyPotion {
   var isIdentified = false
+  var assignedColor = ""
 }
 
 class FirePotion(pos:Position) extends Potion {
@@ -103,7 +127,7 @@ class FirePotion(pos:Position) extends Potion {
   id = "POTION_FIRE"
   position = pos
   override val color = "orange"
-  override def description: String = if (FirePotion.isIdentified) name else s"swirling ${color} potion"
+  override def description: String = if (FirePotion.isIdentified) name else s"swirling ${FirePotion.assignedColor} potion"
 
   def consume(target: Player): String = {
     target.conditions = target.conditions :+ Burning(target)
@@ -113,4 +137,5 @@ class FirePotion(pos:Position) extends Potion {
 
 object FirePotion {
   var isIdentified = false
+  var assignedColor = ""
 }
