@@ -21,7 +21,8 @@ import scala.io.Source
 
 object Game extends App {
   def createPlayer: Player = {
-    print("\u033c")
+//    print("\u033c")
+    s.clear()
 
     // try to read configuration first
     val filename = "config.txt"
@@ -120,7 +121,8 @@ object Game extends App {
   Potion.initializePotions
   Scroll.initializeScrolls(gameState)
 
-  print("\u033c")
+  s.clear()
+//  print("\u033c")
   val colNum = NUM_COLS
   val rowNum = NUM_ROWS
 
@@ -128,7 +130,8 @@ object Game extends App {
   while(isPlaying) {
 
     if (player.health <= 0) {
-      print("\u033c")
+//      print("\u033c")
+      s.clear()
       println("**********************************")
       println(s"${player.name} the Level ${player.level} ${player.charRace} ${player.charClass} was slain. RIP.")
       isPlaying = false
@@ -595,8 +598,8 @@ class GameState(player:Player, screen: Scurses) {
   }
 
   def tick(action: Int): Boolean = {
-    print("\u033c")
-
+//    print("\u033c")
+    screen.clear()
     var playerPerformedAction = false
     val playerIsAlive = true
 
