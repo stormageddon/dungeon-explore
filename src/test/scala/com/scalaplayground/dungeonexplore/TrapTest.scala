@@ -2,10 +2,14 @@ package com.scalaplayground.dungeonexplore
 
 import com.scalaplayground.dungeonexplore.Monster.Goblin
 import com.scalaplayground.dungeonexplore.Position.Position
-import org.scalatest.mockito.MockitoSugar
-import org.scalatest.{BeforeAndAfterEach, FlatSpec, Matchers}
+import org.mockito.MockitoSugar
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
+//import org.scalatest.matchers._
+//import org.scalatest.mockito.MockitoSugar
+import org.scalatest.{BeforeAndAfterEach}
 
-class TrapTest extends FlatSpec
+class TrapTest extends AnyFlatSpec
   with Matchers
   with MockitoSugar
   with BeforeAndAfterEach{
@@ -20,17 +24,17 @@ class TrapTest extends FlatSpec
   behavior of "Trap"
 
   it should "not be identified by default" in {
-    testTrap.identified shouldBe false
-    testTrap.displayChar shouldBe "."
+    testTrap.identified mustBe false
+    testTrap.displayChar mustBe "."
   }
 
   it should "hide the trap as a floor when not identified" in {
     testTrap.identified = true
 
-    testTrap.displayChar shouldBe "^"
+    testTrap.displayChar mustBe "^"
 
     testTrap.identified = false
-    testTrap.displayChar shouldBe "."
+    testTrap.displayChar mustBe "."
   }
 
   behavior of "Dart Trap"
@@ -42,7 +46,7 @@ class TrapTest extends FlatSpec
 
     testTrap.trigger(target)
 
-    target.health shouldBe 7
+    target.health mustBe 7
   }
 
   it should "deal a minimum of 1 damage" in {
@@ -53,7 +57,7 @@ class TrapTest extends FlatSpec
 
     testTrap.trigger(target)
 
-    target.health shouldBe 9
+    target.health mustBe 9
   }
 }
 

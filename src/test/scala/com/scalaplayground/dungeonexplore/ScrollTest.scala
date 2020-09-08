@@ -1,10 +1,14 @@
 package com.scalaplayground.dungeonexplore
 
 import com.scalaplayground.dungeonexplore.Consumables.{FirePotion, HardenedArmorPotion, HealthPotion, IdentifyScroll, PoisonPotion, Potion, Scroll, TelepathyPotion}
+import com.scalaplayground.dungeonexplore.Game.GameState
 import com.scalaplayground.dungeonexplore.Position.Position
-import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FlatSpec, Matchers}
+import net.team2xh.scurses.Scurses
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 
-class ScrollTest extends FlatSpec
+class ScrollTest extends AnyFlatSpec
   with Matchers
   with BeforeAndAfterEach
   with BeforeAndAfterAll {
@@ -14,7 +18,8 @@ class ScrollTest extends FlatSpec
   var testPlayer:Player = new Player("testName", "testClass", "testRace")
 
   override def beforeAll: Unit = {
-    Scroll.initializeScrolls
+    val s: Scurses = new Scurses
+    Scroll.initializeScrolls(new GameState(testPlayer, s))
   }
 
   override def beforeEach: Unit = {
@@ -38,21 +43,21 @@ class ScrollTest extends FlatSpec
 
     // assert
     val inventoryItems = testPlayer.inventory.getItems
-    testPlayer.inventory.getItem("POTION_HEALTH").asInstanceOf[Potion].description shouldBe "Healing Potion"
-    testPlayer.inventory.getItem("POTION_STONE_SKIN").asInstanceOf[Potion].description shouldBe "Stone Skin Potion"
-    testPlayer.inventory.getItem("POTION_POISON").asInstanceOf[Potion].description shouldBe "Poison"
-    testPlayer.inventory.getItem("POTION_TELEPATHY").asInstanceOf[Potion].description shouldBe "Telepathy Potion"
-    testPlayer.inventory.getItem("POTION_FIRE").asInstanceOf[Potion].description shouldBe "Fire Potion"
+    testPlayer.inventory.getItem("POTION_HEALTH").asInstanceOf[Potion].description mustBe "Healing Potion"
+    testPlayer.inventory.getItem("POTION_STONE_SKIN").asInstanceOf[Potion].description mustBe "Stone Skin Potion"
+    testPlayer.inventory.getItem("POTION_POISON").asInstanceOf[Potion].description mustBe "Poison"
+    testPlayer.inventory.getItem("POTION_TELEPATHY").asInstanceOf[Potion].description mustBe "Telepathy Potion"
+    testPlayer.inventory.getItem("POTION_FIRE").asInstanceOf[Potion].description mustBe "Fire Potion"
   }
 
   it should "reveal the name when identified" in {
     testPlayer.inventory.add(new IdentifyScroll(new Position(1,1)))
 
     var testScroll:IdentifyScroll = testPlayer.inventory.getItem("SCROLL_IDENTIFY").asInstanceOf[IdentifyScroll]
-    testScroll.description should not be "Scroll of Identify"
+    testScroll.description mustNot be ("Scroll of Identify")
 
     IdentifyScroll.isIdentified = true
 
-    testScroll.description should be ("Scroll of Identify")
+    testScroll.description mustBe "Scroll of Identify"
   }
 }

@@ -26,7 +26,7 @@ class Renderer(gs: GameState, screen: Scurses) {
     "HELP_MENU" -> renderHelpScreen
   )
 
-  def render(shouldRenderStatsBar: Boolean = true) = {
+  def render(shouldRenderStatsBar: Boolean = true): Unit = {
     renderGameState
     renderDebugBar
     if (shouldRenderStatsBar) renderStatsBar()
@@ -116,7 +116,7 @@ class Renderer(gs: GameState, screen: Scurses) {
     val player: Player = gameState.getPlayer()
     val droppedItems: Seq[Item] = gameState.getFloorItems
     val traps = gameState.getTraps
-    val tiles: mutable.Seq[mutable.Seq[Tile]] = gameState.tiles
+    val tiles = gameState.tiles.map(_.toSeq).toSeq // TODO: Fix this weird hack
 
     for (x <- 0 to NUM_COLS - 1) {
       for (y <- 0 to NUM_ROWS - 1) {
@@ -133,7 +133,7 @@ class Renderer(gs: GameState, screen: Scurses) {
                 screen.put(x, y, " ") // hide monster if it's not visible
               }
             }
-            case None => Unit
+            case None => ()
           }
         }
         else if (shrine != null && shrine.position.x == x && shrine.position.y == y && gameState.getTileAtPosition(shrine.position.x, shrine.position.y).get.currentlyVisible) {
@@ -185,7 +185,7 @@ class Renderer(gs: GameState, screen: Scurses) {
         case 7 => screen.put(NUM_COLS + 1, 8, "ENTER - enter/leave observation mode")
         case 8 => screen.put(NUM_COLS + 1, 9, "ESC - quit")
 
-        case _ => Unit
+        case _ => ()
       }
     }
   }
@@ -206,7 +206,7 @@ class Renderer(gs: GameState, screen: Scurses) {
     })
   }
 
-  def renderRightPanel(callback: () => Unit) = {
+  def renderRightPanel(callback: () => Unit): Unit = {
     callback()
   }
 }

@@ -2,9 +2,10 @@ package com.scalaplayground.dungeonexplore.PathFinding
 
 import com.scalaplayground.dungeonexplore.Position.Position
 import com.scalaplayground.dungeonexplore.Room
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
 
-class RoomTest extends FlatSpec with Matchers {
+class RoomTest extends AnyFlatSpec with Matchers {
  behavior of "Room Test"
 
   it should "return true if it intersects the provided coordinates" in {
@@ -16,7 +17,7 @@ class RoomTest extends FlatSpec with Matchers {
     val result = room.intersects(otherRoom)
 
     // assert
-    result shouldBe true
+    result mustBe true
   }
 
   it should "return false if the rooms only overlap on the x axis" in {
@@ -28,7 +29,7 @@ class RoomTest extends FlatSpec with Matchers {
     val result = room.intersects(otherRoom)
 
     // assert
-    result shouldBe false
+    result mustBe false
   }
 
   it should "return false if the rooms only overlap on the y axis" in {
@@ -40,7 +41,7 @@ class RoomTest extends FlatSpec with Matchers {
     val result = room.intersects(otherRoom)
 
     // assert
-    result shouldBe false
+    result mustBe false
   }
 
   it should "return false if the rooms do not overlap" in {
@@ -52,7 +53,7 @@ class RoomTest extends FlatSpec with Matchers {
     val result = room.intersects(otherRoom)
 
     // assert
-    result shouldBe false
+    result mustBe false
   }
 
   it should "return true if the rooms are identical" in {
@@ -64,7 +65,7 @@ class RoomTest extends FlatSpec with Matchers {
     val result = room.intersects(otherRoom)
 
     // assert
-    result shouldBe true
+    result mustBe true
   }
 
   it should "properly calculate the center of a room" in {
@@ -72,19 +73,19 @@ class RoomTest extends FlatSpec with Matchers {
     val expectedCenter = new Position(4, 4)
     val roomCenter = room.getCenter
 
-    roomCenter.isEqualToPosition(expectedCenter) shouldBe true
-    roomCenter.isEqualToPosition(new Position(3, 2)) shouldBe false
+    roomCenter.isEqualToPosition(expectedCenter) mustBe true
+    roomCenter.isEqualToPosition(new Position(3, 2)) mustBe false
 
     val room2 = new Room(new Position(1, 1), 6, 1)
     val expectedCenter2 = new Position(4, 2)
 
-    room2.getCenter.isEqualToPosition(expectedCenter2) shouldBe true
+    room2.getCenter.isEqualToPosition(expectedCenter2) mustBe true
   }
 
   it should "calculate center of larger 14x20 room" in {
     val room = new Room(new Position(14, 20), 6, 8)
     val expectedCenter = new Position(17, 24)
 
-    room.getCenter.isEqualToPosition(expectedCenter) shouldBe true
+    room.getCenter.isEqualToPosition(expectedCenter) mustBe true
   }
 }

@@ -26,6 +26,8 @@ object Scroll {
     IdentifyScroll.hiddenName = s"Scroll of ${randStr(4)}"
     TeleportScroll.hiddenName = s"Scroll of ${randStr(4)}"
     TeleportScroll.gameState = gameState
+
+    ()
   }
 
   def generateScroll(pos:Position): Scroll = {

@@ -4,9 +4,10 @@ import com.scalaplayground.dungeonexplore.Consumables.{HealthPotion, TelepathyPo
 import com.scalaplayground.dungeonexplore.Item.Item
 import com.scalaplayground.dungeonexplore.Position.Position
 import com.scalaplayground.dungeonexplore.Weapons.Dagger
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.must.Matchers
 
-class InventoryTest extends FlatSpec with Matchers {
+class InventoryTest extends AnyFlatSpec with Matchers {
   behavior of "Inventory test"
 
   it should "Add an item to the inventory" in {
@@ -17,7 +18,7 @@ class InventoryTest extends FlatSpec with Matchers {
     inventory.add(new Item(new Position(1, 1)))
 
     // assert
-    inventory.getItems.size shouldBe 1
+    inventory.getItems.size mustBe 1
   }
 
   it should "not add an item to the inventory if the total weight would be over inventory capacity" in {
@@ -26,8 +27,8 @@ class InventoryTest extends FlatSpec with Matchers {
     inventory.add(new Item(new Position(1, 1), id = "ITEM1", weight = 55.0))
     inventory.add(new Item(new Position(2,2), id = "ITEM2", weight = 10))
 
-    inventory.getItems.size shouldBe 1
-    inventory.totalCapacity shouldBe 55
+    inventory.getItems.size mustBe 1
+    inventory.totalCapacity mustBe 55
   }
 
   it should "track the number of an item within the inventory" in {
@@ -37,8 +38,8 @@ class InventoryTest extends FlatSpec with Matchers {
     inventory.add(new Item(new Position(1, 1), id = "POTION"))
     inventory.add(new Item(new Position(-1, -1), id = "OTHER_ITEM"))
 
-    inventory.items("POTION").size shouldBe 2
-    inventory.items("OTHER_ITEM").size shouldBe 1
+    inventory.items("POTION").size mustBe 2
+    inventory.items("OTHER_ITEM").size mustBe 1
   }
 
   it should "remove an item from inventory" in {
@@ -47,7 +48,7 @@ class InventoryTest extends FlatSpec with Matchers {
     inventory.add(new Item(new Position(1, 1), id = "POTION"))
 
     inventory.remove("POTION")
-    inventory.items("POTION").size shouldBe 1
+    inventory.items("POTION").size mustBe 1
   }
 
   it should "remove the item entirely from inventory if the last of that item is removed" in {
@@ -56,7 +57,7 @@ class InventoryTest extends FlatSpec with Matchers {
     inventory.add(new Item(new Position(1, 1), id = "POTION"))
     inventory.remove("POTION")
 
-    inventory.items.contains("POTION") shouldBe false
+    inventory.items.contains("POTION") mustBe false
   }
 
   it should "Decrease total capacity by removed items weight" in {
@@ -71,7 +72,7 @@ class InventoryTest extends FlatSpec with Matchers {
 
     inventory.remove(item1.id)
 
-    inventory.totalCapacity shouldBe 50
+    inventory.totalCapacity mustBe 50
   }
 
   it should "Get item from inventory by index" in {
@@ -88,10 +89,10 @@ class InventoryTest extends FlatSpec with Matchers {
     inventory.add(item4)
 
     var result = inventory.getItem(0)
-    result.id shouldBe item1.id
+    result.id mustBe item1.id
 
     result = inventory.getItem(1)
-    result.id shouldBe item4.id
+    result.id mustBe item4.id
   }
 
   it should "Get item from inventory by id" in {
@@ -106,13 +107,13 @@ class InventoryTest extends FlatSpec with Matchers {
     inventory.add(item3)
 
     var result = inventory.getItem("POTION_HEALTH")
-    result shouldBe item1
+    result mustBe item1
 
     result = inventory.getItem("POTION_TELEPATHY")
-    result shouldBe item3
+    result mustBe item3
 
     result = inventory.getItem("DAGGER")
-    result shouldBe item2
+    result mustBe item2
   }
 }
 

@@ -21,7 +21,7 @@ import scala.io.Source
 
 object Game extends App {
   def createPlayer: Player = {
-    print("\033c")
+    print("\u033c")
 
     // try to read configuration first
     val filename = "config.txt"
@@ -120,7 +120,7 @@ object Game extends App {
   Potion.initializePotions
   Scroll.initializeScrolls(gameState)
 
-  print("\033c")
+  print("\u033c")
   val colNum = NUM_COLS
   val rowNum = NUM_ROWS
 
@@ -128,7 +128,7 @@ object Game extends App {
   while(isPlaying) {
 
     if (player.health <= 0) {
-      print("\033c")
+      print("\u033c")
       println("**********************************")
       println(s"${player.name} the Level ${player.level} ${player.charRace} ${player.charClass} was slain. RIP.")
       isPlaying = false
@@ -179,8 +179,8 @@ class GameState(player:Player, screen: Scurses) {
 
   val renderer = new Renderer(this, screen)
   var defeatedMonsters = Map[String,Int]()
-  var tiles = mutable.Seq[mutable.Seq[Tile]]()
-  var rooms: mutable.Seq[Room] = mutable.Seq[Room]()
+  var tiles: Seq[Seq[Tile]] = Seq[Seq[Tile]]()
+  var rooms: Seq[Room] = Seq[Room]()
   var floors: Seq[Floor] = Seq[Floor]()
   var shouldGenerateMonster = true
   var monsters: List[Monster] = List[Monster]()
@@ -196,8 +196,9 @@ class GameState(player:Player, screen: Scurses) {
   var debugMode = false
 
   def resetState = {
-    tiles = mutable.Seq[mutable.Seq[Tile]]()
-    rooms = mutable.Seq[Room]()
+    tiles = Seq[Seq[Tile]]()
+    //rooms = mutable.Seq[Room]()
+    rooms = Seq[Room]()
     monsters = List[Monster]()
     droppedItems = List[Item]()
   }
@@ -216,7 +217,7 @@ class GameState(player:Player, screen: Scurses) {
     val newFloor = Floor(dungeonLevel, bossLevel = dungeonLevel == 5)
     floors = floors :+ newFloor
     randomMap
-    newFloor.rooms = rooms
+    newFloor.rooms = rooms.toSeq
     newFloor.populate
     dungeonLevel = dungeonLevel + 1
   }
@@ -233,7 +234,7 @@ class GameState(player:Player, screen: Scurses) {
                 tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
               }
             }
-            case None => Unit
+            case None => ()
           }
 
           getTileAtPosition(tile.position.x, tile.position.y - 1) match {
@@ -242,7 +243,7 @@ class GameState(player:Player, screen: Scurses) {
                 tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
               }
             }
-            case None => Unit
+            case None => ()
           }
 
           getTileAtPosition(tile.position.x + 1, tile.position.y - 1) match {
@@ -251,7 +252,7 @@ class GameState(player:Player, screen: Scurses) {
                 tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
               }
             }
-            case None => Unit
+            case None => ()
           }
 
           getTileAtPosition(tile.position.x - 1, tile.position.y) match {
@@ -260,7 +261,7 @@ class GameState(player:Player, screen: Scurses) {
                 tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
               }
             }
-            case None => Unit
+            case None => ()
           }
 
           getTileAtPosition(tile.position.x + 1, tile.position.y) match {
@@ -269,7 +270,7 @@ class GameState(player:Player, screen: Scurses) {
                 tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
               }
             }
-            case None => Unit
+            case None => ()
           }
 
           getTileAtPosition(tile.position.x - 1, tile.position.y + 1) match {
@@ -278,7 +279,7 @@ class GameState(player:Player, screen: Scurses) {
                 tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
               }
             }
-            case None => Unit
+            case None => ()
           }
 
           getTileAtPosition(tile.position.x, tile.position.y + 1) match {
@@ -287,7 +288,7 @@ class GameState(player:Player, screen: Scurses) {
                 tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
               }
             }
-            case None => Unit
+            case None => ()
           }
 
           getTileAtPosition(tile.position.x + 1, tile.position.y + 1) match {
@@ -296,7 +297,7 @@ class GameState(player:Player, screen: Scurses) {
                 tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
               }
             }
-            case None => Unit
+            case None => ()
           }
         }
       })
@@ -333,7 +334,7 @@ class GameState(player:Player, screen: Scurses) {
                 tile.neighbors = tile.neighbors :+ new Vertex(t, 2)
               }
             }
-            case None => Unit
+            case None => ()
           }
 
           getTileAtPosition(tile.position.x, tile.position.y - 1) match {
@@ -342,7 +343,7 @@ class GameState(player:Player, screen: Scurses) {
                 tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
               }
             }
-            case None => Unit
+            case None => ()
           }
 
           getTileAtPosition(tile.position.x + 1, tile.position.y - 1) match {
@@ -351,7 +352,7 @@ class GameState(player:Player, screen: Scurses) {
                 tile.neighbors = tile.neighbors :+ new Vertex(t, 2)
               }
             }
-            case None => Unit
+            case None => ()
           }
 
           getTileAtPosition(tile.position.x - 1, tile.position.y) match {
@@ -360,7 +361,7 @@ class GameState(player:Player, screen: Scurses) {
                 tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
               }
             }
-            case None => Unit
+            case None => ()
           }
 
           getTileAtPosition(tile.position.x + 1, tile.position.y) match {
@@ -369,7 +370,7 @@ class GameState(player:Player, screen: Scurses) {
                 tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
               }
             }
-            case None => Unit
+            case None => ()
           }
 
           getTileAtPosition(tile.position.x - 1, tile.position.y + 1) match {
@@ -378,7 +379,7 @@ class GameState(player:Player, screen: Scurses) {
                 tile.neighbors = tile.neighbors :+ new Vertex(t, 2)
               }
             }
-            case None => Unit
+            case None => ()
           }
 
           getTileAtPosition(tile.position.x, tile.position.y + 1) match {
@@ -387,7 +388,7 @@ class GameState(player:Player, screen: Scurses) {
                 tile.neighbors = tile.neighbors :+ new Vertex(t, 1)
               }
             }
-            case None => Unit
+            case None => ()
           }
 
           getTileAtPosition(tile.position.x + 1, tile.position.y + 1) match {
@@ -396,7 +397,7 @@ class GameState(player:Player, screen: Scurses) {
                 tile.neighbors = tile.neighbors :+ new Vertex(t, 2)
               }
             }
-            case None => Unit
+            case None => ()
           }
         }
       })
@@ -404,7 +405,7 @@ class GameState(player:Player, screen: Scurses) {
     setSurroundingTilesVisible(getPlayer.position)
   }
 
-  def createRooms: mutable.Seq[Room] = {
+  def createRooms: Seq[Room] = {
     var listOfRooms: Seq[Room] = Seq[Room]()
 
     for (roomIterator <- 0 to MAX_NUM_ROOMS) {
@@ -560,7 +561,7 @@ class GameState(player:Player, screen: Scurses) {
           floors(dungeonLevel - 1).getMonsters.filter(monster => monster != m)
         }
       }
-      case None => Unit
+      case None => ()
     }
   }
 
@@ -594,7 +595,7 @@ class GameState(player:Player, screen: Scurses) {
   }
 
   def tick(action: Int): Boolean = {
-    print("\033c")
+    print("\u033c")
 
     var playerPerformedAction = false
     val playerIsAlive = true
@@ -841,8 +842,11 @@ class GameState(player:Player, screen: Scurses) {
                 monsterActionMessages = monsterActionMessages + (s"The ${monster.name} missed you." -> Colors.DIM_WHITE)
               }
             }
+            // TODO: Figure out why this hack is necessary to appease the compiler overlords
+            val tilesAsSeq = tiles.map(_.toSeq).toSeq
+
             val playerTile = getTileAtPosition(player.position.x, player.position.y)
-            val newPos = monster.move(playerTile, tiles, getTileAtPosition(monster.position.x, monster.position.y))
+            val newPos = monster.move(playerTile, tilesAsSeq, getTileAtPosition(monster.position.x, monster.position.y))
             getTileAtPosition(newPos.x, newPos.y) match {
               case Some(tile) => {
                 if ((tile.passable || monster.canAvoidObstacles) && !tile.occupied) {
