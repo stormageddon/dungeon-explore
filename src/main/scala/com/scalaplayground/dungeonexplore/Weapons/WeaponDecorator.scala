@@ -12,6 +12,10 @@ abstract class WeaponDecorator extends Weapon {
     target.appendActionMessage(s"Picked up ${name}")
     target.inventory.add(this)
   }
+
+  def removeDecorator(weapon:Weapon, decoratorToRemove: WeaponDecorator): Weapon = {
+    weapon
+  }
 }
 
 case class RustyWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {

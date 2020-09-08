@@ -4,6 +4,7 @@ import com.scalaplayground.dungeonexplore.Game.GameState
 import com.scalaplayground.dungeonexplore.Monster.CharacterObject
 import com.scalaplayground.dungeonexplore.Player
 import com.scalaplayground.dungeonexplore.Position.Position
+import com.scalaplayground.dungeonexplore.Weapons.{BlessedWeaponDecorator, CursedWeaponDecorator}
 
 import scala.util.Random
 
@@ -63,6 +64,30 @@ class IdentifyScroll(pos:Position) extends Scroll {
 }
 
 object IdentifyScroll {
+  var isIdentified = false
+  var hiddenName = ""
+}
+
+class BlessScroll(pos:Position) extends Scroll {
+  id = "SCROLL_BLESS"
+  name = "Scroll of Bless"
+  position = pos
+
+  override def description: String = if (BlessScroll.isIdentified) name else BlessScroll.hiddenName
+  def consume(target:CharacterObject): String = {
+    target match {
+      case t:Player => {
+        t.weapon = new BlessedWeaponDecorator(t.weapon)
+        if (t.weapon.isInstanceOf[CursedWeaponDecorator] == CursedWeaponDecorator) {
+          // remove curse here
+        }
+      }
+    }
+    "A divine light radiates from you, strengthening your resolve and cleansing the area"
+  }
+}
+
+object BlessScroll {
   var isIdentified = false
   var hiddenName = ""
 }
