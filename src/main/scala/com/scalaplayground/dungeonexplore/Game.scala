@@ -113,6 +113,7 @@ object Game extends App {
   }
 
   s.hideCursor
+  s.clear()
   s.refresh()
   val player = createPlayer
 
