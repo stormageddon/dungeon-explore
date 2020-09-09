@@ -1,6 +1,5 @@
 package com.scalaplayground.dungeonexplore.Consumables
 
-import com.scalaplayground.dungeonexplore.Item.Item
 import com.scalaplayground.dungeonexplore.Monster.CharacterObject
 import com.scalaplayground.dungeonexplore.Position.Position
 import com.scalaplayground.dungeonexplore._

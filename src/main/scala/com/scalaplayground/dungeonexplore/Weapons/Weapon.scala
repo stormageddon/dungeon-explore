@@ -9,7 +9,7 @@ import net.team2xh.scurses.Scurses
 
 import scala.util.Random
 
-abstract class Weapon extends Item {
+trait Weapon extends Item {
   var damage: (Int, Int)
   var attackBonus: Int = 0
   var isDroppable: Boolean = false
@@ -35,12 +35,14 @@ abstract class Weapon extends Item {
   }
 }
 
-case class Dagger() extends Weapon {
+class Dagger() extends Weapon {
   name = "Dagger"
+  id = "DAGGER"
+  var hiddenName = "Dagger"
+
   override val tileDescription: String = name
   var damage = (1,2)
 
-  id = "DAGGER"
   isDroppable = true
 }
 

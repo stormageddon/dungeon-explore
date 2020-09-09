@@ -7,6 +7,7 @@ import com.scalaplayground.dungeonexplore.Monster._
 import com.scalaplayground.dungeonexplore.Shrine._
 import com.scalaplayground.dungeonexplore.Item._
 import com.scalaplayground.dungeonexplore.Position.Position
+import com.scalaplayground.dungeonexplore.Weapons.PoisonedWeaponDecorator
 import net.team2xh.scurses.{Colors, Scurses}
 
 import scala.collection.mutable
@@ -198,7 +199,9 @@ class Renderer(gs: GameState, screen: Scurses) {
       val text = item match {
         case item:Potion => s"${index + 1}: ${item.asInstanceOf[Potion].description} x${itemMapElement._2.size}"
         case item:Consumable => s"${index + 1}: ${item.asInstanceOf[Consumable].description} x${itemMapElement._2.size}"
-        case _ => s"${index + 1}: ${item.name} x${itemMapElement._2.size}"
+        case item:PoisonedWeaponDecorator =>
+          s"${index + 1}: ${if (PoisonedWeaponDecorator.isIdentified) "Poisoned Dagger" else "Dagger"} x${itemMapElement._2.size}"
+        case _ => s"${index + 1}: ${item.tileDescription} x${itemMapElement._2.size}"
       }
 
       screen.put(NUM_COLS + 1, index + 1, text, color)

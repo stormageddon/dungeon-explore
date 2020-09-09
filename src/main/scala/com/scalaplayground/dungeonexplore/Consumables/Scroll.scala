@@ -4,7 +4,7 @@ import com.scalaplayground.dungeonexplore.Game.GameState
 import com.scalaplayground.dungeonexplore.Monster.CharacterObject
 import com.scalaplayground.dungeonexplore.Player
 import com.scalaplayground.dungeonexplore.Position.Position
-import com.scalaplayground.dungeonexplore.Weapons.{BlessedWeaponDecorator, CursedWeaponDecorator}
+import com.scalaplayground.dungeonexplore.Weapons.{BlessedWeaponDecorator, CursedWeaponDecorator, PoisonedWeaponDecorator}
 
 import scala.util.Random
 
@@ -56,6 +56,7 @@ class IdentifyScroll(pos:Position) extends Scroll {
             case _:PoisonPotion => PoisonPotion.isIdentified = true
             case _:FirePotion => FirePotion.isIdentified = true
             case _:TeleportScroll => TeleportScroll.isIdentified = true
+            case _:PoisonedWeaponDecorator => PoisonedWeaponDecorator.isIdentified = true
             case _=>
           }
         })

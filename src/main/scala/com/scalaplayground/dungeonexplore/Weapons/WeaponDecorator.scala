@@ -5,7 +5,7 @@ import com.scalaplayground.dungeonexplore.{Burning, DungeonHelper, Player, Poiso
 
 import scala.util.Random
 
-abstract class WeaponDecorator extends Weapon {
+trait WeaponDecorator extends Weapon {
   val weapon: Weapon
 
   override def interact(target: Player): Unit = {
@@ -44,15 +44,16 @@ case class FineWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
   }
 }
 
-case class PoisonedWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
+class PoisonedWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
   override val weapon = baseWeapon
   name = s"Poisoned ${weapon.name}"
-  override val tileDescription: String = name
+  override val tileDescription: String = if (PoisonedWeaponDecorator.isIdentified) name else baseWeapon.name
   override var damage = weapon.damage
   id = s"POISONED_${weapon.id}"
   isDroppable = baseWeapon.isDroppable
   identified = false
   enchanted = true
+
 
   override def attack(target: Option[CharacterObject] = None, wielder: Option[CharacterObject] = None): Int = {
     if (target.isDefined) {
@@ -66,6 +67,15 @@ case class PoisonedWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {
     }
     return weapon.attack() + 1
   }
+
+  override def interact(target: Player): Unit = {
+    target.appendActionMessage(s"Picked up ${tileDescription}")
+    target.inventory.add(this)
+  }
+}
+
+object PoisonedWeaponDecorator {
+  var isIdentified = false
 }
 
 case class FlamingWeaponDecorator(baseWeapon: Weapon) extends WeaponDecorator {

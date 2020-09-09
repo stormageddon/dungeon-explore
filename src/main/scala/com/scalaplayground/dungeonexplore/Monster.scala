@@ -59,6 +59,10 @@ abstract class Monster extends CharacterObject {
   }
 
   def dropLoot: Option[Item] = {
+    var weapon = new PoisonedWeaponDecorator(new Dagger)
+    weapon.position = position
+    return Some(weapon)
+
     // always short circuit for Night Blade
     if (weapon.id == "NIGHT_BLADE") {
       weapon.position = position
