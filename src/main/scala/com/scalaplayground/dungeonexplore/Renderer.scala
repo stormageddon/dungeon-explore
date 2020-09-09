@@ -12,7 +12,7 @@ import net.team2xh.scurses.{Colors, Scurses}
 import scala.collection.mutable
 
 class Renderer(gs: GameState, screen: Scurses) {
-  private var BUILD_NUMBER = "0.5.20200828"
+  private var BUILD_NUMBER = "0.5.20200908"
 
   def setBuildNumber(buildNumber: String) = {
     BUILD_NUMBER = buildNumber

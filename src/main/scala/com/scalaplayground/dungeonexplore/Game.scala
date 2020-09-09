@@ -13,6 +13,7 @@ import com.scalaplayground.dungeonexplore.constants.KeyboardCommands._
 import com.scalaplayground.dungeonexplore.Item.Item
 import com.scalaplayground.dungeonexplore.Position.Position
 import com.scalaplayground.dungeonexplore.Shrine._
+import com.scalaplayground.dungeonexplore.Utilities.TerminalUtils
 import com.scalaplayground.dungeonexplore.Weapons._
 import com.scalaplayground.dungeonexplore._
 
@@ -139,13 +140,13 @@ object Game extends App {
     else {
 
       print(">> ")
-      val setToRaw = Array[String]("/bin/sh", "-c", "stty raw </dev/tty")
-      val setToCooked = Array[String]("/bin/sh", "-c", "stty cooked </dev/tty")
-      Runtime.getRuntime.exec(setToRaw).waitFor()
+//      val setToRaw = Array[String]("/bin/sh", "-c", "stty raw </dev/tty")
+//      val setToCooked = Array[String]("/bin/sh", "-c", "stty cooked </dev/tty")
+      Runtime.getRuntime.exec(TerminalUtils.setToRaw).waitFor()
       val input = Console.in.read
       println(s"input: $input")
 
-      Runtime.getRuntime.exec(setToCooked).waitFor()
+      Runtime.getRuntime.exec(TerminalUtils.setToCooked).waitFor()
 
       // 27 == escape
       if (input == 27) {
@@ -734,16 +735,16 @@ class GameState(player:Player, screen: Scurses) {
         cursor.render(screen)
         screen.refresh
 
-        val setToRaw = Array[String]("/bin/sh", "-c", "stty raw </dev/tty")
-        val setToCooked = Array[String]("/bin/sh", "-c", "stty cooked </dev/tty")
+//        val setToRaw = Array[String]("/bin/sh", "-c", "stty raw </dev/tty")
+//        val setToCooked = Array[String]("/bin/sh", "-c", "stty cooked </dev/tty")
 
 
 
-        Runtime.getRuntime.exec(setToRaw).waitFor()
+        Runtime.getRuntime.exec(TerminalUtils.setToRaw).waitFor()
 
         var input = Console.in.read
 
-        Runtime.getRuntime.exec(setToCooked).waitFor()
+        Runtime.getRuntime.exec(TerminalUtils.setToCooked).waitFor()
         while (input != OBSERVE_COMMAND && input != EXIT) {
           input match {
             case MOVE_LEFT => cursor.pos.x = if (moveIfVisible(cursor.pos.x - 1, cursor.pos.y)) DungeonHelper.clamp(cursor.pos.x - 1, 0, NUM_COLS) else cursor.pos.x
@@ -790,10 +791,10 @@ class GameState(player:Player, screen: Scurses) {
           //screen.put(0, NUM_ROWS + 2 + 4, s"${get}", descriptionTextColor)
 
           screen.refresh
-          Runtime.getRuntime.exec(setToRaw).waitFor()
+          Runtime.getRuntime.exec(TerminalUtils.setToRaw).waitFor()
 
           input = Console.in.read
-          Runtime.getRuntime.exec(setToCooked).waitFor()
+          Runtime.getRuntime.exec(TerminalUtils.setToCooked).waitFor()
 
         }
 
